@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Products - Technicon Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#376853",
+                      "on-tertiary-fixed": "#002110",
+                      "secondary": "#006d42",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#002115",
+                      "inverse-on-surface": "#eff1f0",
+                      "surface-container-low": "#f2f4f3",
+                      "outline-variant": "#c0c9c2",
+                      "surface-bright": "#f8faf9",
+                      "surface-container": "#eceeed",
+                      "on-error-container": "#93000a",
+                      "on-error": "#ffffff",
+                      "on-secondary-container": "#007145",
+                      "surface": "#f8faf9",
+                      "on-secondary-fixed-variant": "#005230",
+                      "primary-container": "#063d2b",
+                      "on-surface-variant": "#404944",
+                      "background": "#f8faf9",
+                      "primary-fixed-dim": "#9ed2b8",
+                      "on-tertiary-container": "#26b371",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-surface": "#2e3131",
+                      "surface-dim": "#d8dad9",
+                      "primary": "#002619",
+                      "inverse-primary": "#9ed2b8",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e1e3e2",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#191c1c",
+                      "tertiary-fixed": "#7afbb1",
+                      "tertiary": "#002613",
+                      "secondary-fixed": "#96f6bc",
+                      "surface-variant": "#e1e3e2",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed-dim": "#5cde97",
+                      "outline": "#717973",
+                      "tertiary-container": "#003e23",
+                      "surface-container-high": "#e6e9e8",
+                      "on-secondary-fixed": "#002110",
+                      "secondary-fixed-dim": "#7adaa2",
+                      "on-surface": "#191c1c",
+                      "on-primary-fixed-variant": "#1e4f3c",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#baeed4",
+                      "on-primary-container": "#76a891",
+                      "secondary-container": "#93f4ba",
+                      "on-tertiary-fixed-variant": "#00522f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "section-gap": "48px",
+                      "density-medium": "16px",
+                      "container-margin": "32px",
+                      "density-high": "8px",
+                      "gutter": "24px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-md": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { background-color: #F4F6F5; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center h-16 ml-64 px-container-margin w-[calc(100%-16rem)] bg-surface border-b border-outline-variant fixed top-0 z-20">
+<div class="flex items-center gap-density-medium">
+<span class="font-display-lg text-display-lg text-primary">Technicon Services</span>
+<div class="relative ml-8">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="h-11 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded-DEFAULT focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md font-body-md w-64" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-density-medium">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<nav class="docked h-screen w-64 left-0 top-0 border-r border-outline-variant flat no shadows flex flex-col h-full fixed overflow-y-auto bg-primary dark:bg-primary-container z-30">
+<div class="p-card-padding flex items-center gap-3 border-b border-on-primary/10">
+<div class="w-10 h-10 bg-surface rounded-DEFAULT flex items-center justify-center shrink-0">
+<img alt="Technicon Logo" class="w-6 h-6 object-contain" data-alt="A minimalist tech logo featuring a stylized 'T' in deep forest green on a crisp white background. The design is sleek, modern, and conveys enterprise stability and precision, suitable for an ERP SaaS application. The lighting is neutral and even." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMww7Gvipk-nJNyoabkz_bRMqB_P-KypWXzex65AXfVBlksnPrlkRv7DAoXKn8si6rn6lXZzJqTtx9kSREsoZAvCJ4mduY0xDrr9PKTpQWoiGam_1blZnshuOn_Tpf8fDekSwte4C4fUi5XQm3icOfCnhziyv0hRAA6PQWsTryfCEjqpqmHOF6x0Nr6Yk36NGz9IRPt5BjbeIEApEKB2ZSSgwdyVrn1hguhZ9SSa90p6xkIAeKx0LU"/>
+</div>
+<div class="flex flex-col">
+<span class="font-display-md text-display-md font-bold text-on-primary">Technicon</span>
+<span class="text-on-primary/70 text-[10px] uppercase tracking-wider font-semibold">Services SaaS</span>
+</div>
+</div>
+<div class="flex-1 py-density-medium flex flex-col gap-unit">
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                Quotations
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+                Purchase Orders
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Performa Invoices
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="business">business</span>
+                Companies
+            </a>
+<a class="flex items-center gap-3 px-[20px] py-3 border-l-4 border-secondary-fixed bg-surface-tint/10 text-on-primary font-bold transition-all duration-200 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill">inventory_2</span>
+                Products
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-card-padding py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+                Admin
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 mt-16 p-container-margin h-[calc(100vh-4rem)] overflow-y-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-center mb-section-gap">
+<h1 class="font-display-lg text-display-lg text-primary">Products</h1>
+<div class="flex gap-density-medium">
+<button class="h-12 px-6 border border-outline-variant rounded-[16px] font-body-md text-body-md text-primary font-medium hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+                    Import Excel
+                </button>
+<button class="h-12 px-6 bg-[#063D2B] text-on-primary rounded-[16px] font-body-md text-body-md font-medium hover:bg-primary transition-colors flex items-center gap-2 shadow-[0_4px_20px_rgba(16,32,24,0.08)]">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Add Product
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Main Data Table Section (8 cols) -->
+<div class="col-span-8 flex flex-col gap-density-medium">
+<!-- Toolbar -->
+<div class="bg-surface border border-outline-variant rounded-[16px] p-4 flex gap-4 items-center">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-background border border-outline-variant rounded-DEFAULT focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md font-body-md" placeholder="Search product name or part number..." type="text"/>
+</div>
+<div class="relative">
+<select class="h-11 pl-4 pr-10 appearance-none bg-background border border-outline-variant rounded-DEFAULT focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md font-body-md text-on-surface-variant">
+<option>All Categories</option>
+<option>Hardware</option>
+<option>Software</option>
+<option>Services</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+<div class="relative">
+<select class="h-11 pl-4 pr-10 appearance-none bg-background border border-outline-variant rounded-DEFAULT focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md font-body-md text-on-surface-variant">
+<option>Stock Status</option>
+<option>In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+</div>
+<!-- Table -->
+<div class="bg-surface border border-outline-variant rounded-[16px] overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold w-12"></th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold">Product Name</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold">Part Number</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold">Category</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold text-right">Unit Price (₹)</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold text-center">Stock Status</th>
+<th class="font-label-md text-label-md text-on-surface-variant py-3 px-4 font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-[14px]">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-bright transition-colors group">
+<td class="py-2 px-4">
+<div class="w-10 h-10 bg-background border border-outline-variant rounded-DEFAULT flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, isolated product photography shot of a sleek industrial server rack module against a pure white background. Studio lighting, high tech aesthetic, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH8-42wHx5gfyJAo91PxvbH1qEp0hF-uhQ-N7CH9CjqOim6eijgl1VqSZZbDtYk0Wq0c6B4ARRR3LiG4JXYRb6W8gohgXRBgMlerwnYkIGwb3z556DSCTdXNfNskBdgNwP2tn4WUP-CenBxq4TVkrZNJfbo_u7EZjtg79iImdHgEzfCiPimwO2CRuSdRI5FzYYqOropGraTWIYDDD13RxGYCJ5_F3UyKgoFX6v_A1x1oyLkPfgiWYF"/>
+</div>
+</td>
+<td class="py-2 px-4 font-medium text-primary">Enterprise Server X-100</td>
+<td class="py-2 px-4 text-on-surface-variant">SRV-X100-992</td>
+<td class="py-2 px-4 text-on-surface-variant">Hardware</td>
+<td class="py-2 px-4 text-right font-medium">₹ 2,45,000</td>
+<td class="py-2 px-4 text-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-tertiary-fixed-dim/20 text-on-secondary-fixed-variant text-[12px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span> In Stock (45)
+                                    </span>
+</td>
+<td class="py-2 px-4 text-right">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-bright transition-colors group">
+<td class="py-2 px-4">
+<div class="w-10 h-10 bg-background border border-outline-variant rounded-DEFAULT flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, isolated product photography shot of a high-end commercial network switch hub against a pure white background. Studio lighting, high tech aesthetic, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6KRFpKZi5fL4U3LaPC9bIFfcogvMhKrblV62PpyKZzH8WXgOsztMrNOxf5rsbIJApEwaVvTtRpewypVkGuIWoHI0COXOKgviMWYcDBbSSfDEP2_k0Eo4eewUiduCGHH-NiovhQEV7CRrPsI0x1ImjDsp7CQZMjU0xo6dHYGgV4rAvDf1eiXPdULQAJVR1rcJtuoPiN3wLbh7DEi0DlPf9J4VZD5tboLRFZyItpefKOJecgKkbb_Tz"/>
+</div>
+</td>
+<td class="py-2 px-4 font-medium text-primary">Core Network Switch 48-Port</td>
+<td class="py-2 px-4 text-on-surface-variant">NET-SW-48P</td>
+<td class="py-2 px-4 text-on-surface-variant">Hardware</td>
+<td class="py-2 px-4 text-right font-medium">₹ 85,500</td>
+<td class="py-2 px-4 text-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-variant text-on-surface-variant text-[12px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mr-1.5"></span> Low Stock (3)
+                                    </span>
+</td>
+<td class="py-2 px-4 text-right">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-bright transition-colors group">
+<td class="py-2 px-4">
+<div class="w-10 h-10 bg-background border border-outline-variant rounded-DEFAULT flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-outline-variant">deployed_code</span>
+</div>
+</td>
+<td class="py-2 px-4 font-medium text-primary">Cloud Storage License - 1TB</td>
+<td class="py-2 px-4 text-on-surface-variant">LIC-CLD-1TB</td>
+<td class="py-2 px-4 text-on-surface-variant">Software</td>
+<td class="py-2 px-4 text-right font-medium">₹ 12,000 / yr</td>
+<td class="py-2 px-4 text-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-tertiary-fixed-dim/20 text-on-secondary-fixed-variant text-[12px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span> In Stock (∞)
+                                    </span>
+</td>
+<td class="py-2 px-4 text-right">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Intelligence Section (4 cols) -->
+<div class="col-span-4 flex flex-col gap-density-medium">
+<div class="bg-surface border border-outline-variant rounded-[16px] p-card-padding">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">lightbulb</span>
+                        Product Intelligence
+                    </h2>
+<div class="flex flex-col gap-6">
+<!-- Top Revenue -->
+<div class="p-4 bg-background rounded-DEFAULT border border-outline-variant/50">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Top Revenue Product</div>
+<div class="font-body-lg text-body-lg font-medium text-primary mb-1">Enterprise Server X-100</div>
+<div class="flex justify-between items-end">
+<div class="font-headline-sm text-headline-sm text-secondary">₹ 24.5 Cr</div>
+<div class="text-[12px] text-secondary flex items-center">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> +12% YTD
+                                </div>
+</div>
+</div>
+<!-- Top Units -->
+<div class="p-4 bg-background rounded-DEFAULT border border-outline-variant/50">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Top Units Sold</div>
+<div class="font-body-lg text-body-lg font-medium text-primary mb-1">Standard Patch Cable 2m</div>
+<div class="flex justify-between items-end">
+<div class="font-headline-sm text-headline-sm text-primary">12,450 units</div>
+<div class="text-[12px] text-outline flex items-center">
+<span class="material-symbols-outlined text-[16px]">trending_flat</span> Stable
+                                </div>
+</div>
+</div>
+<!-- Trends -->
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Category Performance</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-[14px]">
+<span class="text-on-surface">Hardware</span>
+<span class="text-secondary flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[16px]">arrow_upward</span> 8%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between items-center text-[14px] pt-2">
+<span class="text-on-surface">Software</span>
+<span class="text-secondary flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[16px]">arrow_upward</span> 15%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 45%"></div>
+</div>
+<div class="flex justify-between items-center text-[14px] pt-2">
+<span class="text-on-surface">Services</span>
+<span class="text-error flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-[16px]">arrow_downward</span> 2%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 25%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

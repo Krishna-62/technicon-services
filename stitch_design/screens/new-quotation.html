@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Quotation - Technicon Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#eff1f0",
+                    "surface-bright": "#f8faf9",
+                    "on-secondary-fixed-variant": "#005230",
+                    "outline-variant": "#c0c9c2",
+                    "inverse-surface": "#2e3131",
+                    "tertiary": "#002613",
+                    "tertiary-container": "#003e23",
+                    "primary-fixed-dim": "#9ed2b8",
+                    "surface-container-highest": "#e1e3e2",
+                    "secondary": "#006d42",
+                    "surface-variant": "#e1e3e2",
+                    "inverse-primary": "#9ed2b8",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#96f6bc",
+                    "on-primary-fixed": "#002115",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#93f4ba",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container": "#eceeed",
+                    "on-tertiary-fixed": "#002110",
+                    "surface-tint": "#376853",
+                    "on-background": "#191c1c",
+                    "surface": "#f8faf9",
+                    "on-primary-container": "#76a891",
+                    "primary-fixed": "#baeed4",
+                    "surface-dim": "#d8dad9",
+                    "surface-container-high": "#e6e9e8",
+                    "on-surface": "#191c1c",
+                    "on-primary-fixed-variant": "#1e4f3c",
+                    "primary-container": "#063d2b",
+                    "surface-container-low": "#f2f4f3",
+                    "on-tertiary-fixed-variant": "#00522f",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#404944",
+                    "on-tertiary-container": "#26b371",
+                    "background": "#f8faf9",
+                    "tertiary-fixed-dim": "#5cde97",
+                    "secondary-fixed-dim": "#7adaa2",
+                    "outline": "#717973",
+                    "on-secondary-fixed": "#002110",
+                    "tertiary-fixed": "#7afbb1",
+                    "primary": "#002619",
+                    "on-secondary-container": "#007145"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "density-high": "8px",
+                    "card-padding": "24px",
+                    "unit": "4px",
+                    "section-gap": "48px",
+                    "density-medium": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "display-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "display-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-md": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .input-base {
+            @apply flex h-[44px] w-full rounded border border-outline-variant bg-surface-container-low px-3 py-2 font-body-md text-body-md text-on-surface focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-all duration-200;
+        }
+        .label-base {
+            @apply mb-1 block font-label-md text-label-md text-on-surface-variant;
+        }
+        .btn-primary {
+            @apply flex h-[48px] items-center justify-center rounded-xl bg-primary-container px-6 font-label-md text-label-md text-on-primary transition-all hover:bg-primary-container/90;
+        }
+        .btn-secondary {
+            @apply flex h-[48px] items-center justify-center rounded-xl border border-outline-variant bg-transparent px-6 font-label-md text-label-md text-primary-container transition-all hover:bg-surface-variant/50;
+        }
+        .btn-ghost {
+            @apply flex h-[48px] items-center justify-center rounded-xl bg-transparent px-6 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-variant/30 hover:text-on-surface;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden font-body-md text-body-md selection:bg-secondary/20 selection:text-primary">
+<!-- SideNavBar -->
+<nav class="bg-primary text-secondary-fixed font-body-md text-body-md border-r border-outline-variant docked h-screen w-64 left-0 top-0 flex flex-col h-full fixed overflow-y-auto hidden md:flex z-20">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded bg-primary-fixed flex items-center justify-center text-primary font-bold">T</div>
+<div>
+<h1 class="font-display-md text-display-md font-bold text-on-primary">Technicon</h1>
+<p class="font-label-md text-label-md text-on-primary/70">Services SaaS</p>
+</div>
+</div>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-1">
+<!-- Navigation Items -->
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="border-l-4 border-secondary-fixed bg-surface-tint/10 text-on-primary font-bold transition-all duration-200 flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Quotations</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span>Purchase Orders</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Performa Invoices</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="business">business</span>
+<span>Companies</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Products</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Reports</span>
+</a>
+<div class="mt-auto mb-4 flex flex-col gap-1">
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors flex items-center gap-3 px-6 py-3" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span>Admin</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 w-full md:w-[calc(100%-16rem)]">
+<!-- TopNavBar -->
+<header class="bg-surface text-primary font-headline-sm text-headline-sm border-b border-outline-variant docked full-width top-0 flex justify-between items-center h-16 px-container-margin z-10">
+<div class="flex items-center gap-4">
+<span class="font-display-lg text-display-lg text-primary font-bold">Technicon Services</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="h-10 w-64 rounded-full border border-outline-variant bg-surface-container-low pl-10 pr-4 font-body-md text-body-md focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-4 md:p-container-margin bg-surface-container-low">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="mb-section-gap flex items-center justify-between">
+<div>
+<h2 class="font-display-md text-display-md text-on-surface font-semibold">New Quotation</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Create a new commercial offer for a client.</p>
+</div>
+</div>
+<!-- Form Container (ERP Document Style) -->
+<form class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<!-- Top Sections Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter p-card-padding border-b border-outline-variant/50">
+<!-- Section 1: Customer Information -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<h3 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant/30 pb-2 mb-2">Customer Information</h3>
+<div>
+<label class="label-base">Company</label>
+<div class="relative">
+<select class="input-base appearance-none cursor-pointer">
+<option disabled="" selected="" value="">Select an existing company...</option>
+<option value="1">Acme Corporation</option>
+<option value="2">Global Industries</option>
+<option value="3">Stark Enterprises</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div>
+<label class="label-base">Contact Person</label>
+<div class="relative">
+<select class="input-base appearance-none cursor-pointer disabled:bg-surface-variant/30 disabled:text-on-surface-variant/50" disabled="">
+<option disabled="" selected="" value="">Select contact...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1">Please select a company first.</p>
+</div>
+</div>
+<!-- Spacer -->
+<div class="hidden lg:block lg:col-span-1"></div>
+<!-- Section 2: Quotation Information -->
+<div class="lg:col-span-6 flex flex-col gap-4">
+<h3 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant/30 pb-2 mb-2">Quotation Details</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="label-base">Quotation Number</label>
+<input class="input-base bg-surface-variant/20 text-on-surface-variant cursor-not-allowed font-mono" readonly="" type="text" value="QT-2023-0891"/>
+</div>
+<div>
+<label class="label-base">Status</label>
+<div class="relative">
+<select class="input-base appearance-none cursor-pointer">
+<option selected="" value="draft">Draft</option>
+<option value="pending">Pending Approval</option>
+<option value="sent">Sent to Client</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div>
+<label class="label-base">Issue Date</label>
+<div class="relative">
+<input class="input-base" type="date" value="2023-10-24"/>
+</div>
+</div>
+<div>
+<label class="label-base">Valid Until</label>
+<div class="relative">
+<input class="input-base" type="date" value="2023-11-24"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Line Items -->
+<div class="p-card-padding border-b border-outline-variant/50 overflow-x-auto">
+<div class="flex justify-between items-end mb-4">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Line Items</h3>
+</div>
+<table class="w-full min-w-[800px] border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-y border-outline-variant">
+<th class="py-3 px-4 text-left font-label-md text-label-md text-on-surface-variant w-12">#</th>
+<th class="py-3 px-4 text-left font-label-md text-label-md text-on-surface-variant">Product / Service</th>
+<th class="py-3 px-4 text-left font-label-md text-label-md text-on-surface-variant w-32">Part No.</th>
+<th class="py-3 px-4 text-right font-label-md text-label-md text-on-surface-variant w-24">Qty</th>
+<th class="py-3 px-4 text-right font-label-md text-label-md text-on-surface-variant w-32">Unit Price</th>
+<th class="py-3 px-4 text-right font-label-md text-label-md text-on-surface-variant w-24">Tax (%)</th>
+<th class="py-3 px-4 text-right font-label-md text-label-md text-on-surface-variant w-32">Total</th>
+<th class="py-3 px-4 text-center font-label-md text-label-md text-on-surface-variant w-12"></th>
+</tr>
+</thead>
+<tbody>
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-2 px-4 text-on-surface-variant font-medium">1</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest" placeholder="Item description" type="text" value="Enterprise Server Rack 42U"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest font-mono text-xs" type="text" value="SR-42U-E"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="number" value="2"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="text" value="$1,250.00"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="number" value="10"/>
+</td>
+<td class="py-2 px-4 text-right font-medium text-on-surface">$2,750.00</td>
+<td class="py-2 px-4 text-center">
+<button class="text-on-surface-variant/50 hover:text-error transition-colors p-1 rounded opacity-0 group-hover:opacity-100 focus:opacity-100" type="button">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-2 px-4 text-on-surface-variant font-medium">2</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest" placeholder="Item description" type="text" value="Installation &amp; Setup Service"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest font-mono text-xs" type="text" value="SRV-INST-01"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="number" value="1"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="text" value="$800.00"/>
+</td>
+<td class="py-2 px-4">
+<input class="input-base h-9 bg-transparent border-transparent hover:border-outline-variant focus:bg-surface-container-lowest text-right" type="number" value="0"/>
+</td>
+<td class="py-2 px-4 text-right font-medium text-on-surface">$800.00</td>
+<td class="py-2 px-4 text-center">
+<button class="text-on-surface-variant/50 hover:text-error transition-colors p-1 rounded opacity-0 group-hover:opacity-100 focus:opacity-100" type="button">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="mt-4">
+<button class="flex items-center gap-2 font-label-md text-label-md text-secondary hover:text-secondary-fixed-dim transition-colors py-2 px-3 rounded hover:bg-secondary/5" type="button">
+<span class="material-symbols-outlined text-sm">add</span>
+                                Add New Item
+                            </button>
+</div>
+</div>
+<!-- Section 4: Financial Summary & Notes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter p-card-padding">
+<!-- Notes -->
+<div>
+<label class="label-base">Notes / Terms &amp; Conditions</label>
+<textarea class="input-base min-h-[120px] resize-y" placeholder="Add specific terms, payment conditions, or client notes here...">Standard net 30 payment terms apply. Delivery expected within 14 days of PO receipt.</textarea>
+</div>
+<!-- Summary Totals -->
+<div class="flex flex-col items-end justify-start">
+<div class="w-full max-w-sm border border-outline-variant rounded-xl overflow-hidden">
+<div class="flex justify-between py-3 px-4 border-b border-outline-variant/50">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">$3,300.00</span>
+</div>
+<div class="flex justify-between py-3 px-4 border-b border-outline-variant/50">
+<span class="font-body-md text-body-md text-on-surface-variant">Tax Amount</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">$250.00</span>
+</div>
+<div class="flex justify-between py-4 px-4 bg-surface-container-low">
+<span class="font-headline-sm text-headline-sm text-on-surface">Grand Total</span>
+<span class="font-headline-sm text-headline-sm text-primary-container">$3,550.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions Footer -->
+<div class="bg-surface-container-low border-t border-outline-variant p-4 px-card-padding flex flex-col sm:flex-row justify-end items-center gap-4">
+<button class="btn-ghost w-full sm:w-auto" type="button">Cancel</button>
+<button class="btn-secondary w-full sm:w-auto" type="button">
+<span class="material-symbols-outlined mr-2 text-[20px]">save</span>
+                            Save Draft
+                        </button>
+<button class="btn-primary w-full sm:w-auto" type="submit">
+<span class="material-symbols-outlined mr-2 text-[20px]">send</span>
+                            Send Quotation
+                        </button>
+</div>
+</form>
+</div>
+<!-- Bottom spacing for scroll -->
+<div class="h-16"></div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Settings - Technicon Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#96f6bc",
+                      "surface-dim": "#d8dad9",
+                      "on-secondary": "#ffffff",
+                      "inverse-surface": "#2e3131",
+                      "tertiary-fixed": "#7afbb1",
+                      "outline-variant": "#c0c9c2",
+                      "on-tertiary-fixed-variant": "#00522f",
+                      "on-primary-fixed": "#002115",
+                      "primary-fixed-dim": "#9ed2b8",
+                      "on-secondary-fixed-variant": "#005230",
+                      "tertiary": "#002613",
+                      "surface-container": "#eceeed",
+                      "tertiary-fixed-dim": "#5cde97",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#76a891",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-container": "#26b371",
+                      "on-background": "#191c1c",
+                      "on-surface": "#191c1c",
+                      "inverse-on-surface": "#eff1f0",
+                      "on-secondary-container": "#007145",
+                      "on-secondary-fixed": "#002110",
+                      "inverse-primary": "#9ed2b8",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f2f4f3",
+                      "surface-container-high": "#e6e9e8",
+                      "secondary-fixed-dim": "#7adaa2",
+                      "on-surface-variant": "#404944",
+                      "surface": "#f8faf9",
+                      "tertiary-container": "#003e23",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#93f4ba",
+                      "primary": "#002619",
+                      "outline": "#717973",
+                      "on-tertiary-fixed": "#002110",
+                      "surface-tint": "#376853",
+                      "secondary": "#006d42",
+                      "on-primary-fixed-variant": "#1e4f3c",
+                      "error": "#ba1a1a",
+                      "primary-container": "#063d2b",
+                      "surface-variant": "#e1e3e2",
+                      "primary-fixed": "#baeed4",
+                      "surface-container-highest": "#e1e3e2",
+                      "background": "#f8faf9",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#f8faf9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-padding": "24px",
+                      "section-gap": "48px",
+                      "unit": "4px",
+                      "gutter": "24px",
+                      "density-medium": "16px",
+                      "density-high": "8px",
+                      "container-margin": "32px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "display-md": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-md": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-primary dark:bg-primary-container text-secondary-fixed dark:text-secondary-fixed-dim font-body-md text-body-md docked h-screen w-64 left-0 top-0 border-r border-outline-variant flex flex-col h-full fixed overflow-y-auto flat no shadows z-20">
+<div class="p-6">
+<h1 class="font-display-md text-display-md font-bold text-on-primary dark:text-primary-fixed">Technicon</h1>
+<p class="text-on-primary/70 text-sm mt-1">Services SaaS</p>
+</div>
+<ul class="flex flex-col mt-4">
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+                    Quotations
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+                    Purchase Orders
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                    Performa Invoices
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">business</span>
+                    Companies
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                    Products
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                    Reports
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 border-l-4 border-secondary-fixed bg-surface-tint/10 text-on-primary font-bold hover:bg-on-primary/5 transition-colors transition-all duration-200" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+                    Admin
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-headline-sm text-headline-sm docked full-width top-0 border-b border-outline-variant flat no shadows flex justify-between items-center h-16 px-container-margin w-full bg-surface z-10 sticky">
+<div class="flex items-center">
+<h2 class="font-display-lg text-display-lg text-primary dark:text-inverse-primary">Technicon Services</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-container-margin w-full max-w-[1440px] mx-auto">
+<!-- Header Section -->
+<div class="mb-section-gap flex justify-between items-end">
+<div>
+<h1 class="font-display-md text-display-md text-on-surface mb-2">Admin Settings</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage global system configurations, user access, and security policies.</p>
+</div>
+<div>
+<button class="h-[48px] px-6 bg-primary-container text-on-primary rounded-xl font-headline-sm text-headline-sm hover:bg-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                        Save Changes
+                    </button>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-gutter">
+<!-- Settings Sidebar Navigation -->
+<div class="w-full lg:w-64 flex-shrink-0">
+<nav class="flex flex-col gap-2 sticky top-[calc(64px+32px)]">
+<button class="w-full text-left px-4 py-3 rounded-lg font-headline-sm text-headline-sm bg-surface-variant text-on-surface flex items-center gap-3" onclick="switchTab('general')">
+<span class="material-symbols-outlined fill">tune</span>
+                            General
+                        </button>
+<button class="w-full text-left px-4 py-3 rounded-lg font-headline-sm text-headline-sm text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center gap-3" onclick="switchTab('users')">
+<span class="material-symbols-outlined">group</span>
+                            User Management
+                        </button>
+<button class="w-full text-left px-4 py-3 rounded-lg font-headline-sm text-headline-sm text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center gap-3" onclick="switchTab('security')">
+<span class="material-symbols-outlined">security</span>
+                            Security
+                        </button>
+<button class="w-full text-left px-4 py-3 rounded-lg font-headline-sm text-headline-sm text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center gap-3" onclick="switchTab('integrations')">
+<span class="material-symbols-outlined">extension</span>
+                            Integrations
+                        </button>
+</nav>
+</div>
+<!-- Settings Content Area -->
+<div class="flex-1 min-w-0">
+<!-- General Settings Tab -->
+<div class="space-y-gutter" id="tab-general">
+<!-- Brand Identity Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-outline-variant pb-4">Brand Identity</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Company Logo</label>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-[32px]">image</span>
+</div>
+<div class="flex-1">
+<input class="hidden" id="logo-upload" type="file"/>
+<label class="inline-flex h-[40px] px-4 items-center justify-center rounded-lg border border-outline-variant font-label-md text-label-md text-on-surface hover:bg-surface-container cursor-pointer transition-colors" for="logo-upload">
+                                                Upload New
+                                            </label>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-xs">Recommended size: 512x512px. Max 2MB.</p>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Brand Color (Hex)</label>
+<div class="relative">
+<div class="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded bg-primary-container border border-outline-variant"></div>
+<input class="w-full h-[44px] pl-12 pr-4 bg-background border border-outline-variant rounded-lg font-body-md text-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none transition-all" type="text" value="#063D2B"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Localization Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-outline-variant pb-4">Localization</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Default Currency</label>
+<select class="w-full h-[44px] px-4 bg-background border border-outline-variant rounded-lg font-body-md text-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none transition-all appearance-none">
+<option value="USD">USD - US Dollar</option>
+<option value="EUR">EUR - Euro</option>
+<option value="GBP">GBP - British Pound</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">System Timezone</label>
+<select class="w-full h-[44px] px-4 bg-background border border-outline-variant rounded-lg font-body-md text-body-md focus:border-secondary focus:ring-2 focus:ring-secondary/20 focus:outline-none transition-all appearance-none">
+<option value="UTC">UTC (Universal Coordinated Time)</option>
+<option value="EST">EST (Eastern Standard Time)</option>
+<option value="PST">PST (Pacific Standard Time)</option>
+</select>
+</div>
+</div>
+</section>
+</div>
+<!-- User Management Tab (Hidden by default for this example, but structurally present) -->
+<div class="hidden space-y-gutter" id="tab-users">
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-card-padding border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Team Members</h3>
+<button class="h-[40px] px-4 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                                    Add Member
+                                </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low font-label-md text-label-md text-on-surface-variant">
+<th class="p-density-medium font-medium">Name</th>
+<th class="p-density-medium font-medium">Email</th>
+<th class="p-density-medium font-medium">Role</th>
+<th class="p-density-medium font-medium">Status</th>
+<th class="p-density-medium font-medium text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="p-density-medium py-density-high">Sarah Jenkins</td>
+<td class="p-density-medium py-density-high text-on-surface-variant">sarah.j@technicon.com</td>
+<td class="p-density-medium py-density-high">Admin</td>
+<td class="p-density-medium py-density-high">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary-container text-on-secondary-container">Active</span>
+</td>
+<td class="p-density-medium py-density-high text-right">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="p-density-medium py-density-high">Marcus Reed</td>
+<td class="p-density-medium py-density-high text-on-surface-variant">m.reed@technicon.com</td>
+<td class="p-density-medium py-density-high">Manager</td>
+<td class="p-density-medium py-density-high">
+<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-surface-variant text-on-surface-variant">Pending</span>
+</td>
+<td class="p-density-medium py-density-high text-right">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Simple tab switching logic for demonstration
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.getElementById('tab-general').classList.add('hidden');
+            document.getElementById('tab-users').classList.add('hidden');
+            // Show selected tab
+            const target = document.getElementById('tab-' + tabId);
+            if(target) target.classList.remove('hidden');
+            
+            // Note: In a real app, you'd also update the active state of the sidebar buttons here.
+        }
+    </script>
+</body></html>

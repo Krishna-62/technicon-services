@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technicon Operational ERP - Quotations</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            technicon: {
+              dark: '#002619',
+              green: '#006d42',
+              lightGreen: '#93f4ba',
+              bg: '#f8faf9',
+              card: '#ffffff',
+              textMain: '#191c1c',
+              textMuted: '#717973',
+              border: '#eceeed'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Theme CSS -->
+  <link rel="stylesheet" href="/css/theme.css" />
+</head>
+<body class="bg-[#f8faf9] text-[#191c1c] min-h-screen flex font-sans antialiased selection:bg-[#006d42] selection:text-white">
+
+  <!-- LEFT SIDEBAR NAVIGATION (Dark Deep Forest Green #002619) -->
+  <aside class="w-64 bg-[#002619] text-white min-h-screen flex flex-col justify-between p-4 shrink-0 fixed left-0 top-0 bottom-0 z-30 sidebar-scroll overflow-y-auto">
+    <div class="flex flex-col gap-6">
+      
+      <!-- Brand Logo Header -->
+      <div class="px-2 pt-2">
+        <h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <i data-lucide="building" class="w-6 h-6 text-[#93f4ba]"></i>
+          <span>Technicon</span>
+        </h1>
+        <p class="text-xs font-medium text-[#76a891] mt-0.5 pl-8">Operational ERP</p>
+      </div>
+
+      <!-- Navigation Links List -->
+      <nav class="flex flex-col gap-1">
+        <!-- Dashboard -->
+        <a href="/index.html" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <!-- Quotations (ACTIVE) -->
+        <a href="/quotations.html" class="nav-item-active px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="file-text" class="w-4 h-4 text-white"></i>
+          <span>Quotations</span>
+        </a>
+
+        <!-- Purchase Orders -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="shopping-cart" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Purchase Orders</span>
+        </a>
+
+        <!-- Performa Invoices -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="receipt" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Performa Invoices</span>
+        </a>
+
+        <!-- Companies -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="building-2" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Companies</span>
+        </a>
+
+        <!-- Products -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="package" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Products</span>
+        </a>
+
+        <!-- Section: INSIGHTS -->
+        <div class="pt-4 pb-1 px-3">
+          <span class="text-[11px] font-bold tracking-wider text-[#4a7862] uppercase">INSIGHTS</span>
+        </div>
+
+        <!-- Business Health -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="trending-up" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Business Health</span>
+        </a>
+
+        <!-- Customer Health -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="users" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Customer Health</span>
+        </a>
+
+        <!-- Growth Opportunities -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="compass" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Growth Opportunities</span>
+        </a>
+
+        <!-- Product Intelligence -->
+        <a href="/product-intelligence.html" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="brain-circuit" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Product Intelligence</span>
+        </a>
+
+        <!-- Chat with AI -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Chat with AI</span>
+        </a>
+
+        <!-- Section: SYSTEM -->
+        <div class="pt-4 pb-1 px-3">
+          <span class="text-[11px] font-bold tracking-wider text-[#4a7862] uppercase">SYSTEM</span>
+        </div>
+
+        <!-- Settings -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="settings" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Settings</span>
+        </a>
+
+        <!-- Admin -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+          <i data-lucide="user-check" class="w-4 h-4 text-[#76a891]"></i>
+          <span>Admin</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- MAIN APPLICATION BODY CONTENT -->
+  <div class="flex-1 ml-64 min-h-screen flex flex-col">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-[#f8faf9] px-6 lg:px-8 py-4 flex items-center justify-between gap-4 sticky top-0 z-20">
+      
+      <!-- Technicon Services Branding & Search Input -->
+      <div class="flex items-center gap-4 flex-1">
+        <span class="text-sm font-bold text-[#191c1c] hidden sm:inline-block">Technicon Services</span>
+        
+        <div class="relative w-64 lg:w-80">
+          <i data-lucide="search" class="w-4 h-4 text-[#717973] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="global-search-input"
+            placeholder="Search..." 
+            class="w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-white border border-[#e1e3e2] focus:outline-none focus:ring-2 focus:ring-[#006d42]/30 text-[#191c1c] placeholder-[#717973] transition-all shadow-sm"
+          />
+        </div>
+      </div>
+
+      <!-- Right Header Actions (+ New Quotation, Bell, Profile Avatar) -->
+      <div class="flex items-center gap-3">
+        <!-- Primary Button: + New Quotation -->
+        <button id="btn-new-quotation" class="bg-[#002619] hover:bg-[#003e29] text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 transition-all hover-subtle">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>New Quotation</span>
+        </button>
+
+        <button class="p-2 rounded-xl text-[#404944] hover:bg-white transition-all hover-subtle border border-transparent hover:border-[#e1e3e2]">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+        </button>
+
+        <button class="p-2 rounded-xl text-[#404944] hover:bg-white transition-all hover-subtle border border-transparent hover:border-[#e1e3e2]">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- QUOTATIONS MAIN CANVAS -->
+    <main class="flex-1 px-6 lg:px-8 pb-8 flex flex-col gap-6 max-w-[1440px] w-full">
+
+      <!-- PAGE TITLE & EXPORT ACTION BUTTON -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+        <div>
+          <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-[#191c1c]">Quotations</h1>
+          <p class="text-xs lg:text-sm font-medium text-[#717973] mt-1">Manage and track your customer proposals.</p>
+        </div>
+
+        <!-- Right Export Button -->
+        <div>
+          <button id="btn-export-csv" class="bg-white border border-[#e1e3e2] hover:border-[#c0c9c2] text-[#191c1c] font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 transition-all hover-subtle">
+            <i data-lucide="download" class="w-4 h-4 text-[#717973]"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ROW 1: 3 KPI SUMMARY CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        
+        <!-- KPI 1: Active Quotations -->
+        <div class="technicon-card p-6 flex flex-col justify-between gap-4 hover-subtle">
+          <span class="text-xs font-semibold text-[#717973]">Active Quotations</span>
+          <div>
+            <div class="text-3xl lg:text-4xl font-extrabold text-[#191c1c] tracking-tight">248</div>
+            <div class="flex items-center gap-1 text-xs font-medium text-[#006d42] mt-1.5">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+              <span>+12% vs last month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Pipeline Value -->
+        <div class="technicon-card p-6 flex flex-col justify-between gap-4 hover-subtle">
+          <span class="text-xs font-semibold text-[#717973]">Total Pipeline Value</span>
+          <div>
+            <div class="text-3xl lg:text-4xl font-extrabold text-[#191c1c] tracking-tight">₹18.4Cr</div>
+            <div class="flex items-center gap-1 text-xs font-medium text-[#006d42] mt-1.5">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+              <span>+5% vs last month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 3: Conversion Rate -->
+        <div class="technicon-card p-6 flex flex-col justify-between gap-4 hover-subtle">
+          <span class="text-xs font-semibold text-[#717973]">Conversion Rate</span>
+          <div>
+            <div class="text-3xl lg:text-4xl font-extrabold text-[#191c1c] tracking-tight">34.2%</div>
+            <div class="flex items-center gap-1 text-xs font-medium text-[#717973] mt-1.5">
+              <span class="font-bold">—</span>
+              <span>No change</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 2: QUOTATIONS DATA TABLE & FILTER CARD -->
+      <div class="technicon-card p-6 flex flex-col justify-between gap-5">
+        
+        <!-- Table Filter Controls Row -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          
+          <!-- Left Filter Pills (All Statuses, Last 30 Days) -->
+          <div class="flex items-center gap-3">
+            
+            <!-- All Statuses Filter Pill -->
+            <div class="relative">
+              <button id="status-filter-btn" class="bg-white border border-[#e1e3e2] hover:border-[#c0c9c2] text-[#191c1c] font-medium text-xs px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all">
+                <span>All Statuses</span>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#717973]"></i>
+              </button>
+              
+              <div id="status-filter-dropdown" class="hidden absolute left-0 mt-2 w-36 bg-white border border-[#e1e3e2] rounded-xl shadow-lg z-30 py-1 text-xs">
+                <a href="#" class="block px-4 py-2 text-[#191c1c] font-semibold hover:bg-[#f2f4f3]">All Statuses</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Accepted</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Sent</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Draft</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Rejected</a>
+              </div>
+            </div>
+
+            <!-- Last 30 Days Filter Pill -->
+            <div class="relative">
+              <button id="date-filter-btn" class="bg-white border border-[#e1e3e2] hover:border-[#c0c9c2] text-[#191c1c] font-medium text-xs px-3.5 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all">
+                <span>Last 30 Days</span>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#717973]"></i>
+              </button>
+
+              <div id="date-filter-dropdown" class="hidden absolute left-0 mt-2 w-44 bg-white border border-[#e1e3e2] rounded-xl shadow-lg z-30 py-1 text-xs">
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Last 7 Days</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] font-semibold hover:bg-[#f2f4f3]">Last 30 Days</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">Last 90 Days</a>
+                <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3]">This Year</a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Table Search Input -->
+          <div class="relative w-full sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-[#717973] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+              type="text" 
+              id="quote-search-input"
+              placeholder="Search quotes..." 
+              class="w-full pl-9 pr-4 py-1.5 text-xs rounded-full bg-white border border-[#e1e3e2] focus:outline-none focus:ring-2 focus:ring-[#006d42]/30 text-[#191c1c] placeholder-[#717973] transition-all shadow-sm"
+            />
+          </div>
+
+        </div>
+
+        <!-- Data Table Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-[#eceeed] text-[11px] font-bold text-[#717973] uppercase tracking-wider">
+                <th class="py-3 px-4">QTN ID</th>
+                <th class="py-3 px-4">CUSTOMER</th>
+                <th class="py-3 px-4">AMOUNT</th>
+                <th class="py-3 px-4">CREATED DATE</th>
+                <th class="py-3 px-4">EXPIRY</th>
+                <th class="py-3 px-4">STATUS</th>
+                <th class="py-3 px-4 text-right">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="quotations-table-body" class="divide-y divide-[#eceeed] text-xs font-medium">
+              
+              <!-- Row 1: QTN-104 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-104</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">ABC Industries</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹4.5L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 12, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 12, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#e6f7ef] text-[#006d42]">
+                    Accepted
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 2: QTN-105 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-105</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">XYZ Pharma</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹2.1L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 14, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 14, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#e0f2fe] text-[#0284c7]">
+                    Sent
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 3: QTN-106 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-106</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">Delta Labs</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹0.8L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 15, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 15, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#eceeed] text-[#525855]">
+                    Draft
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 4: QTN-107 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-107</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">TechCorp Solutions</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹12.0L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 18, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 18, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#e6f7ef] text-[#006d42]">
+                    Accepted
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 5: QTN-108 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-108</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">Apex Manufacturing</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹6.4L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 20, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 20, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#e0f2fe] text-[#0284c7]">
+                    Sent
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 6: QTN-109 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-109</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">Global Tech Inc</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹3.7L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 22, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 22, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#fee2e2] text-[#b91c1c]">
+                    Rejected
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+              <!-- Row 7: QTN-110 -->
+              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+                <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-110</td>
+                <td class="py-4 px-4 font-semibold text-[#191c1c]">Vanguard Systems</td>
+                <td class="py-4 px-4 font-bold text-[#191c1c]">₹8.9L</td>
+                <td class="py-4 px-4 text-[#717973]">Oct 25, 2023</td>
+                <td class="py-4 px-4 text-[#717973]">Nov 25, 2023</td>
+                <td class="py-4 px-4">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#eceeed] text-[#525855]">
+                    Draft
+                  </span>
+                </td>
+                <td class="py-4 px-4 text-right">
+                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- APPLICATION INTERACTIVE SCRIPTS -->
+  <script src="/js/technicon-dashboard.js"></script>
+  <script>
+    // Initialize Lucide Icons
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

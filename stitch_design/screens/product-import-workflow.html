@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Import Products - Technicon Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-surface-variant": "#404944",
+                  "on-error": "#ffffff",
+                  "primary-container": "#063d2b",
+                  "on-tertiary-fixed": "#002110",
+                  "on-surface": "#191c1c",
+                  "on-background": "#191c1c",
+                  "on-error-container": "#93000a",
+                  "on-primary-fixed": "#002115",
+                  "tertiary-container": "#003e23",
+                  "on-secondary-fixed": "#002110",
+                  "inverse-on-surface": "#eff1f0",
+                  "error-container": "#ffdad6",
+                  "primary-fixed-dim": "#9ed2b8",
+                  "secondary-container": "#93f4ba",
+                  "surface-variant": "#e1e3e2",
+                  "primary-fixed": "#baeed4",
+                  "surface-bright": "#f8faf9",
+                  "on-secondary": "#ffffff",
+                  "on-primary-fixed-variant": "#1e4f3c",
+                  "surface": "#f8faf9",
+                  "surface-container-lowest": "#ffffff",
+                  "on-primary": "#ffffff",
+                  "on-secondary-container": "#007145",
+                  "tertiary-fixed": "#7afbb1",
+                  "secondary": "#006d42",
+                  "background": "#f8faf9",
+                  "on-tertiary": "#ffffff",
+                  "inverse-surface": "#2e3131",
+                  "on-tertiary-fixed-variant": "#00522f",
+                  "outline": "#717973",
+                  "on-secondary-fixed-variant": "#005230",
+                  "inverse-primary": "#9ed2b8",
+                  "on-tertiary-container": "#26b371",
+                  "tertiary": "#002613",
+                  "error": "#ba1a1a",
+                  "surface-container-highest": "#e1e3e2",
+                  "surface-container-high": "#e6e9e8",
+                  "outline-variant": "#c0c9c2",
+                  "on-primary-container": "#76a891",
+                  "surface-dim": "#d8dad9",
+                  "surface-tint": "#376853",
+                  "tertiary-fixed-dim": "#5cde97",
+                  "secondary-fixed": "#96f6bc",
+                  "surface-container": "#eceeed",
+                  "surface-container-low": "#f2f4f3",
+                  "secondary-fixed-dim": "#7adaa2",
+                  "primary": "#002619"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "density-medium": "16px",
+                  "container-margin": "32px",
+                  "unit": "4px",
+                  "gutter": "24px",
+                  "section-gap": "48px",
+                  "card-padding": "24px",
+                  "density-high": "8px"
+          },
+          "fontFamily": {
+                  "body-lg": ["Inter"],
+                  "display-lg-mobile": ["Inter"],
+                  "display-lg": ["Inter"],
+                  "display-md": ["Inter"],
+                  "headline-sm": ["Inter"],
+                  "label-md": ["Inter"],
+                  "body-md": ["Inter"]
+          },
+          "fontSize": {
+                  "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                  "display-md": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                  "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+          }
+        },
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Stepper transition */
+    .step-content {
+      display: none;
+    }
+    .step-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md m-0 p-0 h-screen overflow-hidden flex">
+<!-- Background Content: Products List View (Simulated underlying screen) -->
+<div class="fixed inset-0 z-0 bg-surface">
+<!-- Embedded Screen 8 (Products List View) would go here in reality. 
+          For context, we'll just show a blurred out representation. -->
+<div class="w-full h-full relative" data-alt="A blurred, out-of-focus background representing a complex enterprise dashboard table for a SaaS product list. The color scheme features soft grays and forest greens, conveying a corporate, high-tech interface. The lighting is bright and even, characteristic of modern light-mode applications." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDouPgu0ntZHMhiexut9MFAyBuFoeVws0TooesKNjcYM_2p2S6YiSkHxwReMksEeOnA28j8Hq2aUJ0mww5KVZKR2hte3T4N_xdEGt_x0Pm8R5mNGWDbv_ZZz0U5THB8jcGTYeYmkVktfI-j1nbSgL2Xr6Gb7vY_5Np2P2Yt7pyVri8qRrf3IidCf0hxpM3ZZ4IzNfxSZseGREyuVE3yS7Rt9yG3UV-_V04yyr25lyaKwF9Cn_6rBbZ0')">
+<div class="absolute inset-0 bg-surface/50 backdrop-blur-sm"></div>
+</div>
+</div>
+<!-- Modal Overlay Container -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 backdrop-blur-[2px] p-4">
+<!-- Modal Card -->
+<div class="bg-surface-container-lowest w-full max-w-4xl rounded-xl shadow-[0_8px_32px_rgba(6,61,43,0.12)] border border-outline-variant flex flex-col max-h-[921px] overflow-hidden">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-card-padding py-4 border-b border-outline-variant bg-surface-bright">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary">Import Products</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Bulk upload and map product data into Technicon Services.</p>
+</div>
+<button aria-label="Close modal" class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Stepper Header -->
+<div class="px-card-padding py-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-center">
+<ol class="flex items-center w-full max-w-2xl">
+<!-- Step 1 -->
+<li class="flex w-full items-center text-primary-container after:content-[''] after:w-full after:h-1 after:border-b after:border-primary-container after:border-2 after:inline-block">
+<span class="flex items-center justify-center w-8 h-8 bg-primary-container rounded-full lg:h-10 lg:w-10 shrink-0">
+<span class="material-symbols-outlined text-on-primary text-sm lg:text-base fill">cloud_upload</span>
+</span>
+<span class="ml-2 font-label-md text-label-md text-primary-container whitespace-nowrap hidden sm:block mr-4">Upload File</span>
+</li>
+<!-- Step 2 -->
+<li class="flex w-full items-center text-outline after:content-[''] after:w-full after:h-1 after:border-b after:border-outline-variant after:border-2 after:inline-block">
+<span class="flex items-center justify-center w-8 h-8 bg-surface-container-high border-2 border-outline-variant rounded-full lg:h-10 lg:w-10 shrink-0">
+<span class="font-label-md text-label-md text-outline">2</span>
+</span>
+<span class="ml-2 font-label-md text-label-md text-outline whitespace-nowrap hidden sm:block mr-4">Column Mapping</span>
+</li>
+<!-- Step 3 -->
+<li class="flex items-center text-outline">
+<span class="flex items-center justify-center w-8 h-8 bg-surface-container-high border-2 border-outline-variant rounded-full lg:h-10 lg:w-10 shrink-0">
+<span class="font-label-md text-label-md text-outline">3</span>
+</span>
+<span class="ml-2 font-label-md text-label-md text-outline whitespace-nowrap hidden sm:block">Validation &amp; Preview</span>
+</li>
+</ol>
+</div>
+<!-- Modal Body (Scrollable) -->
+<div class="flex-1 overflow-y-auto p-card-padding bg-surface-bright">
+<!-- STEP 1: Upload (Active) -->
+<div class="step-content active max-w-2xl mx-auto py-8" id="step-1">
+<div class="text-center mb-8">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Upload Data File</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">We support Excel (.xlsx, .xls) and CSV files up to 50MB.</p>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="border-2 border-dashed border-primary-container/30 bg-surface-container-low hover:bg-surface-container transition-colors rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer mb-6 group">
+<div class="w-16 h-16 rounded-full bg-primary-container/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl text-primary-container">upload_file</span>
+</div>
+<p class="font-body-lg text-body-lg text-primary font-medium mb-1">Drag and drop your file here</p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">or click to browse from your computer</p>
+<button class="bg-primary-container text-on-primary hover:bg-primary-container/90 h-12 px-6 rounded-lg font-label-md text-label-md transition-colors shadow-sm flex items-center gap-2">
+              Browse Files
+            </button>
+</div>
+<!-- Download Template Link -->
+<div class="flex items-center justify-center p-4 bg-surface-container rounded-lg border border-outline-variant border-l-4 border-l-tertiary-container">
+<span class="material-symbols-outlined text-tertiary-container mr-3">info</span>
+<p class="font-body-md text-body-md text-on-surface mr-2">Need a starting point?</p>
+<a class="font-label-md text-label-md text-primary-container hover:text-secondary hover:underline flex items-center gap-1" href="#">
+              Download sample template
+              <span class="material-symbols-outlined text-sm">download</span>
+</a>
+</div>
+</div>
+<!-- STEP 2: Column Mapping (Hidden) -->
+<div class="step-content max-w-3xl mx-auto py-4" id="step-2">
+<div class="mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Map Columns</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Match the headers from your uploaded file to the corresponding Technicon fields.</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-1/3">Our Field (System)</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-2/3">Your Column (Uploaded File)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Mapping Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-4 px-4 align-middle">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md text-on-surface font-medium">SKU</span>
+<span class="text-error text-xs" title="Required">*</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 appearance-none focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50">
+<option value="item_code">Item_Code</option>
+<option value="sku">SKU</option>
+<option value="id">ID</option>
+<option value="">-- Ignore --</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</td>
+</tr>
+<!-- Mapping Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-4 px-4 align-middle">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md text-on-surface font-medium">Name</span>
+<span class="text-error text-xs" title="Required">*</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 appearance-none focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50">
+<option value="product_name">Product_Name</option>
+<option value="title">Title</option>
+<option value="">-- Ignore --</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</td>
+</tr>
+<!-- Mapping Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-4 px-4 align-middle">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md text-on-surface font-medium">Price</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 appearance-none focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50">
+<option value="unit_price">Unit_Price</option>
+<option value="cost">Cost</option>
+<option value="">-- Ignore --</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- STEP 3: Validation & Preview (Hidden) -->
+<div class="step-content py-4" id="step-3">
+<div class="mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Review &amp; Import</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Review the data before finalizing the import process.</p>
+</div>
+<!-- Summary Cards (Bento style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-tertiary-container shadow-sm">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container">check_circle</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Ready to Import</p>
+<p class="font-display-md text-display-md text-on-surface">1,204</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-[#D97706] shadow-sm">
+<div class="w-12 h-12 rounded-full bg-[#D97706]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#D97706]">warning</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Warnings (Skipped)</p>
+<p class="font-display-md text-display-md text-on-surface">12</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 border-l-4 border-l-error shadow-sm">
+<div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error">error</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Errors (Blocked)</p>
+<p class="font-display-md text-display-md text-on-surface">3</p>
+</div>
+</div>
+</div>
+<!-- Data Preview Grid -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-x-auto">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h4 class="font-label-md text-label-md text-on-surface font-semibold uppercase">Data Preview (First 3 Rows)</h4>
+</div>
+<table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+<thead class="bg-surface-container-lowest border-b border-outline-variant">
+<tr>
+<th class="py-2 px-4 font-label-md text-label-md text-on-surface-variant">Status</th>
+<th class="py-2 px-4 font-label-md text-label-md text-on-surface-variant">SKU (Item_Code)</th>
+<th class="py-2 px-4 font-label-md text-label-md text-on-surface-variant">Name (Product_Name)</th>
+<th class="py-2 px-4 font-label-md text-label-md text-on-surface-variant">Price (Unit_Price)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant bg-surface-bright">
+<tr>
+<td class="py-2 px-4"><span class="material-symbols-outlined text-tertiary-container text-sm">check_circle</span></td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">SRV-001</td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">Annual Maintenance Plan</td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">$1,200.00</td>
+</tr>
+<tr>
+<td class="py-2 px-4"><span class="material-symbols-outlined text-tertiary-container text-sm">check_circle</span></td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">SRV-002</td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">On-site Consultation</td>
+<td class="py-2 px-4 font-body-md text-body-md text-on-surface">$500.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Modal Footer (Actions) -->
+<div class="px-card-padding py-4 border-t border-outline-variant bg-surface-container-low flex justify-between items-center mt-auto">
+<button class="h-12 px-6 rounded-lg font-label-md text-label-md border border-outline-variant text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-colors" id="btn-cancel">
+          Cancel
+        </button>
+<div class="flex gap-4">
+<button class="h-12 px-6 rounded-lg font-label-md text-label-md border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors hidden" id="btn-back">
+            Back
+          </button>
+<button class="bg-primary-container text-on-primary hover:bg-primary-container/90 h-12 px-8 rounded-lg font-label-md text-label-md transition-colors shadow-sm" id="btn-next">
+            Next Step
+          </button>
+<button class="bg-secondary text-on-secondary hover:bg-secondary/90 h-12 px-8 rounded-lg font-label-md text-label-md transition-colors shadow-sm hidden flex items-center gap-2" id="btn-submit">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+            Start Import
+          </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Simple script to toggle between steps for demonstration
+    document.addEventListener('DOMContentLoaded', () => {
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        const btnNext = document.getElementById('btn-next');
+        const btnBack = document.getElementById('btn-back');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnCancel = document.getElementById('btn-cancel');
+
+        const updateUI = () => {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            // Show current step
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+
+            // Update buttons
+            if (currentStep === 1) {
+                btnBack.classList.add('hidden');
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            } else if (currentStep === totalSteps) {
+                btnBack.classList.remove('hidden');
+                btnNext.classList.add('hidden');
+                btnSubmit.classList.remove('hidden');
+            } else {
+                btnBack.classList.remove('hidden');
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            }
+
+            // Update Stepper Visuals (simplified for demo)
+            const listItems = document.querySelectorAll('ol li');
+            listItems.forEach((li, index) => {
+                const stepNum = index + 1;
+                const iconContainer = li.querySelector('span:first-child');
+                const textContainer = li.querySelector('span:last-child');
+                
+                if (stepNum < currentStep) {
+                     // Completed
+                    li.classList.remove('text-outline');
+                    li.classList.add('text-primary-container');
+                    if(li.classList.contains('after:border-outline-variant')) {
+                         li.classList.replace('after:border-outline-variant', 'after:border-primary-container');
+                    }
+                    iconContainer.className = 'flex items-center justify-center w-8 h-8 bg-primary-container rounded-full lg:h-10 lg:w-10 shrink-0';
+                    iconContainer.innerHTML = '<span class="material-symbols-outlined text-on-primary text-sm lg:text-base fill">check</span>';
+                    textContainer.className = 'ml-2 font-label-md text-label-md text-primary-container whitespace-nowrap hidden sm:block mr-4';
+                } else if (stepNum === currentStep) {
+                    // Active
+                    li.classList.remove('text-outline');
+                    li.classList.add('text-primary-container');
+                     if(li.classList.contains('after:border-outline-variant')) {
+                         li.classList.replace('after:border-outline-variant', 'after:border-primary-container');
+                    }
+                    iconContainer.className = 'flex items-center justify-center w-8 h-8 bg-primary-container rounded-full lg:h-10 lg:w-10 shrink-0';
+                     if(stepNum === 2) iconContainer.innerHTML = '<span class="font-label-md text-label-md text-on-primary">2</span>';
+                     if(stepNum === 3) iconContainer.innerHTML = '<span class="font-label-md text-label-md text-on-primary">3</span>';
+                    textContainer.className = 'ml-2 font-label-md text-label-md text-primary-container whitespace-nowrap hidden sm:block mr-4';
+                } else {
+                    // Pending
+                    li.classList.remove('text-primary-container');
+                    li.classList.add('text-outline');
+                    if(li.classList.contains('after:border-primary-container')) {
+                         li.classList.replace('after:border-primary-container', 'after:border-outline-variant');
+                    }
+                    iconContainer.className = 'flex items-center justify-center w-8 h-8 bg-surface-container-high border-2 border-outline-variant rounded-full lg:h-10 lg:w-10 shrink-0';
+                    if(stepNum === 2) iconContainer.innerHTML = '<span class="font-label-md text-label-md text-outline">2</span>';
+                    if(stepNum === 3) iconContainer.innerHTML = '<span class="font-label-md text-label-md text-outline">3</span>';
+                    textContainer.className = 'ml-2 font-label-md text-label-md text-outline whitespace-nowrap hidden sm:block mr-4';
+                }
+            });
+        };
+
+        btnNext.addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateUI();
+            }
+        });
+
+        btnBack.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quotations - Technicon Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "inverse-on-surface": "#eff1f0",
+                      "surface-bright": "#f8faf9",
+                      "on-secondary-fixed-variant": "#005230",
+                      "outline-variant": "#c0c9c2",
+                      "inverse-surface": "#2e3131",
+                      "tertiary": "#002613",
+                      "tertiary-container": "#003e23",
+                      "primary-fixed-dim": "#9ed2b8",
+                      "surface-container-highest": "#e1e3e2",
+                      "secondary": "#006d42",
+                      "surface-variant": "#e1e3e2",
+                      "inverse-primary": "#9ed2b8",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#96f6bc",
+                      "on-primary-fixed": "#002115",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-container": "#93f4ba",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container": "#eceeed",
+                      "on-tertiary-fixed": "#002110",
+                      "surface-tint": "#376853",
+                      "on-background": "#191c1c",
+                      "surface": "#f8faf9",
+                      "on-primary-container": "#76a891",
+                      "primary-fixed": "#baeed4",
+                      "surface-dim": "#d8dad9",
+                      "surface-container-high": "#e6e9e8",
+                      "on-surface": "#191c1c",
+                      "on-primary-fixed-variant": "#1e4f3c",
+                      "primary-container": "#063d2b",
+                      "surface-container-low": "#f2f4f3",
+                      "on-tertiary-fixed-variant": "#00522f",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-surface-variant": "#404944",
+                      "on-tertiary-container": "#26b371",
+                      "background": "#f8faf9",
+                      "tertiary-fixed-dim": "#5cde97",
+                      "secondary-fixed-dim": "#7adaa2",
+                      "outline": "#717973",
+                      "on-secondary-fixed": "#002110",
+                      "tertiary-fixed": "#7afbb1",
+                      "primary": "#002619",
+                      "on-secondary-container": "#007145"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "1rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "container-margin": "32px",
+                      "density-high": "8px",
+                      "card-padding": "24px",
+                      "unit": "4px",
+                      "section-gap": "48px",
+                      "density-medium": "16px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "display-lg-mobile": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                      "display-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                      "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                      "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for sidebar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-primary dark:bg-primary-container text-secondary-fixed dark:text-secondary-fixed-dim font-body-md text-body-md h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col overflow-y-auto z-20">
+<!-- Header -->
+<div class="p-card-padding flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">apartment</span>
+</div>
+<div>
+<h1 class="font-display-md text-display-md font-bold text-on-primary dark:text-primary-fixed leading-tight">Technicon</h1>
+<p class="text-on-primary/70 text-label-md font-label-md">Services SaaS</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col flex-grow px-4 gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 border-secondary-fixed bg-surface-tint/10 text-on-primary font-bold transition-all duration-200" href="#">
+<span class="material-symbols-outlined fill" style="font-variation-settings: 'FILL' 1;">description</span>
+<span>Quotations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span>Purchase Orders</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Performa Invoices</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">business</span>
+<span>Companies</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Products</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span>Reports</span>
+</a>
+</li>
+<li class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<li class="mb-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span>Admin</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- TopNavBar (from JSON) -->
+<header class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-headline-sm text-headline-sm fixed top-0 border-b border-outline-variant flex justify-between items-center h-16 ml-64 px-container-margin w-[calc(100%-16rem)] z-10">
+<div class="flex items-center gap-6 w-full max-w-2xl">
+<!-- Brand removed from top nav as per common dashboard layout, focusing on search -->
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/20 transition-all" placeholder="Global search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-variant transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-variant transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-16 min-h-screen bg-background pb-12">
+<div class="max-w-[1440px] mx-auto p-container-margin">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-section-gap">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Quotations</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1">Manage and track all company quotations</p>
+</div>
+<button class="h-12 px-6 bg-primary-container text-on-primary rounded-2xl font-body-md text-body-md font-medium flex items-center gap-2 hover:bg-primary transition-colors whitespace-nowrap self-start md:self-auto">
+<span class="material-symbols-outlined">add</span>
+                    New Quotation
+                </button>
+</div>
+<!-- Card Container -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant overflow-hidden">
+<!-- Toolbar -->
+<div class="p-card-padding border-b border-outline-variant flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-surface-bright">
+<!-- Search -->
+<div class="relative w-full lg:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-background border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search Number or Company" type="text"/>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+<!-- Status Filter -->
+<div class="relative inline-block text-left w-full sm:w-auto">
+<select class="appearance-none w-full sm:w-auto h-11 pl-4 pr-10 bg-background border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 cursor-pointer">
+<option value="all">All Statuses</option>
+<option value="draft">Draft</option>
+<option value="sent">Sent</option>
+<option value="accepted">Accepted</option>
+<option value="rejected">Rejected</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<!-- Date Range -->
+<div class="relative inline-block w-full sm:w-auto">
+<div class="h-11 px-4 bg-background border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface flex items-center gap-2 cursor-pointer hover:border-outline transition-colors">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span>Last 30 Days</span>
+<span class="material-symbols-outlined text-outline ml-2">expand_more</span>
+</div>
+</div>
+<button class="h-11 w-11 rounded-lg border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors ml-auto sm:ml-0">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Number</th>
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Date</th>
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Company</th>
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Total</th>
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+<th class="px-card-padding py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-body-md text-on-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="font-medium text-primary-container">QTN/2627/0012</span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-on-surface-variant">24 Oct 2023</td>
+<td class="px-card-padding py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-tertiary-container flex items-center justify-center text-on-tertiary font-medium text-xs">AC</div>
+<span class="font-medium">Acme Corp Ltd.</span>
+</div>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right font-medium">₹ 1,45,000.00</td>
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-md text-label-md bg-secondary-container/30 text-secondary border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>
+                                        Accepted
+                                    </span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="View">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="font-medium text-primary-container">QTN/2627/0011</span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-on-surface-variant">22 Oct 2023</td>
+<td class="px-card-padding py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-medium text-xs">GI</div>
+<span class="font-medium">Global Industries</span>
+</div>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right font-medium">₹ 85,500.00</td>
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-md text-label-md bg-surface-variant text-on-surface-variant border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mr-1.5"></span>
+                                        Draft
+                                    </span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="View">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="font-medium text-primary-container">QTN/2627/0010</span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-on-surface-variant">18 Oct 2023</td>
+<td class="px-card-padding py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-tertiary-container flex items-center justify-center text-on-tertiary font-medium text-xs">TS</div>
+<span class="font-medium">TechSolutions Inc.</span>
+</div>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right font-medium">₹ 3,20,000.00</td>
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-md text-label-md bg-primary-fixed/30 text-primary-container border border-primary-fixed/50">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container mr-1.5"></span>
+                                        Sent
+                                    </span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="View">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="font-medium text-primary-container">QTN/2627/0009</span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-on-surface-variant">15 Oct 2023</td>
+<td class="px-card-padding py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-medium text-xs">NW</div>
+<span class="font-medium">Nexus Works</span>
+</div>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right font-medium">₹ 45,200.00</td>
+<td class="px-card-padding py-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-md text-label-md bg-error-container text-on-error-container border border-error/20">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-1.5"></span>
+                                        Rejected
+                                    </span>
+</td>
+<td class="px-card-padding py-4 whitespace-nowrap text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="View">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-md transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-card-padding py-4 border-t border-outline-variant bg-surface-bright flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface-variant">Showing 1 to 4 of 24 entries</span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-outline hover:bg-surface-variant transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-on-primary font-medium text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors text-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors text-sm">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

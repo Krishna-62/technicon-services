@@ -1,0 +1,13 @@
+{
+  "name": "flux-ai-dashboard",
+  "version": "1.0.0",
+  "description": "Flux AI Control Room - Glassmorphic Dashboard Home Page",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["dashboard", "glassmorphism", "tailwind", "ai-control-room"],
+  "author": "Antigravity",
+  "license": "ISC"
+}

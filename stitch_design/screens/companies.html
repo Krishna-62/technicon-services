@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Technicon ERP - Companies</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#376853",
+                      "secondary-fixed": "#96f6bc",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#5cde97",
+                      "surface-container-high": "#e6e9e8",
+                      "inverse-on-surface": "#eff1f0",
+                      "on-secondary-fixed-variant": "#005230",
+                      "tertiary": "#002613",
+                      "outline-variant": "#c0c9c2",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f8faf9",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "surface-container": "#eceeed",
+                      "surface-container-highest": "#e1e3e2",
+                      "tertiary-fixed": "#7afbb1",
+                      "secondary": "#006d42",
+                      "outline": "#717973",
+                      "on-primary-fixed-variant": "#1e4f3c",
+                      "inverse-primary": "#9ed2b8",
+                      "on-surface": "#191c1c",
+                      "tertiary-container": "#003e23",
+                      "on-tertiary-fixed": "#002110",
+                      "on-surface-variant": "#404944",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#002619",
+                      "on-primary-container": "#76a891",
+                      "secondary-container": "#93f4ba",
+                      "surface-container-low": "#f2f4f3",
+                      "background": "#f8faf9",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#2e3131",
+                      "on-background": "#191c1c",
+                      "on-secondary-fixed": "#002110",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#063d2b",
+                      "on-primary-fixed": "#002115",
+                      "primary-fixed": "#baeed4",
+                      "surface-variant": "#e1e3e2",
+                      "surface": "#f8faf9",
+                      "on-tertiary-fixed-variant": "#00522f",
+                      "on-tertiary-container": "#26b371",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#9ed2b8",
+                      "secondary-fixed-dim": "#7adaa2",
+                      "on-secondary-container": "#007145",
+                      "surface-dim": "#d8dad9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "section-gap": "48px",
+                      "unit": "4px",
+                      "container-margin": "32px",
+                      "card-padding": "24px",
+                      "density-medium": "16px",
+                      "density-high": "8px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg-mobile": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "display-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "display-md": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex">
+<!-- Shared Component: SideNavBar -->
+<nav class="docked h-screen w-64 left-0 top-0 bg-primary border-r border-outline-variant flex flex-col fixed overflow-y-auto z-20">
+<div class="px-container-margin py-8 flex flex-col">
+<h1 class="font-display-md text-display-md font-bold text-on-primary tracking-tight">Technicon</h1>
+<span class="font-body-md text-body-md text-secondary-fixed mt-1 opacity-90">Services SaaS</span>
+</div>
+<ul class="flex flex-col w-full mt-4 flex-grow">
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">description</span>
+<span class="font-body-md text-body-md">Quotations</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">shopping_cart</span>
+<span class="font-body-md text-body-md">Purchase Orders</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span class="font-body-md text-body-md">Performa Invoices</span>
+</a>
+</li>
+<!-- ACTIVE TAB: Companies -->
+<li>
+<a class="flex items-center px-container-margin py-3 border-l-4 border-secondary-fixed bg-surface-tint/10 text-on-primary font-bold transition-all duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 text-secondary-fixed" style="font-variation-settings: 'FILL' 1;">business</span>
+<span class="font-body-md text-body-md">Companies</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-body-md text-body-md">Products</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">assessment</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full mt-auto" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</li>
+<!-- Inactive Tab -->
+<li>
+<a class="flex items-center px-container-margin py-3 text-on-primary/70 hover:text-on-primary hover:bg-on-primary/5 transition-colors duration-200 w-full mb-6" href="#">
+<span class="material-symbols-outlined mr-4 opacity-80" style="font-variation-settings: 'FILL' 0;">admin_panel_settings</span>
+<span class="font-body-md text-body-md">Admin</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-background">
+<!-- Shared Component: TopNavBar -->
+<header class="flex justify-between items-center h-16 px-container-margin bg-surface border-b border-outline-variant shrink-0 z-10 w-full">
+<!-- Left: Brand / Search Context -->
+<div class="flex items-center gap-6">
+<!-- The JSON specifies search on left, but standard design system suggests a clean header. We will add a subtle search trigger here or keep it simple. -->
+<div class="font-headline-sm text-headline-sm text-primary font-bold">Technicon Services</div>
+<div class="h-8 w-px bg-outline-variant mx-2 hidden lg:block"></div>
+<div class="relative hidden lg:flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined absolute left-3 text-outline" style="font-size: 20px;">search</span>
+<input class="pl-10 pr-4 py-1.5 h-9 bg-surface-container-low border border-surface-container-high rounded-lg text-body-md font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-64 transition-all" placeholder="Quick search..." type="text"/>
+</div>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="p-2 hover:bg-surface-variant rounded-full transition-colors flex items-center justify-center relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-1"></div>
+<button class="flex items-center gap-2 hover:bg-surface-variant p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-outline-variant">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm">
+                        JD
+                    </div>
+<span class="font-body-md text-body-md font-medium text-on-surface hidden md:block">J. Doe</span>
+<span class="material-symbols-outlined text-outline" style="font-size: 18px;">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Main Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-container-margin">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-section-gap gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Companies</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage and track your enterprise clients, vendors, and partners.</p>
+</div>
+<button class="h-[48px] px-6 bg-primary-container text-on-primary rounded-xl font-body-md text-body-md font-medium hover:bg-secondary transition-colors shadow-sm flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined" style="font-size: 20px;">add</span>
+                    New Company
+                </button>
+</div>
+<!-- Toolbar / Filters -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-t-lg p-4 flex flex-col lg:flex-row gap-4 items-center justify-between">
+<div class="relative w-full lg:w-96 shrink-0">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 h-11 bg-surface-container-low border border-surface-container-high rounded-lg text-body-md font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search companies by name, location..." type="text"/>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
+<div class="relative min-w-[140px]">
+<select class="w-full appearance-none h-11 bg-surface-container-lowest border border-surface-container-high rounded-lg pl-4 pr-10 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary cursor-pointer">
+<option value="">All Types</option>
+<option value="client">Client</option>
+<option value="vendor">Vendor</option>
+<option value="partner">Partner</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<div class="relative min-w-[140px]">
+<select class="w-full appearance-none h-11 bg-surface-container-lowest border border-surface-container-high rounded-lg pl-4 pr-10 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary cursor-pointer">
+<option value="">All Statuses</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<button class="h-11 px-4 border border-outline-variant rounded-lg text-on-surface-variant font-body-md text-body-md flex items-center gap-2 hover:bg-surface-container-low transition-colors shrink-0 whitespace-nowrap">
+<span class="material-symbols-outlined" style="font-size: 20px;">tune</span>
+                        More Filters
+                    </button>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container-lowest border-x border-b border-outline-variant rounded-b-lg overflow-x-auto shadow-sm">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Company Name</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Type</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Contact Person</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Location</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Total Value</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+<th class="px-density-medium py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-center w-24">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-density-medium py-density-medium">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest border border-outline-variant overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist corporate logo featuring a geometric blue and silver abstract shape, suitable for a modern technology or finance enterprise, placed on a crisp white background with soft, studio-quality lighting to highlight its sharp edges." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAlCy2bpfKKq9uzBvMg3SnUNGWSVsBFdfMZo4Y4eSRtc1C8eRL3Al5BborWYfPNVsFeWarSJ1nf4R5Z1-lEtnzbLIWlyGWIrRLEPsZuka1kHrbDaIbyctBmrfbHImmAZJFePif4HcmacQ5KgALKDVgiwlyj6yHoS8QkWStGG1Zz5leVE07gyd1-ADabbiqLfddJtLQcx0jwPL6G1EjOMqRaaHAEhGluw75E5iLMvdpvrpN0Y3vEB-6"/>
+</div>
+<div>
+<div class="font-medium text-primary">Apex Global Solutions</div>
+<div class="text-xs text-outline mt-0.5">Information Technology</div>
+</div>
+</div>
+</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-surface-container-high text-on-surface text-xs font-medium border border-outline-variant/50">Client</span>
+</td>
+<td class="px-density-medium py-density-medium">
+<div class="font-medium">Sarah Jenkins</div>
+<div class="text-xs text-outline mt-0.5">s.jenkins@apexglobal.com</div>
+</td>
+<td class="px-density-medium py-density-medium text-on-surface-variant">New York, USA</td>
+<td class="px-density-medium py-density-medium text-right font-medium">₹45,20,000</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-secondary-container/30 text-secondary border border-secondary-fixed text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Active
+                                </span>
+</td>
+<td class="px-density-medium py-density-medium text-center">
+<div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-outline hover:text-primary transition-colors" title="View Details">
+<span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+</button>
+<button class="text-outline hover:text-primary transition-colors" title="Edit">
+<span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-density-medium py-density-medium">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest border border-outline-variant overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A robust, industrial-style corporate logo featuring a stylized grey steel gear interlocking with a green arrow, designed for a logistics or manufacturing enterprise, shot against a stark white backdrop under bright, flat lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5VEQlYLJesQcsiuNLVS2qYOvqOJV-I_xtz5dxb8bdKOvcurXQQhBQ6gt3UpXcCenVeb6TFuBYGWlcQkuaLaUCq0GY1mY3iLWSf3NPrS4PoHGTIC_Yxy1j_W34RMuDY-i79VjJfbqA53lrFaj3bJaIULuq8cCmJDxp77cxhIqkzzqP-_YZhy-IkKUaF4INiizomFzbu2hPBXSfnyTrUrP-gPp_X24V3uiaoCWWenY8JmrGS2hVQQW_"/>
+</div>
+<div>
+<div class="font-medium text-primary">Nexus Logistics Pvt Ltd</div>
+<div class="text-xs text-outline mt-0.5">Supply Chain</div>
+</div>
+</div>
+</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-surface-container-high text-on-surface text-xs font-medium border border-outline-variant/50">Vendor</span>
+</td>
+<td class="px-density-medium py-density-medium">
+<div class="font-medium">Rajiv Kumar</div>
+<div class="text-xs text-outline mt-0.5">rajiv.k@nexuslogistics.in</div>
+</td>
+<td class="px-density-medium py-density-medium text-on-surface-variant">Mumbai, India</td>
+<td class="px-density-medium py-density-medium text-right font-medium">₹12,45,000</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-secondary-container/30 text-secondary border border-secondary-fixed text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Active
+                                </span>
+</td>
+<td class="px-density-medium py-density-medium text-center">
+<div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-outline hover:text-primary transition-colors" title="View Details">
+<span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+</button>
+<button class="text-outline hover:text-primary transition-colors" title="Edit">
+<span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-density-medium py-density-medium">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest border border-outline-variant overflow-hidden shrink-0 flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<div class="font-medium text-primary">Stratos Financial Group</div>
+<div class="text-xs text-outline mt-0.5">Financial Services</div>
+</div>
+</div>
+</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-surface-container-high text-on-surface text-xs font-medium border border-outline-variant/50">Partner</span>
+</td>
+<td class="px-density-medium py-density-medium">
+<div class="font-medium">Elena Rostova</div>
+<div class="text-xs text-outline mt-0.5">e.rostova@stratos.co.uk</div>
+</td>
+<td class="px-density-medium py-density-medium text-on-surface-variant">London, UK</td>
+<td class="px-density-medium py-density-medium text-right font-medium">₹89,10,000</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-error-container/50 text-on-error-container border border-error-container text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Inactive
+                                </span>
+</td>
+<td class="px-density-medium py-density-medium text-center">
+<div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-outline hover:text-primary transition-colors" title="View Details">
+<span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+</button>
+<button class="text-outline hover:text-primary transition-colors" title="Edit">
+<span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-density-medium py-density-medium">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest border border-outline-variant overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist corporate logo depicting a stylized green leaf intersecting with a building silhouette, suited for an environmental or real estate consulting firm, placed against a pure white background under crisp, professional studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-b89nlySs_PKq_-Nel4ul1N7sonBXNwaOZzbH7JFHiuoSDXjKWHPwQOjvV4PB0f-itSGn_fOIzUMb8sF4J0RvPPeOWvBpjrV1hx-5f-Eb2LQju9Ue9ZM8JT_fLmv1oSyfvsgHo2bFEAlWjGJmx9BNOgfYOqYrI6zCfCPOjNsPtq7N1AfcQTQRibkWB8WxP5u0TDFHPVmUQjrcowJbcyZX0ipEJgsYB-_bE5j8V5aN8eXiYEvP36VF"/>
+</div>
+<div>
+<div class="font-medium text-primary">EcoBuild Consultants</div>
+<div class="text-xs text-outline mt-0.5">Consulting</div>
+</div>
+</div>
+</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-surface-container-high text-on-surface text-xs font-medium border border-outline-variant/50">Client</span>
+</td>
+<td class="px-density-medium py-density-medium">
+<div class="font-medium">David Chen</div>
+<div class="text-xs text-outline mt-0.5">d.chen@ecobuild.com</div>
+</td>
+<td class="px-density-medium py-density-medium text-on-surface-variant">Singapore</td>
+<td class="px-density-medium py-density-medium text-right font-medium">₹34,00,000</td>
+<td class="px-density-medium py-density-medium">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-secondary-container/30 text-secondary border border-secondary-fixed text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Active
+                                </span>
+</td>
+<td class="px-density-medium py-density-medium text-center">
+<div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-outline hover:text-primary transition-colors" title="View Details">
+<span class="material-symbols-outlined" style="font-size: 20px;">visibility</span>
+</button>
+<button class="text-outline hover:text-primary transition-colors" title="Edit">
+<span class="material-symbols-outlined" style="font-size: 20px;">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination Footer -->
+<div class="flex items-center justify-between px-6 py-4 border-t border-outline-variant bg-surface">
+<div class="text-body-md text-on-surface-variant">
+                        Showing 1 to 4 of 124 companies
+                    </div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-outline hover:bg-surface-container-low transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-on-primary font-medium text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:bg-surface-container-low text-on-surface font-medium text-sm transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:bg-surface-container-low text-on-surface font-medium text-sm transition-colors">3</button>
+<span class="text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Spacer -->
+<div class="h-12"></div>
+</main>
+</div>
+</body></html>

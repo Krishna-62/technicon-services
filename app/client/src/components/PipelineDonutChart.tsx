@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import type { PipelineStage } from '../api';
+
+function formatCurrency(n: number) {
+  return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+}
+
+// Stage color palette (Lime for accepted/PO, dark olive/slate for draft/sent, dark red for rejected)
+const STAGE_COLORS: Record<string, string> = {
+  draft: '#69736E',
+  sent: '#708D31',
+  accepted: '#B8F23A',
+  purchase_order: '#D8F98D',
+  performa_invoice: '#9CF45D',
+  rejected: '#E25757',
+};
+
+export function PipelineDonutChart({
+  stages,
+  totalValue,
+  acceptedRate,
+}: {
+  stages: PipelineStage[];
+  totalValue: number;
+  acceptedRate: number;
+}) {
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+
+  if (!stages || stages.length === 0) {
+    return <p className="text-xs text-[#A5AEA8] py-6 text-center">No pipeline data recorded.</p>;
+  }
+
+  const radius = 64;
+  const strokeWidth = 14;
+  const circumference = 2 * Math.PI * radius;
+  const nonZeroValue = Math.max(1, totalValue);
+
+  let accumulatedAngle = 0;
+  const segments = stages.map((s) => {
+    const strokeDasharray = (s.value / nonZeroValue) * circumference;
+    const strokeDashoffset = -accumulatedAngle;
+    accumulatedAngle += strokeDasharray;
+    return {
+      ...s,
+      color: STAGE_COLORS[s.key] || '#708D31',
+      strokeDasharray: `${strokeDasharray} ${circumference}`,
+      strokeDashoffset,
+    };
+  });
+
+  const activeStage = hoveredKey ? stages.find((s) => s.key === hoveredKey) : null;
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      {/* SVG Donut Ring */}
+      <div className="relative size-44 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 160 160" className="size-full -rotate-90 overflow-visible">
+          <circle cx="80" cy="80" r={radius} fill="none" stroke="#292E2A" strokeWidth={strokeWidth} />
+          {segments.map((seg) => (
+            <circle
+              key={seg.key}
+              cx="80"
+              cy="80"
+              r={radius}
+              fill="none"
+              stroke={seg.color}
+              strokeWidth={hoveredKey === seg.key ? strokeWidth + 3 : strokeWidth}
+              strokeDasharray={seg.strokeDasharray}
+              strokeDashoffset={seg.strokeDashoffset}
+              strokeLinecap="round"
+              className="transition-all duration-300 cursor-pointer"
+              style={{
+                opacity: hoveredKey && hoveredKey !== seg.key ? 0.4 : 1,
+              }}
+              onMouseEnter={() => setHoveredKey(seg.key)}
+              onMouseLeave={() => setHoveredKey(null)}
+            />
+          ))}
+        </svg>
+
+        {/* Center Conversion Metrics */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+          <span className="text-[10px] font-bold text-[#A5AEA8] uppercase tracking-wider">Accepted Rate</span>
+          <span className="text-xl font-extrabold text-[#B8F23A] mt-0.5">{acceptedRate}%</span>
+          <span className="text-[10px] text-[#A5AEA8] font-semibold">{formatCurrency(totalValue)}</span>
+        </div>
+      </div>
+
+      {/* Stage Breakdown & Progress Bars */}
+      <div className="flex-1 space-y-2.5 w-full">
+        {stages.map((stage) => {
+          const color = STAGE_COLORS[stage.key] || '#708D31';
+          const percent = Math.min(100, Math.max(3, (stage.value / nonZeroValue) * 100));
+          return (
+            <div
+              key={stage.key}
+              className={`p-2 rounded-lg transition-colors border ${
+                hoveredKey === stage.key ? 'bg-[#1D211E] border-[#B8F23A]/40' : 'border-transparent hover:border-[#292E2A]'
+              }`}
+              onMouseEnter={() => setHoveredKey(stage.key)}
+              onMouseLeave={() => setHoveredKey(null)}
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-[#F5F7F4] mb-1">
+                <span className="flex items-center gap-2">
+                  <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                  <span>{stage.label}</span>
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold">{formatCurrency(stage.value)}</span>
+                  <span className="bg-[#292E2A] text-[#A5AEA8] px-1.5 py-0.5 rounded text-[10px]">{stage.count}</span>
+                </div>
+              </div>
+              <div className="w-full bg-[#292E2A] rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${percent}%`, backgroundColor: color }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+    </div>
+  );
+}

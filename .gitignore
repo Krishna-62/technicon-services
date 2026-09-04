@@ -1,0 +1,14 @@
+﻿node_modules
+.env
+.env.local
+dist
+.vercel
+.claude
+scratchpad
+
+*.db
+*.db-shm
+*.db-wal
+*.tsbuildinfo
+build
+.DS_Store

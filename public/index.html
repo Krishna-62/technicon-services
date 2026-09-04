@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technicon Operational ERP - Enterprise CRM Dashboard</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            technicon: {
+              dark: '#002619',
+              darkHover: '#003825',
+              green: '#006d42',
+              lightGreen: '#93f4ba',
+              lightGreenBg: '#e6f7ef',
+              bg: '#f8faf9',
+              card: '#ffffff',
+              textMain: '#191c1c',
+              textMuted: '#717973',
+              border: '#eceeed',
+              borderSubtle: '#e1e3e2',
+              danger: '#ba1a1a',
+              warning: '#d97706'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Theme CSS -->
+  <link rel="stylesheet" href="/css/theme.css" />
+</head>
+<body class="bg-[#f8faf9] text-[#191c1c] min-h-screen flex font-sans antialiased selection:bg-[#006d42] selection:text-white">
+
+  <!-- LEFT SIDEBAR NAVIGATION (Dark Deep Forest Green #002619) -->
+  <aside class="w-64 bg-[#002619] text-white min-h-screen flex flex-col justify-between p-4 shrink-0 fixed left-0 top-0 bottom-0 z-30 sidebar-scroll overflow-y-auto border-r border-[#003d29]">
+    <div class="flex flex-col gap-6">
+      
+      <!-- Brand Logo Header -->
+      <div class="px-2 pt-2 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#006d42] flex items-center justify-center text-[#93f4ba] shadow-md border border-[#008f57]/30">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold tracking-tight text-white leading-none">Technicon</h1>
+            <p class="text-[11px] font-semibold text-[#76a891] mt-1 tracking-wide">Operational ERP</p>
+          </div>
+        </div>
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#004d2e] text-[#93f4ba] border border-[#006d42]/50">PRO</span>
+      </div>
+
+      <!-- Navigation Links List -->
+      <nav class="flex flex-col gap-1">
+        <!-- Dashboard (Active) -->
+        <a href="/index.html" class="nav-item-active px-3 py-2.5 flex items-center justify-between text-sm transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-white"></i>
+            <span>Dashboard</span>
+          </div>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#93f4ba]"></span>
+        </a>
+
+        <!-- Quotations -->
+        <a href="/quotations.html" class="nav-item-inactive px-3 py-2.5 flex items-center justify-between text-sm transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-text" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+            <span>Quotations</span>
+          </div>
+          <span class="text-[11px] font-semibold bg-white/10 px-2 py-0.5 rounded-full text-[#93f4ba]">17</span>
+        </a>
+
+        <!-- Purchase Orders -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center justify-between text-sm transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="shopping-cart" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+            <span>Purchase Orders</span>
+          </div>
+          <span class="text-[11px] font-semibold bg-white/10 px-2 py-0.5 rounded-full text-[#76a891]">5</span>
+        </a>
+
+        <!-- Performa Invoices -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="receipt" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Performa Invoices</span>
+        </a>
+
+        <!-- Companies -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="building-2" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Companies</span>
+        </a>
+
+        <!-- Products -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="package" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Products Catalog</span>
+        </a>
+
+        <!-- Section: INSIGHTS -->
+        <div class="pt-5 pb-1.5 px-3 flex items-center justify-between">
+          <span class="text-[10px] font-extrabold tracking-wider text-[#4a7862] uppercase">INSIGHTS & AI</span>
+        </div>
+
+        <!-- Business Health -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="trending-up" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Business Health</span>
+        </a>
+
+        <!-- Customer Health -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="users" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Customer Health</span>
+        </a>
+
+        <!-- Growth Opportunities -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="compass" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Growth Opportunities</span>
+        </a>
+
+        <!-- Product Intelligence -->
+        <a href="/product-intelligence.html" class="nav-item-inactive px-3 py-2.5 flex items-center justify-between text-sm transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="brain-circuit" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+            <span>Product Intelligence</span>
+          </div>
+          <span class="inline-block w-2 h-2 rounded-full bg-[#93f4ba]"></span>
+        </a>
+
+        <!-- Chat with AI -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#93f4ba] group-hover:text-white transition-colors"></i>
+          <span>Chat with AI</span>
+        </a>
+
+        <!-- Section: SYSTEM -->
+        <div class="pt-5 pb-1.5 px-3">
+          <span class="text-[10px] font-extrabold tracking-wider text-[#4a7862] uppercase">SYSTEM</span>
+        </div>
+
+        <!-- Settings -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-all group">
+          <i data-lucide="settings" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+          <span>Settings</span>
+        </a>
+
+        <!-- Admin -->
+        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center justify-between text-sm transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="user-check" class="w-4 h-4 text-[#76a891] group-hover:text-white transition-colors"></i>
+            <span>Review Queue</span>
+          </div>
+          <span class="text-[11px] font-bold bg-[#ba1a1a]/80 text-white px-2 py-0.5 rounded-full">22</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- User Profile Footer Card -->
+    <div class="pt-4 border-t border-[#003d29]">
+      <div class="p-2.5 rounded-xl bg-[#003322]/80 border border-[#004d2e] flex items-center justify-between cursor-pointer hover:bg-[#003825] transition-colors">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-[#006d42] text-white font-bold text-xs flex items-center justify-center border border-[#93f4ba]/30">
+            KC
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Krishna Chaitanya</div>
+            <div class="text-[10px] text-[#76a891]">Sales Administrator</div>
+          </div>
+        </div>
+        <i data-lucide="more-vertical" class="w-4 h-4 text-[#76a891]"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN APPLICATION BODY CONTENT -->
+  <div class="flex-1 ml-64 min-h-screen flex flex-col">
+
+    <!-- TOP NAVIGATION BAR (Sticky Glass Backdropped Header) -->
+    <header class="glass-header px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4 sticky top-0 z-20 border-b border-[#e1e3e2]/80">
+      
+      <!-- Search Input & Spotlight Trigger -->
+      <div class="relative w-80 lg:w-96 cursor-pointer" id="header-search-trigger">
+        <i data-lucide="search" class="w-4 h-4 text-[#717973] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input 
+          type="text" 
+          id="global-search-input"
+          readonly
+          placeholder="Search quotations, customers, products..." 
+          class="w-full pl-9 pr-14 py-2 text-xs rounded-xl bg-white border border-[#e1e3e2] focus:outline-none focus:ring-2 focus:ring-[#006d42]/30 text-[#191c1c] placeholder-[#717973] transition-all shadow-sm cursor-pointer hover:border-[#c0c9c2]"
+        />
+        <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 text-[10px] font-semibold text-[#717973] bg-[#f2f4f3] border border-[#d2dbd6] rounded shadow-2xs">⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Actions (Bell, Profile Avatar, New Quotation) -->
+      <div class="flex items-center gap-3">
+        <!-- Live Status Chip -->
+        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e6f7ef] border border-[#93f4ba]/50 text-[#006d42] text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-[#006d42] pulse-indicator"></span>
+          <span>System Live</span>
+        </div>
+
+        <!-- Notification Bell with Alert Pulse Dot -->
+        <button id="btn-notifications" class="relative p-2.5 rounded-xl text-[#404944] bg-white hover:bg-[#f2f4f3] transition-all hover-subtle border border-[#e1e3e2] shadow-sm">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#ba1a1a]"></span>
+        </button>
+
+        <!-- User Profile Avatar Button -->
+        <button id="btn-profile" class="p-2 rounded-xl bg-white hover:bg-[#f2f4f3] transition-all hover-subtle border border-[#e1e3e2] shadow-sm flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-[#002619] text-white font-bold text-[11px] flex items-center justify-center">KC</div>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#717973]"></i>
+        </button>
+
+        <!-- Primary Action Button: + New Quotation -->
+        <button id="btn-new-quotation" class="bg-[#002619] hover:bg-[#003825] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg flex items-center gap-2 transition-all hover-subtle border border-[#004d2e]">
+          <i data-lucide="plus" class="w-4 h-4 text-[#93f4ba]"></i>
+          <span>New Quotation</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD MAIN CANVAS -->
+    <main class="flex-1 px-6 lg:px-8 py-6 flex flex-col gap-6 max-w-[1440px] w-full">
+
+      <!-- EXECUTIVE HERO BANNER -->
+      <div class="technicon-card p-6 bg-gradient-to-r from-[#002619] via-[#003825] to-[#005232] text-white relative overflow-hidden shadow-md">
+        <!-- Background subtle grid SVG overlay -->
+        <div class="absolute inset-0 opacity-10 pointer-events-none">
+          <svg class="w-full h-full" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0h100v100H0z" fill="url(#grid-pattern)" />
+            <defs>
+              <pattern id="grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#ffffff" stroke-width="0.8" />
+              </pattern>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-[#006d42] text-[#93f4ba] text-[11px] font-bold tracking-wide uppercase">ERP Command Center</span>
+              <span class="text-xs text-[#93f4ba]/80 font-medium">Friday, Aug 21, 2026</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight text-white">Welcome back, Krishna 👋</h1>
+            <p class="text-xs lg:text-sm text-[#a3c4b5] max-w-2xl font-medium leading-relaxed">
+              Your business operations are performing smoothly today. You have <strong class="text-white font-semibold">5 priority follow-ups</strong> scheduled and <strong class="text-[#93f4ba] font-semibold">₹24.12L</strong> in total revenue for the current period.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <button id="hero-quick-quote" class="bg-[#006d42] hover:bg-[#008f57] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all hover-subtle border border-[#009b5f]/50">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-[#93f4ba]"></i>
+              <span>Quick Proposal</span>
+            </button>
+            <button id="hero-export-report" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all border border-white/20 flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Export Analytics</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD TITLE & DATE FILTER BAR -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        <div>
+          <h2 class="text-2xl font-extrabold tracking-tight text-[#191c1c]">Executive Overview</h2>
+          <p class="text-xs font-medium text-[#717973] mt-0.5">Real-time performance metrics and sales activity.</p>
+        </div>
+
+        <!-- Date Range Filter Dropdown -->
+        <div class="relative">
+          <button id="date-filter-btn" class="bg-white border border-[#e1e3e2] hover:border-[#c0c9c2] text-[#191c1c] font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2.5 shadow-sm transition-all">
+            <i data-lucide="calendar" class="w-4 h-4 text-[#006d42]"></i>
+            <span>Last 30 Days</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#717973]"></i>
+          </button>
+          
+          <div id="date-filter-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-[#e1e3e2] rounded-xl shadow-xl z-30 py-1.5 text-xs font-medium">
+            <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3] transition-colors">Last 7 Days</a>
+            <a href="#" class="block px-4 py-2 text-[#006d42] bg-[#e6f7ef] font-bold flex items-center justify-between">
+              <span>Last 30 Days</span>
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3] transition-colors">Last 90 Days</a>
+            <a href="#" class="block px-4 py-2 text-[#191c1c] hover:bg-[#f2f4f3] transition-colors">This Year (2026)</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 1: 5 ENHANCED KPI CARDS WITH MICRO SPARKLINES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- KPI 1: TOTAL REVENUE -->
+        <div class="technicon-card p-4.5 flex flex-col justify-between gap-3 hover-subtle technicon-card-hover group">
+          <div class="flex items-center justify-between text-[10px] font-extrabold tracking-wider text-[#717973] uppercase">
+            <span>TOTAL REVENUE</span>
+            <div class="w-7 h-7 rounded-lg bg-[#e6f7ef] text-[#006d42] flex items-center justify-center">
+              <i data-lucide="indian-rupee" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-[#191c1c] tracking-tight">₹24.12L</div>
+            <div class="flex items-center justify-between mt-1">
+              <div class="flex items-center gap-1 text-[11px] font-bold text-[#006d42] bg-[#e6f7ef] px-2 py-0.5 rounded-md">
+                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                <span>+12.4%</span>
+              </div>
+              <!-- Mini SVG Sparkline -->
+              <svg class="w-16 h-6 text-[#006d42]" viewBox="0 0 60 20" fill="none">
+                <path d="M2 16L12 12L22 14L32 8L42 10L58 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 2: ACCEPTED REVENUE -->
+        <div class="technicon-card p-4.5 flex flex-col justify-between gap-3 hover-subtle technicon-card-hover group">
+          <div class="flex items-center justify-between text-[10px] font-extrabold tracking-wider text-[#717973] uppercase">
+            <span>ACCEPTED REVENUE</span>
+            <div class="w-7 h-7 rounded-lg bg-[#e6f7ef] text-[#006d42] flex items-center justify-center">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-[#191c1c] tracking-tight">₹1.19L</div>
+            <div class="flex items-center justify-between mt-1">
+              <div class="flex items-center gap-1 text-[11px] font-bold text-[#006d42] bg-[#e6f7ef] px-2 py-0.5 rounded-md">
+                <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                <span>+8.2%</span>
+              </div>
+              <!-- Mini SVG Sparkline -->
+              <svg class="w-16 h-6 text-[#006d42]" viewBox="0 0 60 20" fill="none">
+                <path d="M2 14L15 15L28 10L40 11L58 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 3: OPEN QUOTATIONS -->
+        <div class="technicon-card p-4.5 flex flex-col justify-between gap-3 hover-subtle technicon-card-hover group">
+          <div class="flex items-center justify-between text-[10px] font-extrabold tracking-wider text-[#717973] uppercase">
+            <span>OPEN QUOTATIONS</span>
+            <div class="w-7 h-7 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-[#191c1c] tracking-tight">17</div>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">5 awaiting response</span>
+              <span class="text-[11px] text-[#717973] font-medium">₹26.6L</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 4: PURCHASE ORDERS -->
+        <div class="technicon-card p-4.5 flex flex-col justify-between gap-3 hover-subtle technicon-card-hover group">
+          <div class="flex items-center justify-between text-[10px] font-extrabold tracking-wider text-[#717973] uppercase">
+            <span>PURCHASE ORDERS</span>
+            <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-[#191c1c] tracking-tight">5</div>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-[11px] font-semibold text-[#006d42]">Valued at ₹3.30L</span>
+              <span class="text-[11px] font-medium text-[#717973]">100% active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 5: REVIEW QUEUE -->
+        <div class="technicon-card p-4.5 flex flex-col justify-between gap-3 hover-subtle technicon-card-hover group border-red-100 bg-gradient-to-br from-white to-red-50/20">
+          <div class="flex items-center justify-between text-[10px] font-extrabold tracking-wider text-[#ba1a1a] uppercase">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#ba1a1a] pulse-indicator"></span>
+              REVIEW QUEUE
+            </span>
+            <div class="w-7 h-7 rounded-lg bg-red-100 text-[#ba1a1a] flex items-center justify-center">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+          <div>
+            <div class="text-2xl font-extrabold text-[#ba1a1a] tracking-tight">22</div>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-[11px] font-extrabold text-[#ba1a1a]">Needs attention</span>
+              <button id="kpi-review-btn" class="text-[11px] font-bold text-[#006d42] hover:underline flex items-center gap-0.5">
+                <span>Inspect</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 2: MIDDLE ROW WIDGETS (Revenue Overview & Quotation Pipeline) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Revenue Overview Chart Card (Left - 8 columns) -->
+        <div class="lg:col-span-8 technicon-card p-6 flex flex-col justify-between gap-6 relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-extrabold text-[#191c1c] flex items-center gap-2">
+                <span>Revenue Performance</span>
+                <i data-lucide="info" class="w-4 h-4 text-[#717973] cursor-pointer hover:text-[#006d42]" title="Monthly aggregated revenue data"></i>
+              </h3>
+              <p class="text-xs text-[#717973] font-medium mt-0.5">Monthly breakdown of closed and projected deals</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <!-- Monthly / Quarterly Switch -->
+              <div class="bg-[#f2f4f3] p-1 rounded-xl flex items-center text-xs font-semibold text-[#717973] border border-[#e1e3e2]">
+                <button class="px-3 py-1 rounded-lg bg-white text-[#191c1c] shadow-2xs font-bold">Monthly</button>
+                <button class="px-3 py-1 rounded-lg hover:text-[#191c1c] transition-colors">Quarterly</button>
+              </div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#006d42] bg-[#e6f7ef] px-3 py-1.5 rounded-full border border-[#93f4ba]/50">
+                <span class="w-2 h-2 rounded-full bg-[#006d42]"></span>
+                Peak: Oct (₹24.1L)
+              </span>
+            </div>
+          </div>
+
+          <!-- Dynamic SVG Line/Area Chart Container -->
+          <div class="w-full h-64 relative pt-2" id="revenue-chart-wrapper">
+            <svg class="w-full h-full overflow-visible" viewBox="0 0 500 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="revenueGreenGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#006d42" stop-opacity="0.3" />
+                  <stop offset="100%" stop-color="#006d42" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Grid background horizontal lines -->
+              <line x1="0" y1="30" x2="500" y2="30" stroke="#eceeed" stroke-width="1" stroke-dasharray="4 4" />
+              <line x1="0" y1="80" x2="500" y2="80" stroke="#eceeed" stroke-width="1" stroke-dasharray="4 4" />
+              <line x1="0" y1="130" x2="500" y2="130" stroke="#eceeed" stroke-width="1" stroke-dasharray="4 4" />
+              <line x1="0" y1="180" x2="500" y2="180" stroke="#eceeed" stroke-width="1" />
+
+              <!-- Area Fill Under Path -->
+              <path d="M 0 145 Q 100 135, 200 120 T 350 50 T 500 30 L 500 180 L 0 180 Z" fill="url(#revenueGreenGrad)" />
+              
+              <!-- Curve Stroke Path -->
+              <path d="M 0 145 Q 100 135, 200 120 T 350 50 T 500 30" fill="none" stroke="#006d42" stroke-width="3.5" stroke-linecap="round" />
+
+              <!-- Interactive Data Nodes -->
+              <circle cx="0" cy="145" r="5" fill="#ffffff" stroke="#006d42" stroke-width="3" class="cursor-pointer hover:r-7 transition-all chart-node" data-month="June" data-val="₹14.2L" />
+              <circle cx="100" cy="135" r="5" fill="#ffffff" stroke="#006d42" stroke-width="3" class="cursor-pointer hover:r-7 transition-all chart-node" data-month="July" data-val="₹16.8L" />
+              <circle cx="200" cy="120" r="5" fill="#ffffff" stroke="#006d42" stroke-width="3" class="cursor-pointer hover:r-7 transition-all chart-node" data-month="August" data-val="₹18.5L" />
+              <circle cx="300" cy="90" r="5" fill="#ffffff" stroke="#006d42" stroke-width="3" class="cursor-pointer hover:r-7 transition-all chart-node" data-month="September" data-val="₹21.0L" />
+              <circle cx="400" cy="45" r="6" fill="#006d42" stroke="#ffffff" stroke-width="3" class="cursor-pointer hover:r-8 transition-all chart-node" data-month="October" data-val="₹24.12L (Best)" />
+              <circle cx="500" cy="30" r="5" fill="#ffffff" stroke="#006d42" stroke-width="3" class="cursor-pointer hover:r-7 transition-all chart-node" data-month="November" data-val="₹22.8L (Proj)" />
+            </svg>
+
+            <!-- X-Axis Month Labels -->
+            <div class="flex items-center justify-between text-xs font-semibold text-[#717973] pt-3 px-1 border-t border-[#eceeed]">
+              <span class="hover:text-[#006d42] cursor-pointer">Jun</span>
+              <span class="hover:text-[#006d42] cursor-pointer">Jul</span>
+              <span class="hover:text-[#006d42] cursor-pointer">Aug</span>
+              <span class="hover:text-[#006d42] cursor-pointer">Sep</span>
+              <span class="text-[#006d42] font-extrabold cursor-pointer">Oct</span>
+              <span class="hover:text-[#006d42] cursor-pointer">Nov</span>
+            </div>
+
+            <!-- Dynamic Tooltip Popup -->
+            <div id="chart-tooltip" class="chart-tooltip opacity-0"></div>
+          </div>
+
+          <!-- Bottom Summary Metrics Bar -->
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-[#eceeed] bg-[#f8faf9] -mx-6 -mb-6 p-4 text-center">
+            <div>
+              <div class="text-[10px] font-bold text-[#717973] uppercase tracking-wider">Avg Monthly Revenue</div>
+              <div class="text-sm font-extrabold text-[#191c1c] mt-0.5">₹19.5L</div>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[#717973] uppercase tracking-wider">Win Conversion Rate</div>
+              <div class="text-sm font-extrabold text-[#006d42] mt-0.5">34.2%</div>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-[#717973] uppercase tracking-wider">Quarter Target</div>
+              <div class="text-sm font-extrabold text-sky-700 mt-0.5">88% Achieved</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quotation Pipeline Progress Card (Right - 4 columns) -->
+        <div class="lg:col-span-4 technicon-card p-6 flex flex-col justify-between gap-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-extrabold text-[#191c1c]">Quotation Pipeline</h3>
+              <p class="text-xs text-[#717973] font-medium mt-0.5">64 Total Proposals in Pipeline</p>
+            </div>
+            <a href="/quotations.html" class="text-xs font-bold text-[#006d42] hover:underline flex items-center gap-1">
+              <span>View All</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            
+            <!-- Stage 1: Draft -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-[#191c1c] mb-1.5">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                  <span>Draft</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#717973] font-medium">₹8.4L</span>
+                  <span class="font-extrabold bg-slate-100 px-2 py-0.5 rounded text-[11px]">12</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#f2f4f3] rounded-full h-2.5 overflow-hidden">
+                <div class="pipeline-bar bg-slate-500 h-full rounded-full" style="width: 35%;"></div>
+              </div>
+            </div>
+
+            <!-- Stage 2: Sent -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-[#191c1c] mb-1.5">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  <span>Sent</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#717973] font-medium">₹18.2L</span>
+                  <span class="font-extrabold bg-sky-50 text-sky-700 px-2 py-0.5 rounded text-[11px]">34</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#f2f4f3] rounded-full h-2.5 overflow-hidden">
+                <div class="pipeline-bar bg-sky-500 h-full rounded-full" style="width: 85%;"></div>
+              </div>
+            </div>
+
+            <!-- Stage 3: Accepted -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-[#191c1c] mb-1.5">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#006d42]"></span>
+                  <span>Accepted</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#717973] font-medium">₹1.19L</span>
+                  <span class="font-extrabold bg-[#e6f7ef] text-[#006d42] px-2 py-0.5 rounded text-[11px]">8</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#f2f4f3] rounded-full h-2.5 overflow-hidden">
+                <div class="pipeline-bar bg-[#006d42] h-full rounded-full" style="width: 45%;"></div>
+              </div>
+            </div>
+
+            <!-- Stage 4: Purchase Order -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-[#191c1c] mb-1.5">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span>Purchase Order</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#717973] font-medium">₹3.30L</span>
+                  <span class="font-extrabold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[11px]">5</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#f2f4f3] rounded-full h-2.5 overflow-hidden">
+                <div class="pipeline-bar bg-[#93f4ba] h-full rounded-full" style="width: 25%;"></div>
+              </div>
+            </div>
+
+            <!-- Stage 5: Performa Invoice -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold text-[#191c1c] mb-1.5">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                  <span>Performa Invoice</span>
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[#717973] font-medium">₹1.80L</span>
+                  <span class="font-extrabold bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[11px]">2</span>
+                </div>
+              </div>
+              <div class="w-full bg-[#f2f4f3] rounded-full h-2.5 overflow-hidden">
+                <div class="pipeline-bar bg-purple-500 h-full rounded-full" style="width: 15%;"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Total Pipeline Value Card Footer -->
+          <div class="p-3.5 rounded-xl bg-[#f8faf9] border border-[#e1e3e2] flex items-center justify-between">
+            <span class="text-xs font-bold text-[#717973]">Total Pipeline Value</span>
+            <span class="text-sm font-extrabold text-[#006d42]">₹32.89L</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 3: BOTTOM ROW WIDGETS (Needs Your Attention & Today's Follow-Ups) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Needs Your Attention Priority Queue (Left - 6 columns) -->
+        <div class="lg:col-span-6 technicon-card p-6 flex flex-col justify-between gap-5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-red-50 text-[#ba1a1a] flex items-center justify-center border border-red-100">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-[#ba1a1a]"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-extrabold text-[#191c1c]">Needs Your Attention</h3>
+                <p class="text-xs text-[#717973] font-medium">Priority action items requiring decision</p>
+              </div>
+            </div>
+
+            <!-- Priority Category Filter Tabs -->
+            <div class="flex items-center gap-1 bg-[#f2f4f3] p-1 rounded-xl text-xs font-semibold text-[#717973]">
+              <button class="px-2.5 py-0.5 rounded-lg bg-white text-[#191c1c] shadow-2xs font-bold">All (3)</button>
+              <button class="px-2.5 py-0.5 rounded-lg hover:text-[#191c1c] transition-colors">Urgent</button>
+            </div>
+          </div>
+
+          <div class="divide-y divide-[#eceeed]">
+            
+            <!-- Alert 1 -->
+            <div class="attention-item py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#f8faf9] px-3 rounded-xl transition-all border border-transparent hover:border-[#e1e3e2] group" data-qtn-id="QTN-104" data-[#company]="TechCorp Solutions Ltd" data-amount="₹4.5L">
+              <div class="flex items-start gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ba1a1a] mt-1 shrink-0 pulse-indicator"></span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="attention-title text-xs font-extrabold text-[#191c1c] group-hover:text-[#006d42] transition-colors">QTN-104 expires tomorrow</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-[#ba1a1a]">High Priority</span>
+                  </div>
+                  <div class="text-xs font-semibold text-[#717973] mt-1">₹4.5L · TechCorp Solutions Ltd</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="attention-action-btn opacity-0 group-hover:opacity-100 text-[11px] font-bold bg-[#006d42] text-white px-2.5 py-1 rounded-lg transition-all shadow-sm">Extend</button>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#717973] group-hover:text-[#006d42] shrink-0 transition-all group-hover:translate-x-0.5"></i>
+              </div>
+            </div>
+
+            <!-- Alert 2 -->
+            <div class="attention-item py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#f8faf9] px-3 rounded-xl transition-all border border-transparent hover:border-[#e1e3e2] group" data-qtn-id="QTN-108" data-[#company]="ABC Industries" data-amount="₹6.2L">
+              <div class="flex items-start gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1 shrink-0"></span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="attention-title text-xs font-extrabold text-[#191c1c] group-hover:text-[#006d42] transition-colors">ABC Industries follow-up</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Pending Specs</span>
+                  </div>
+                  <div class="text-xs font-semibold text-[#717973] mt-1">Waiting on custom motor technical specs</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="attention-action-btn opacity-0 group-hover:opacity-100 text-[11px] font-bold bg-amber-600 text-white px-2.5 py-1 rounded-lg transition-all shadow-sm">Remind</button>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#717973] group-hover:text-[#006d42] shrink-0 transition-all group-hover:translate-x-0.5"></i>
+              </div>
+            </div>
+
+            <!-- Alert 3 -->
+            <div class="attention-item py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#f8faf9] px-3 rounded-xl transition-all border border-transparent hover:border-[#e1e3e2] group" data-qtn-id="QTN-092" data-[#company]="MSN Laboratories" data-amount="₹12.0L">
+              <div class="flex items-start gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 mt-1 shrink-0"></span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="attention-title text-xs font-extrabold text-[#191c1c] group-hover:text-[#006d42] transition-colors">MSN Laboratories inactive</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700">90 Days Inactive</span>
+                  </div>
+                  <div class="text-xs font-semibold text-[#717973] mt-1">No proposal activity or responses logged in 90 days</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="attention-action-btn opacity-0 group-hover:opacity-100 text-[11px] font-bold bg-sky-700 text-white px-2.5 py-1 rounded-lg transition-all shadow-sm">Re-engage</button>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#717973] group-hover:text-[#006d42] shrink-0 transition-all group-hover:translate-x-0.5"></i>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Today's Follow-Ups Interactive Table (Right - 6 columns) -->
+        <div class="lg:col-span-6 technicon-card p-6 flex flex-col justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-extrabold text-[#191c1c]">Today's Scheduled Follow-Ups</h3>
+              <p class="text-xs text-[#717973] font-medium">Active customer proposals awaiting sales contact</p>
+            </div>
+
+            <!-- Table Filter Pill Buttons -->
+            <div class="flex items-center gap-1.5" id="table-status-filters">
+              <button class="status-filter-pill px-2.5 py-1 rounded-lg bg-[#006d42] text-white text-xs font-bold shadow-2xs" data-status="all">All</button>
+              <button class="status-filter-pill px-2.5 py-1 rounded-lg bg-[#f2f4f3] text-[#717973] hover:text-[#191c1c] text-xs font-semibold transition-colors" data-status="sent">Sent</button>
+              <button class="status-filter-pill px-2.5 py-1 rounded-lg bg-[#f2f4f3] text-[#717973] hover:text-[#191c1c] text-xs font-semibold transition-colors" data-status="draft">Draft</button>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[#eceeed] text-[10px] font-extrabold text-[#717973] uppercase tracking-wider">
+                  <th class="py-3 px-3">CUSTOMER COMPANY</th>
+                  <th class="py-3 px-3 text-right">VALUE</th>
+                  <th class="py-3 px-3 text-right">STATUS</th>
+                  <th class="py-3 px-3 text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="followups-table-body" class="divide-y divide-[#eceeed] text-xs font-medium">
+                
+                <!-- Row 1: Global Tech Inc -->
+                <tr class="table-row-hover cursor-pointer group" data-company="Global Tech Inc" data-val="₹2.4L" data-status="Sent">
+                  <td class="py-3 px-3 font-bold text-[#191c1c] customer-name">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-[#e6f7ef] text-[#006d42] font-extrabold text-xs flex items-center justify-center border border-[#93f4ba]/40">GT</div>
+                      <div>
+                        <div class="font-bold group-hover:text-[#006d42] transition-colors">Global Tech Inc</div>
+                        <div class="text-[10px] font-medium text-[#717973]">QTN-2026-081</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 text-right font-extrabold text-[#191c1c]">₹2.4L</td>
+                  <td class="py-3 px-3 text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#e6f7ef] text-[#006d42] border border-[#93f4ba]/50">
+                      Sent
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    <button class="text-[#006d42] hover:bg-[#e6f7ef] p-1.5 rounded-lg font-bold text-xs transition-colors">
+                      <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Row 2: Nexus Logistics -->
+                <tr class="table-row-hover cursor-pointer group" data-company="Nexus Logistics" data-val="₹8.9L" data-status="Draft">
+                  <td class="py-3 px-3 font-bold text-[#191c1c] customer-name">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 font-extrabold text-xs flex items-center justify-center border border-slate-200">NL</div>
+                      <div>
+                        <div class="font-bold group-hover:text-[#006d42] transition-colors">Nexus Logistics</div>
+                        <div class="text-[10px] font-medium text-[#717973]">QTN-2026-084</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 text-right font-extrabold text-[#191c1c]">₹8.9L</td>
+                  <td class="py-3 px-3 text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
+                      Draft
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    <button class="text-[#006d42] hover:bg-[#e6f7ef] p-1.5 rounded-lg font-bold text-xs transition-colors">
+                      <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Row 3: Vanguard Systems -->
+                <tr class="table-row-hover cursor-pointer group" data-company="Vanguard Systems" data-val="₹1.1L" data-status="Sent">
+                  <td class="py-3 px-3 font-bold text-[#191c1c] customer-name">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 font-extrabold text-xs flex items-center justify-center border border-sky-200">VS</div>
+                      <div>
+                        <div class="font-bold group-hover:text-[#006d42] transition-colors">Vanguard Systems</div>
+                        <div class="text-[10px] font-medium text-[#717973]">QTN-2026-079</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 text-right font-extrabold text-[#191c1c]">₹1.1L</td>
+                  <td class="py-3 px-3 text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#e6f7ef] text-[#006d42] border border-[#93f4ba]/50">
+                      Sent
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    <button class="text-[#006d42] hover:bg-[#e6f7ef] p-1.5 rounded-lg font-bold text-xs transition-colors">
+                      <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Row 4: Apex Manufacturing -->
+                <tr class="table-row-hover cursor-pointer group" data-company="Apex Manufacturing" data-val="₹14.0L" data-status="Accepted">
+                  <td class="py-3 px-3 font-bold text-[#191c1c] customer-name">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center justify-center border border-emerald-300">AM</div>
+                      <div>
+                        <div class="font-bold group-hover:text-[#006d42] transition-colors">Apex Manufacturing</div>
+                        <div class="text-[10px] font-medium text-[#717973]">QTN-2026-068</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-3 text-right font-extrabold text-[#191c1c]">₹14.0L</td>
+                  <td class="py-3 px-3 text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#006d42] text-white shadow-2xs">
+                      Accepted
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    <button class="text-[#006d42] hover:bg-[#e6f7ef] p-1.5 rounded-lg font-bold text-xs transition-colors">
+                      <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer Pagination -->
+          <div class="pt-3 border-t border-[#eceeed] flex items-center justify-between text-xs text-[#717973] font-medium">
+            <span>Showing 4 of 12 scheduled follow-ups</span>
+            <a href="/quotations.html" class="font-bold text-[#006d42] hover:underline flex items-center gap-1">
+              <span>View Full Schedule</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- SLIDE-OVER QUICK DETAIL DRAWER -->
+  <div id="detail-drawer" class="fixed inset-0 z-50 pointer-events-none hidden">
+    <!-- Backdrop Overlay -->
+    <div id="drawer-backdrop" class="fixed inset-0 bg-[#002619]/40 backdrop-blur-xs opacity-0 drawer-overlay pointer-events-auto"></div>
+    
+    <!-- Drawer Slide Content Container -->
+    <div class="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl border-l border-[#e1e3e2] flex flex-col justify-between translate-x-full drawer-content pointer-events-auto z-10">
+      
+      <!-- Drawer Header -->
+      <div class="p-6 bg-[#002619] text-white flex items-center justify-between">
+        <div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-[#006d42] text-[#93f4ba] uppercase tracking-wider" id="drawer-badge">Proposal Overview</span>
+          <h2 class="text-xl font-extrabold tracking-tight mt-1 text-white" id="drawer-title">Global Tech Inc</h2>
+          <p class="text-xs text-[#76a891] mt-0.5" id="drawer-subtitle">Ref: QTN-2026-081 · Technicon Operational ERP</p>
+        </div>
+        <button id="close-drawer-btn" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Body Content -->
+      <div class="flex-1 p-6 overflow-y-auto space-y-6 text-xs text-[#191c1c]">
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-xl bg-[#f8faf9] border border-[#e1e3e2]">
+            <div class="text-[10px] font-bold text-[#717973] uppercase">Quotation Amount</div>
+            <div class="text-lg font-extrabold text-[#006d42] mt-0.5" id="drawer-amount">₹2,40,000</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#f8faf9] border border-[#e1e3e2]">
+            <div class="text-[10px] font-bold text-[#717973] uppercase">Current Status</div>
+            <div class="text-sm font-extrabold text-[#191c1c] mt-1" id="drawer-status">Sent (Awaiting PO)</div>
+          </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="p-4 rounded-xl bg-white border border-[#e1e3e2] space-y-2">
+          <h4 class="font-bold text-xs text-[#717973] uppercase tracking-wider">Primary Contact</h4>
+          <div class="text-sm font-extrabold text-[#191c1c]">Rajesh Kumar · Purchase Manager</div>
+          <div class="flex items-center gap-2 text-xs text-[#717973]">
+            <i data-lucide="mail" class="w-3.5 h-3.5 text-[#006d42]"></i>
+            <span>r.kumar@globaltech.com</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-[#717973]">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-[#006d42]"></i>
+            <span>+91 98765 43210</span>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div>
+          <h4 class="font-bold text-xs text-[#717973] uppercase tracking-wider mb-2">Quotation Line Items</h4>
+          <div class="rounded-xl border border-[#e1e3e2] overflow-hidden divide-y divide-[#eceeed]">
+            <div class="p-3 bg-[#f8faf9] flex items-center justify-between font-bold text-[11px]">
+              <span>Technicon Industrial Servo Pack</span>
+              <span>₹1,80,000</span>
+            </div>
+            <div class="p-3 bg-[#f8faf9] flex items-center justify-between font-bold text-[11px]">
+              <span>Annual Maintenance & SLA Warranty</span>
+              <span>₹60,000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Log -->
+        <div>
+          <h4 class="font-bold text-xs text-[#717973] uppercase tracking-wider mb-2 font-mono">Activity Log</h4>
+          <div class="space-y-2 text-[11px] text-[#717973]">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#006d42]"></span>
+              <span>Aug 20: Proposal sent via email</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span>Aug 18: Created draft QTN-2026-081</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Drawer Footer Actions -->
+      <div class="p-4 bg-[#f8faf9] border-t border-[#e1e3e2] flex items-center gap-3">
+        <button id="drawer-action-email" class="flex-1 bg-[#006d42] hover:bg-[#005634] text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Send Reminder</span>
+        </button>
+        <button id="drawer-action-edit" class="bg-white hover:bg-[#f2f4f3] text-[#191c1c] font-bold text-xs py-2.5 px-4 rounded-xl border border-[#e1e3e2] transition-colors">
+          <span>Edit Quote</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 1: + NEW QUOTATION WIZARD MODAL -->
+  <div id="new-quotation-modal" class="fixed inset-0 z-50 pointer-events-none hidden flex items-center justify-center p-4">
+    <div id="modal-backdrop" class="fixed inset-0 glass-modal pointer-events-auto"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-[#e1e3e2] pointer-events-auto z-10 overflow-hidden transform transition-all">
+      
+      <!-- Modal Header -->
+      <div class="p-5 bg-[#002619] text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#006d42] text-[#93f4ba] flex items-center justify-center border border-[#009b5f]/40">
+            <i data-lucide="file-plus" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-white">Create New Quotation</h3>
+            <p class="text-xs text-[#76a891]">Technicon Proposal Generator</p>
+          </div>
+        </div>
+        <button id="close-modal-btn" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form id="new-quotation-form" class="p-6 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-[#191c1c] mb-1">Customer / Company Name</label>
+          <input type="text" placeholder="e.g. Apex Industrial Systems" required class="w-full px-3.5 py-2.5 rounded-xl border border-[#e1e3e2] focus:ring-2 focus:ring-[#006d42]/30 focus:outline-none text-xs" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-[#191c1c] mb-1">Target Amount (₹)</label>
+            <input type="number" placeholder="500000" required class="w-full px-3.5 py-2.5 rounded-xl border border-[#e1e3e2] focus:ring-2 focus:ring-[#006d42]/30 focus:outline-none text-xs" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#191c1c] mb-1">Validity (Days)</label>
+            <select class="w-full px-3.5 py-2.5 rounded-xl border border-[#e1e3e2] focus:ring-2 focus:ring-[#006d42]/30 focus:outline-none text-xs bg-white">
+              <option value="30">30 Days</option>
+              <option value="60">60 Days</option>
+              <option value="90">90 Days</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-[#191c1c] mb-1">Product Items Selection</label>
+          <select class="w-full px-3.5 py-2.5 rounded-xl border border-[#e1e3e2] focus:ring-2 focus:ring-[#006d42]/30 focus:outline-none text-xs bg-white">
+            <option value="pack1">Technicon Industrial Motor Pack (Heavy Duty)</option>
+            <option value="pack2">Hydraulic Automation Controller Assembly</option>
+            <option value="pack3">Custom Instrumentation & Sensor Suite</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-[#191c1c] mb-1">Proposal Notes / Terms</label>
+          <textarea rows="3" placeholder="Enter special delivery or discount terms..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#e1e3e2] focus:ring-2 focus:ring-[#006d42]/30 focus:outline-none text-xs"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-[#eceeed] flex items-center justify-end gap-3">
+          <button type="button" id="cancel-modal-btn" class="px-4 py-2 rounded-xl border border-[#e1e3e2] font-semibold text-[#717973] hover:bg-[#f2f4f3] transition-colors">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#006d42] hover:bg-[#005634] text-white font-bold shadow-md transition-all">Save Draft Proposal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: SPOTLIGHT COMMAND PALETTE (`Cmd+K`) -->
+  <div id="spotlight-modal" class="fixed inset-0 z-50 pointer-events-none hidden flex items-start justify-center pt-20 p-4">
+    <div id="spotlight-backdrop" class="fixed inset-0 glass-modal pointer-events-auto"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full border border-[#e1e3e2] pointer-events-auto z-10 overflow-hidden">
+      
+      <div class="p-4 border-b border-[#e1e3e2] flex items-center gap-3">
+        <i data-lucide="search" class="w-5 h-5 text-[#006d42]"></i>
+        <input 
+          type="text" 
+          id="spotlight-input"
+          placeholder="Type to search quotations, companies, products or commands..." 
+          class="w-full text-sm font-medium focus:outline-none bg-transparent text-[#191c1c] placeholder-[#717973]"
+        />
+        <kbd class="px-2 py-0.5 text-[10px] font-semibold text-[#717973] bg-[#f2f4f3] border border-[#d2dbd6] rounded">ESC</kbd>
+      </div>
+
+      <div class="p-4 max-h-80 overflow-y-auto space-y-3" id="spotlight-results">
+        <div class="text-[10px] font-extrabold text-[#717973] uppercase tracking-wider">Quick Suggestions</div>
+        
+        <div class="spotlight-item p-2.5 rounded-xl hover:bg-[#e6f7ef] cursor-pointer flex items-center justify-between text-xs font-semibold text-[#191c1c] transition-colors">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-text" class="w-4 h-4 text-[#006d42]"></i>
+            <span>Global Tech Inc — QTN-2026-081 (₹2.4L)</span>
+          </div>
+          <span class="text-[10px] text-[#717973]">Quotation</span>
+        </div>
+
+        <div class="spotlight-item p-2.5 rounded-xl hover:bg-[#e6f7ef] cursor-pointer flex items-center justify-between text-xs font-semibold text-[#191c1c] transition-colors">
+          <div class="flex items-center gap-3">
+            <i data-lucide="building-2" class="w-4 h-4 text-[#006d42]"></i>
+            <span>Apex Manufacturing Ltd</span>
+          </div>
+          <span class="text-[10px] text-[#717973]">Company</span>
+        </div>
+
+        <div class="spotlight-item p-2.5 rounded-xl hover:bg-[#e6f7ef] cursor-pointer flex items-center justify-between text-xs font-semibold text-[#191c1c] transition-colors">
+          <div class="flex items-center gap-3">
+            <i data-lucide="package" class="w-4 h-4 text-[#006d42]"></i>
+            <span>Industrial Servo Pack Heavy Duty</span>
+          </div>
+          <span class="text-[10px] text-[#717973]">Product</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-[#f8faf9] border-t border-[#e1e3e2] text-[11px] text-[#717973] font-medium flex items-center justify-between">
+        <span>Use arrow keys to navigate</span>
+        <span class="font-bold text-[#006d42]">Technicon Spotlight</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION INTERACTIVE SCRIPTS -->
+  <script src="/js/technicon-dashboard.js"></script>
+  <script>
+    // Initialize Lucide Icons
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
