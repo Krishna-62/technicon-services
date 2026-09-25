@@ -328,7 +328,7 @@ router.get('/customers/:id/360', (req, res) => {
 router.get('/quotations/:id/timeline', (req, res) => {
   try {
     const timeline = getQuotationTimeline(req.params.id);
-    res.json(timeline);
+    res.json({ timeline, count: Array.isArray(timeline) ? timeline.length : 0 });
   } catch (err) {
     console.error('Failed to get quotation timeline:', err);
     res.status(500).json({ error: err.message || 'Failed to get quotation timeline' });

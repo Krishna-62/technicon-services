@@ -2514,15 +2514,19 @@ export interface EngineerFollowUpPerformance {
 }
 
 export interface QuotationTimelineEvent {
-  event_type: string;
+  event_type?: string;
+  stage?: string;
   title: string;
   description: string;
-  event_timestamp: string;
-  user_name: string;
+  timestamp?: string;
+  event_timestamp?: string;
+  status?: string;
+  user_name?: string;
 }
 
 export interface QuotationTimelineResponse {
   timeline: QuotationTimelineEvent[];
+  count?: number;
 }
 
 function buildQuery(params: Record<string, any>): string {
@@ -2617,8 +2621,13 @@ export async function fetchCustomer360Pipeline(customerId: number): Promise<Cust
   return request<Customer360Pipeline>(`/sales/customers/${customerId}/360`);
 }
 
+
 export async function fetchQuotationTimeline(quotationId: number): Promise<QuotationTimelineResponse> {
-  return request<QuotationTimelineResponse>(`/sales/quotations/${quotationId}/timeline`);
+  const res = await request<any>(`/sales/quotations/${quotationId}/timeline`);
+  if (Array.isArray(res)) {
+    return { timeline: res, count: res.length };
+  }
+  return { timeline: Array.isArray(res?.timeline) ? res.timeline : [], count: res?.count || 0 };
 }
 
 export async function fetchSalesActivityApi(params: Record<string, any> = {}): Promise<{ activities: any[]; total: number }> {

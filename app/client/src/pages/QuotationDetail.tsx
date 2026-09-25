@@ -619,13 +619,21 @@ function QuotationTimelineSection({ quotationId }: { quotationId: number }) {
   useEffect(() => {
     import('../api').then(({ fetchQuotationTimeline }) => {
       fetchQuotationTimeline(quotationId)
-        .then((res) => setEvents(res.timeline))
-        .catch(console.error)
+        .then((res) => {
+          const list = Array.isArray(res) ? res : res?.timeline || [];
+          setEvents(list);
+        })
+        .catch((err) => {
+          console.error('Failed to load quotation timeline:', err);
+          setEvents([]);
+        })
         .finally(() => setLoading(false));
     });
   }, [quotationId]);
 
   if (loading) return <div className="text-xs text-[#6D756F]">Loading activity timeline...</div>;
+
+  const safeEvents = Array.isArray(events) ? events : [];
 
   return (
     <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
@@ -637,22 +645,22 @@ function QuotationTimelineSection({ quotationId }: { quotationId: number }) {
       </p>
 
       <div className="relative border-l border-[#292E2A] ml-3 pl-4 space-y-4">
-        {events.map((ev, idx) => (
+        {safeEvents.map((ev, idx) => (
           <div key={idx} className="relative">
             {/* Timeline bullet */}
             <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#B8F23A] border-2 border-[#171918]" />
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-xs text-[#F5F7F4]">{ev.title}</span>
-                <span className="text-[10px] text-[#A5AEA8] font-mono">{ev.event_timestamp}</span>
-                <span className="text-[10px] text-[#7E95FF]">by {ev.user_name}</span>
+                <span className="font-bold text-xs text-[#F5F7F4]">{ev.title || 'Commercial Event'}</span>
+                <span className="text-[10px] text-[#A5AEA8] font-mono">{ev.timestamp || ev.event_timestamp || ''}</span>
+                {ev.user_name && <span className="text-[10px] text-[#7E95FF]">by {ev.user_name}</span>}
               </div>
-              <p className="text-xs text-[#A5AEA8] margin-0">{ev.description}</p>
+              <p className="text-xs text-[#A5AEA8] margin-0">{ev.description || ''}</p>
             </div>
           </div>
         ))}
 
-        {events.length === 0 && (
+        {safeEvents.length === 0 && (
           <p className="text-xs text-[#6D756F]">No timeline events recorded yet.</p>
         )}
       </div>
