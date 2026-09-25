@@ -5,13 +5,11 @@ function formatCurrency(n: number) {
   return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
-// Stage color palette (Lime for accepted/PO, dark olive/slate for draft/sent, dark red for rejected)
+// Authentic quotation stage color palette
 const STAGE_COLORS: Record<string, string> = {
   draft: '#69736E',
   sent: '#708D31',
   accepted: '#B8F23A',
-  purchase_order: '#D8F98D',
-  performa_invoice: '#9CF45D',
   rejected: '#E25757',
 };
 
@@ -26,18 +24,22 @@ export function PipelineDonutChart({
 }) {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
-  if (!stages || stages.length === 0) {
+  const totalCount = stages ? stages.reduce((sum, s) => sum + s.count, 0) : 0;
+
+  if (!stages || stages.length === 0 || (totalValue === 0 && totalCount === 0)) {
     return <p className="text-xs text-[#A5AEA8] py-6 text-center">No pipeline data recorded.</p>;
   }
 
   const radius = 64;
   const strokeWidth = 14;
   const circumference = 2 * Math.PI * radius;
-  const nonZeroValue = Math.max(1, totalValue);
+  const useCountForSegments = totalValue <= 0 && totalCount > 0;
+  const denominator = useCountForSegments ? totalCount : Math.max(1, totalValue);
 
   let accumulatedAngle = 0;
   const segments = stages.map((s) => {
-    const strokeDasharray = (s.value / nonZeroValue) * circumference;
+    const metric = useCountForSegments ? s.count : s.value;
+    const strokeDasharray = (metric / denominator) * circumference;
     const strokeDashoffset = -accumulatedAngle;
     accumulatedAngle += strokeDasharray;
     return {
@@ -91,7 +93,8 @@ export function PipelineDonutChart({
       <div className="flex-1 space-y-2.5 w-full">
         {stages.map((stage) => {
           const color = STAGE_COLORS[stage.key] || '#708D31';
-          const percent = Math.min(100, Math.max(3, (stage.value / nonZeroValue) * 100));
+          const metric = useCountForSegments ? stage.count : stage.value;
+          const percent = Math.min(100, Math.max(3, (metric / denominator) * 100));
           return (
             <div
               key={stage.key}

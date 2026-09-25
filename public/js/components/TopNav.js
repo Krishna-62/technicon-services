@@ -1,52 +1,43 @@
 export function renderTopNav(pageTitle = 'Dashboard') {
   return `
-    <header class="flex justify-between items-center h-16 px-6 lg:px-8 w-full bg-surface border-b border-outline-variant sticky top-0 z-40 shadow-xs">
+    <header class="flex justify-between items-center h-16 px-4 md:px-8 w-full bg-[#F4F7F4] border-b border-[#E2E7E3] sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
       <div class="flex items-center gap-4 flex-1">
-        <button id="mobile-menu-btn" class="md:hidden text-on-surface p-2 rounded-lg hover:bg-surface-container">
-          <span class="material-symbols-outlined">menu</span>
+        <button id="mobile-menu-btn" class="md:hidden text-[#111714] p-2 rounded-lg hover:bg-white border border-[#E2E7E3]">
+          <span class="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <div class="relative w-80 hidden lg:block">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+        
+        <!-- Search Input matching reference -->
+        <div class="relative w-80 hidden sm:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#65716B] text-[18px]">search</span>
           <input 
             id="global-search-input"
             type="text" 
-            placeholder="Search quotations, POs, companies..." 
-            class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded-lg text-body-md focus:outline-none focus:border-surface-tint focus:ring-2 focus:ring-surface-tint/20 transition-all text-on-surface placeholder:text-on-surface-variant/50"
+            placeholder="Search orders..." 
+            class="w-full pl-9 pr-4 py-2 bg-white border border-[#E2E7E3] rounded-full text-xs text-[#111714] placeholder-[#65716B] focus:outline-none focus:ring-2 focus:ring-[#0E513C]/20 focus:border-[#0E513C] transition-all shadow-xs"
           />
         </div>
-        <h2 class="font-display-md text-lg font-bold text-primary lg:hidden">${pageTitle}</h2>
+        <h2 class="font-bold text-base text-[#111714] sm:hidden">${pageTitle}</h2>
       </div>
 
       <div class="flex items-center gap-4">
+        <!-- Notifications Button -->
+        <button aria-label="Notifications" class="w-9 h-9 rounded-full bg-white border border-[#E2E7E3] flex items-center justify-center text-[#111714] hover:bg-slate-50 transition-colors shadow-xs relative">
+          <span class="material-symbols-outlined text-[20px]">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-[#35A866] rounded-full ring-2 ring-white"></span>
+        </button>
+
+        <!-- Profile Button -->
+        <button aria-label="User Account" class="w-9 h-9 rounded-full bg-white border border-[#E2E7E3] flex items-center justify-center text-[#111714] hover:bg-slate-50 transition-colors shadow-xs">
+          <span class="material-symbols-outlined text-[20px]">person</span>
+        </button>
+
         <!-- New Quotation Action Button -->
-        <button onclick="window.location.hash='#new-quotation'" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg text-[13px] font-semibold hover:bg-primary-container transition-all shadow-xs">
-          <span class="material-symbols-outlined text-[18px]">add</span>
+        <button onclick="window.location.hash='#new-quotation'" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#003B2B] text-white rounded-lg text-xs font-semibold hover:bg-[#0E513C] transition-all shadow-xs">
+          <span class="material-symbols-outlined text-[16px]">add</span>
           <span>New Quotation</span>
         </button>
-
-        <!-- Import Products Button -->
-        <button onclick="window.location.hash='#product-import-workflow'" class="hidden md:flex items-center gap-2 px-3.5 py-1.5 border border-outline-variant text-on-surface rounded-lg text-[13px] font-medium hover:bg-surface-container transition-all">
-          <span class="material-symbols-outlined text-[18px]">upload_file</span>
-          <span>Import Data</span>
-        </button>
-
-        <!-- Notifications Badge -->
-        <button class="text-on-surface-variant hover:text-primary transition-colors relative p-2 rounded-full hover:bg-surface-container">
-          <span class="material-symbols-outlined text-[22px]">notifications</span>
-          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
-        </button>
-
-        <!-- User Profile Dropdown -->
-        <div class="flex items-center gap-3 pl-2 border-l border-outline-variant cursor-pointer group relative" id="user-profile-trigger">
-          <div class="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm shadow-xs">
-            KC
-          </div>
-          <div class="hidden sm:block text-left">
-            <p class="text-[13px] font-semibold text-on-surface leading-tight">Krishna Chaitanya</p>
-            <p class="text-[11px] text-on-surface-variant">Administrator</p>
-          </div>
-        </div>
       </div>
     </header>
   `;
 }
+

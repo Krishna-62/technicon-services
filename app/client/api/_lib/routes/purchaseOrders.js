@@ -9,10 +9,12 @@ async function fullPO(id) {
   const po = await db
     .prepare(
       `SELECT po.*, q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
-              c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
+              c.name AS company_name, c.address AS company_address, c.state AS company_state,
+              c.gstin AS company_gstin, c.phone AS company_phone, u.username AS created_by_username
        FROM purchase_order po
        JOIN quotation q ON q.id = po.quotation_id
        JOIN company c ON c.id = q.company_id
+       LEFT JOIN app_user u ON u.id = q.created_by_user_id
        WHERE po.id = ?`
     )
     .get(id);

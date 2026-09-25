@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, type FlaggedSalesRecordsData } from '../api';
 import { Pagination } from '../components/Pagination';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 const PAGE_SIZE = 20;
 
@@ -54,13 +55,15 @@ export default function FlaggedSalesRecords() {
         <div className="inactive-summary-hint">Data quality issues found during import (missing or unclear fields).</div>
       </div>
 
-      <input
-        type="search"
-        placeholder="Search by company, invoice, part no, or reason..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 340, marginBottom: 14 }}
-      />
+      <div className="mb-3">
+        <ExpandableSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Search by company, invoice, part no, or reason..."
+          ariaLabel="Search flagged sales records"
+          maxWidth="340px"
+        />
+      </div>
 
       <div className="card">
         <div className="table-scroll">

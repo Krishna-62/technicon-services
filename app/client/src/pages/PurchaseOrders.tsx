@@ -2,14 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, PurchaseOrder } from '../api';
 import { Pagination } from '../components/Pagination';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 const PAGE_SIZE = 20;
 
 type DateFilter = 'all' | 'today' | 'week' | 'month';
 
-// Pure string comparison against the API's plain 'YYYY-MM-DD' DATE values — never parses a row's
-// date into a JS Date (which risks a timezone-driven off-by-one-day shift), only the boundaries are
-// built from local calendar fields (getFullYear/getMonth/getDate), never .toISOString().
 function getDateRange(filter: DateFilter): { start: string; end: string } | null {
   if (filter === 'all') return null;
   const now = new Date();
@@ -24,11 +22,10 @@ function getDateRange(filter: DateFilter): { start: string; end: string } | null
     return { start: s, end: s };
   }
   if (filter === 'week') {
-    const dayOfWeek = new Date(y, m, d).getDay(); // 0=Sun..6=Sat
+    const dayOfWeek = new Date(y, m, d).getDay();
     const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     return { start: toStr(y, m, d - diffToMonday), end: toStr(y, m, d - diffToMonday + 6) };
   }
-  // month
   const lastDayOfMonth = new Date(y, m + 1, 0).getDate();
   return { start: toStr(y, m, 1), end: toStr(y, m, lastDayOfMonth) };
 }
@@ -38,6 +35,14 @@ function matchesDate(dateStr: string | null | undefined, range: { start: string;
   if (!dateStr) return false;
   return dateStr >= range.start && dateStr <= range.end;
 }
+
+const PO_STATUS_TONES: Record<string, string> = {
+  active: '#D9A441',
+  'in production': '#D9A441',
+  dispatched: '#7E95FF',
+  delivered: '#B8F23A',
+  completed: '#B8F23A',
+};
 
 export default function PurchaseOrders() {
   const [rows, setRows] = useState<PurchaseOrder[]>([]);
@@ -87,76 +92,168 @@ export default function PurchaseOrders() {
     setDateFilter('all');
   }
 
-  return (
-    <div>
-      <h2>Purchase Orders</h2>
-      {error && <div className="error">{error}</div>}
+  const kpis = useMemo(() => {
+    const openVal = rows.reduce((sum, po) => sum + (po.total || 0), 0);
+    const count = rows.length;
+    return { openVal, count };
+  }, [rows]);
 
-      <div className="filter-bar">
-        <div className="field">
-          <label>Search</label>
-          <input
-            type="search"
-            placeholder="Search by number or company..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+  return (
+    <div className="p-6 flex flex-col gap-6 bg-[#101312] text-[#F5F7F4] min-h-screen">
+      {/* Header & KPI Summary */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="margin-0 text-[34px] font-medium tracking-[-.02em] leading-[1.05]">
+            Purchase Orders
+          </h1>
+          <p className="margin-0 text-[13.5px] text-[#A5AEA8]">
+            Orders raised against accepted quotations, by fulfilment state.
+          </p>
         </div>
-        <div className="field">
-          <label>Status</label>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">All Status</option>
-            {statuses.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
+        <div className="grid grid-cols-2 border border-[#292E2A] rounded-[12px] bg-[#171918] overflow-hidden">
+          <div className="p-[10px_16px] border-r border-[#1f2421] flex flex-col gap-[2px]">
+            <span className="text-[11px] tracking-[.08em] text-[#6d756f]">TOTAL VALUE</span>
+            <span className="text-[20px] font-medium text-[#B8F23A]">
+              ₹{kpis.openVal > 0 ? (kpis.openVal / 100000).toFixed(2) + 'L' : '0.00'}
+            </span>
+          </div>
+          <div className="p-[10px_16px] flex flex-col gap-[2px]">
+            <span className="text-[11px] tracking-[.08em] text-[#6d756f]">TOTAL ORDERS</span>
+            <span className="text-[20px] font-medium text-[#F5F7F4]">{kpis.count}</span>
+          </div>
         </div>
-        <div className="field">
-          <label>Date</label>
-          <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value as DateFilter)}>
-            <option value="all">All Dates</option>
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
-        </div>
-        {hasActiveFilters && (
-          <button className="btn small secondary" onClick={resetFilters} style={{ alignSelf: 'end' }}>
-            Clear Filters
-          </button>
-        )}
-        <div className="filter-count muted">{filtered.length} of {rows.length} purchase orders</div>
       </div>
 
-      <div className="card">
-        <div className="table-scroll">
-          <table>
+      {error && (
+        <div className="p-3 rounded-[10px] border border-[#4a2a2a] bg-[#1b1414] text-[#E25757] text-[12.5px]">
+          {error}
+        </div>
+      )}
+
+      {/* Main Table Container Card */}
+      <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-[16px_18px_12px] flex flex-col gap-4">
+        {/* Search & Filter Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 border-b border-[#20251f] pb-3.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <ExpandableSearch
+              value={search}
+              onChange={setSearch}
+              placeholder="Search PO or company..."
+              ariaLabel="Search purchase orders"
+              maxWidth="280px"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-[30px] px-2 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none cursor-pointer"
+            >
+              <option value="">All Statuses</option>
+              {statuses.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value as DateFilter)}
+              className="h-[30px] px-2 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none cursor-pointer"
+            >
+              <option value="all">All Dates</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="h-[30px] px-2.5 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#A5AEA8] text-[12px] hover:text-[#F5F7F4] cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <span className="text-[11.5px] text-[#6d756f]">
+            Showing {filtered.length} of {rows.length}
+          </span>
+        </div>
+
+        {/* PO Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] border-collapse text-[12.5px]">
             <thead>
-              <tr><th>Number</th><th>Date</th><th>Company</th><th>Quotation</th><th>Client PO Ref</th><th>Status</th><th></th></tr>
+              <tr className="border-b border-[#20251f]">
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  ORDER
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  CUSTOMER
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  LINKED QUOTE
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  CLIENT REF
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  RAISED
+                </th>
+                <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  STATUS
+                </th>
+                <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  PDF
+                </th>
+              </tr>
             </thead>
             <tbody>
-              {paged.map((po) => (
-                <tr key={po.id}>
-                  <td>{po.number}</td>
-                  <td>{po.date}</td>
-                  <td>{po.company_name}</td>
-                  <td><Link to={`/quotations/${po.quotation_id}`}>{po.quotation_number}</Link></td>
-                  <td>{po.client_po_ref || '-'}</td>
-                  <td><span className={`badge ${po.status}`}>{po.status}</span></td>
-                  <td><a className="btn small secondary" href={api.purchaseOrders.pdfUrl(po.id)} target="_blank" rel="noreferrer">PDF</a></td>
+              {paged.map((po) => {
+                const tone = PO_STATUS_TONES[po.status.toLowerCase()] || '#B8F23A';
+                return (
+                  <tr key={po.id} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] font-medium text-[#F5F7F4]">{po.number}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4]">{po.company_name || '—'}</td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">
+                      <Link to={`/quotations/${po.quotation_id}`} className="text-[#B8F23A] hover:underline">
+                        {po.quotation_number}
+                      </Link>
+                    </td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{po.client_po_ref || '—'}</td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{po.date}</td>
+                    <td className="p-[11px_10px] text-right">
+                      <span className="inline-flex items-center gap-1.5 capitalize" style={{ color: tone }}>
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tone }} />
+                        {po.status}
+                      </span>
+                    </td>
+                    <td className="p-[11px_10px] text-right">
+                      <a
+                        href={api.purchaseOrders.pdfUrl(po.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[12px] text-[#A5AEA8] hover:text-[#B8F23A] hover:underline"
+                      >
+                        PDF →
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-8 text-[#A5AEA8] text-[13px]">
+                    No purchase orders found.
+                  </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && rows.length === 0 && (
-                <tr><td colSpan={7} className="muted">No purchase orders yet.</td></tr>
-              )}
-              {filtered.length === 0 && rows.length > 0 && (
-                <tr><td colSpan={7} className="muted">No matches.</td></tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
+      {/* Pagination Footer */}
       <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );

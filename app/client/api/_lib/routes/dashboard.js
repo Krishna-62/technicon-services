@@ -429,41 +429,29 @@ const PIPELINE_STAGES = [
   { key: 'draft', label: 'Draft' },
   { key: 'sent', label: 'Sent' },
   { key: 'accepted', label: 'Accepted' },
-  { key: 'purchase_order', label: 'Purchase Order' },
-  { key: 'performa_invoice', label: 'Performa Invoice' },
-  { key: 'lost', label: 'Rejected / Lost' },
+  { key: 'rejected', label: 'Rejected' },
 ];
 
-// "Sales Pipeline" — each quotation (the opportunity anchor) is bucketed into EXACTLY ONE stage,
-// its furthest-advanced business artifact, so a quotation with both a PO and a PI is counted once
-// under "Performa Invoice" — never additionally under "Accepted" or "Purchase Order". Neither
-// purchase_order nor performa_invoice has its own monetary total (see importer/schema notes
-// elsewhere) — every stage's value is quotation.total, so there is no separate PO/PI amount to
-// accidentally add on top. The CASE below uses EXISTS subqueries (not JOINs) specifically so a
-// quotation with more than one PO/PI row still contributes exactly one row to the GROUP BY —
-// existence is checked, not counted. purchase_order.status / performa_invoice.status are
-// deliberately NOT used: nothing in this app ever changes them away from their creation-time
-// default, so they carry no real signal (see Step 3 analysis).
-export async function getPipeline() {
-  const rows = await db
-    .prepare(
-      `SELECT
-         CASE
-           WHEN q.status = 'rejected' THEN 'lost'
-           WHEN EXISTS (SELECT 1 FROM performa_invoice pi WHERE pi.quotation_id = q.id) THEN 'performa_invoice'
-           WHEN EXISTS (SELECT 1 FROM purchase_order po WHERE po.quotation_id = q.id) THEN 'purchase_order'
-           WHEN q.status = 'accepted' THEN 'accepted'
-           WHEN q.status = 'sent' THEN 'sent'
-           ELSE 'draft'
-         END AS stage,
-         COUNT(*) AS count,
-         COALESCE(SUM(q.total), 0) AS value
-       FROM quotation q
-       GROUP BY stage`
-    )
-    .all();
+export async function getPipeline(start, end) {
+  let query = `
+    SELECT status, COUNT(*) AS count, COALESCE(SUM(total), 0) AS value
+    FROM quotation
+  `;
+  const params = [];
+  if (start && end) {
+    query += ` WHERE date >= ? AND date <= ?`;
+    params.push(start, end);
+  } else if (start) {
+    query += ` WHERE date >= ?`;
+    params.push(start);
+  } else if (end) {
+    query += ` WHERE date <= ?`;
+    params.push(end);
+  }
+  query += ` GROUP BY status`;
 
-  const byStage = new Map(rows.map((r) => [r.stage, { count: Number(r.count), value: Number(r.value) }]));
+  const rows = await db.prepare(query).all(...params);
+  const byStage = new Map(rows.map((r) => [r.status, { count: Number(r.count), value: Number(r.value) }]));
 
   const stages = PIPELINE_STAGES.map(({ key, label }) => ({
     key,
@@ -474,25 +462,25 @@ export async function getPipeline() {
 
   const totalOpportunities = stages.reduce((sum, s) => sum + s.count, 0);
   const totalValue = stages.reduce((sum, s) => sum + s.value, 0);
-  const won = stages.find((s) => s.key === 'performa_invoice');
-  const lost = stages.find((s) => s.key === 'lost');
-  const accepted = stages.find((s) => s.key === 'accepted');
-  const purchaseOrder = stages.find((s) => s.key === 'purchase_order');
+  const accepted = stages.find((s) => s.key === 'accepted') || { count: 0, value: 0 };
+  const acceptedRate = totalValue > 0 ? Math.round((accepted.value / totalValue) * 100) : (totalOpportunities > 0 ? Math.round((accepted.count / totalOpportunities) * 100) : 0);
+
+  const poCountRow = await db.prepare(`SELECT COUNT(*) AS c FROM purchase_order`).get();
+  const piCountRow = await db.prepare(`SELECT COUNT(*) AS c FROM performa_invoice`).get();
 
   return {
     stages,
     summary: {
       totalOpportunities,
       totalValue,
-      wonCount: won.count,
-      wonValue: won.value,
-      lostCount: lost.count,
-      lostValue: lost.value,
+      wonCount: accepted.count,
+      wonValue: accepted.value,
+      acceptedRate,
     },
     fulfillment: {
       acceptedCount: accepted.count,
-      purchaseOrderCount: purchaseOrder.count,
-      performaInvoiceCount: won.count,
+      purchaseOrderCount: Number(poCountRow?.c || 0),
+      performaInvoiceCount: Number(piCountRow?.c || 0),
     },
   };
 }

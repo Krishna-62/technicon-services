@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #101312; }
+  * { box-sizing: border-box; }
+  a { color: #B8F23A; text-decoration: none; }
+  a:hover { color: #D8F98D; }
+  [data-auth] { --accent: #B8F23A; }
+  ::selection { background: rgba(184,242,58,.25); }
+  [data-auth] *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  [data-auth] input::placeholder { color: #5f6862; }
+  @keyframes drawLine { from { stroke-dashoffset: 3200; } to { stroke-dashoffset: 0; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes areaIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes spinLoop { to { transform: rotate(360deg); } }
+  @keyframes shake { 0%,100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  @media (max-width: 900px) { [data-brand] { display: none !important; } [data-auth] { grid-template-columns: minmax(0,1fr) !important; } }
+  @media (prefers-reduced-motion: reduce) { [data-auth] *, [data-auth] *::before { animation: none !important; transition: none !important; } }
+</style>
+</helmet>
+<div data-auth="1" style="--accent: {{ accent }}; display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); min-height: 100vh; background: #101312; color: #F5F7F4; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;">
+
+  <aside data-brand="1" style="position: relative; overflow: hidden; background: #0B0D0D; border-right: 1px solid #1c211e; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 32px; height: 32px; border-radius: 9px; border: 1px solid #3a4a1f; background: #1D211E; color: var(--accent); display: grid; place-items: center; font-size: 12px; font-weight: 600;">TS</div>
+      <div style="display: flex; flex-direction: column; line-height: 1.1;">
+        <span style="font-size: 13.5px; font-weight: 600; letter-spacing: .04em;">TECHNICON</span>
+        <span style="font-size: 10.5px; letter-spacing: .18em; color: #A5AEA8;">SERVICES</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 22px; max-width: 460px;">
+      <h1 style="margin: 0; font-size: 38px; font-weight: 500; letter-spacing: -.025em; line-height: 1.1; text-wrap: pretty;">The quotation-to-invoice line, in one view.</h1>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #A5AEA8; text-wrap: pretty;">Revenue, pipeline, follow-ups and product performance — reading straight from your live Technicon records.</p>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid #292E2A; border-radius: 12px; background: #171918; overflow: hidden;">
+        <div style="padding: 12px 14px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10.5px; letter-spacing: .08em; color: #6d756f;">REVENUE</span><span style="font-size: 18px; font-weight: 500;">₹24.12L</span>
+        </div>
+        <div style="padding: 12px 14px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10.5px; letter-spacing: .08em; color: #6d756f;">ORDERS</span><span style="font-size: 18px; font-weight: 500;">380</span>
+        </div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10.5px; letter-spacing: .08em; color: #6d756f;">CUSTOMERS</span><span style="font-size: 18px; font-weight: 500;">152</span>
+        </div>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 560 180" aria-hidden="true" style="width: 100%; max-width: 560px; height: auto; opacity: .9;">
+      <defs>
+        <linearGradient id="loginArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28"></stop>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <line x1="0" x2="560" y1="150" y2="150" stroke="#20251f"></line>
+      <line x1="0" x2="560" y1="100" y2="100" stroke="#1a1f1c"></line>
+      <line x1="0" x2="560" y1="50" y2="50" stroke="#1a1f1c"></line>
+      <path d="M 0 132 C 62 128, 78 108, 140 112 C 202 116, 218 72, 280 66 C 342 60, 358 92, 420 74 C 482 56, 498 28, 560 22 L 560 160 L 0 160 Z" fill="url(#loginArea)" style="animation: areaIn 1s ease .5s both;"></path>
+      <path d="M 0 132 C 62 128, 78 108, 140 112 C 202 116, 218 72, 280 66 C 342 60, 358 92, 420 74 C 482 56, 498 28, 560 22" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3200" style="animation: drawLine 1.4s cubic-bezier(.4,0,.2,1) both;"></path>
+    </svg>
+  </aside>
+
+  <main style="display: grid; place-items: center; padding: 40px 28px;">
+    <div style="width: 100%; max-width: 396px; display: flex; flex-direction: column; gap: 22px;">
+
+      <sc-if value="{{ stepCreds }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 22px; animation: fadeUp .25s ease both;">
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <h2 style="margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -.02em;">Sign in</h2>
+            <p style="margin: 0; font-size: 13px; color: #A5AEA8;">Use your Technicon Services work account.</p>
+          </div>
+
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+            <div role="alert" style="display: flex; gap: 10px; align-items: flex-start; padding: 11px 13px; border-radius: 10px; border: 1px solid #4a2a2a; background: #1b1414; animation: shake .3s ease both;">
+              <span aria-hidden="true" style="color: #E25757; font-size: 13px; line-height: 1.3;">!</span>
+              <span style="font-size: 12.5px; color: #f0c9c9;">{{ error }}</span>
+            </div>
+          </sc-if>
+
+          <form onSubmit="{{ submitCreds }}" style="display: flex; flex-direction: column; gap: 14px;">
+            <label style="display: flex; flex-direction: column; gap: 7px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">WORK EMAIL
+              <input ref="{{ emailRef }}" type="email" autocomplete="username" placeholder="name@technicon.in" style="height: 42px; padding: 0 13px; border-radius: 10px; background: #171918; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13.5px; letter-spacing: normal; outline: none; transition: border-color .2s;" style-hover="border-color: #3a4237;" style-focus="border-color: var(--accent);" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 7px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">PASSWORD
+              <span style="position: relative; display: flex; align-items: center;">
+                <input ref="{{ passRef }}" type="{{ passType }}" autocomplete="current-password" placeholder="••••••••" style="width: 100%; height: 42px; padding: 0 66px 0 13px; border-radius: 10px; background: #171918; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13.5px; letter-spacing: normal; outline: none; transition: border-color .2s;" style-hover="border-color: #3a4237;" style-focus="border-color: var(--accent);" />
+                <button type="button" onClick="{{ togglePass }}" style="position: absolute; right: 7px; height: 28px; padding: 0 9px; border-radius: 7px; background: #1D211E; border: 1px solid #292E2A; color: #A5AEA8; font-family: inherit; font-size: 11px; letter-spacing: normal; cursor: pointer; transition: color .2s, border-color .2s;" style-hover="color: #F5F7F4; border-color: #3a4237;">{{ passToggleLabel }}</button>
+              </span>
+            </label>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 2px 0 4px;">
+              <label style="display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #A5AEA8; cursor: pointer;">
+                <input type="checkbox" checked="{{ true }}" style="width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer;" />Keep me signed in
+              </label>
+              <a href="#" style="font-size: 12.5px;">Forgot password?</a>
+            </div>
+
+            <button type="submit" disabled="{{ busy }}" style="display: flex; align-items: center; justify-content: center; gap: 9px; height: 44px; border-radius: 11px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 14px; cursor: pointer; transition: background .2s, opacity .2s; opacity: {{ busyOpacity }};" style-hover="background: #1b2013;">
+              <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+                <span aria-hidden="true" style="width: 13px; height: 13px; border-radius: 50%; border: 1.6px solid currentColor; border-top-color: transparent; animation: spinLoop .8s linear infinite;"></span>
+              </sc-if>{{ submitLabel }}</button>
+          </form>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="flex: 1; height: 1px; background: #1f2421;"></span>
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">OR</span>
+            <span style="flex: 1; height: 1px; background: #1f2421;"></span>
+          </div>
+          <button type="button" style="height: 42px; border-radius: 11px; background: #171918; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13.5px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">Continue with company SSO</button>
+          <p style="margin: 0; font-size: 11.5px; color: #6d756f; text-align: center; text-wrap: pretty;">Access is granted by your workspace admin. <a href="#">Request access</a></p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ stepCode }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 22px; animation: fadeUp .25s ease both;">
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <h2 style="margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -.02em;">Verify it's you</h2>
+            <p style="margin: 0; font-size: 13px; color: #A5AEA8;">We sent a 6-digit code to {{ maskedEmail }}.</p>
+          </div>
+          <form onSubmit="{{ submitCode }}" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; gap: 8px;">
+              <sc-for list="{{ codeSlots }}" as="s" hint-placeholder-count="6">
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="{{ s.label }}" data-idx="{{ s.idx }}" onInput="{{ onCodeInput }}" style="flex: 1; min-width: 0; height: 52px; text-align: center; border-radius: 10px; background: #171918; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 20px; outline: none; transition: border-color .2s;" style-focus="border-color: var(--accent);" />
+              </sc-for>
+            </div>
+            <button type="submit" style="height: 44px; border-radius: 11px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 14px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Verify and continue</button>
+            <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px;">
+              <button type="button" onClick="{{ backToCreds }}" style="background: none; border: 0; padding: 0; color: #A5AEA8; font-family: inherit; font-size: 12.5px; cursor: pointer; transition: color .2s;" style-hover="color: #F5F7F4;">← Use another account</button>
+              <a href="#">Resend code</a>
+            </div>
+          </form>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ stepDone }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start; animation: fadeUp .25s ease both;">
+          <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid #3a4a1f; background: #1b2013; color: var(--accent); display: grid; place-items: center; font-size: 16px;">✓</span>
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <h2 style="margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -.02em;">Signed in</h2>
+            <p style="margin: 0; font-size: 13px; color: #A5AEA8;">Taking you to Business Analytics.</p>
+          </div>
+          <a href="Technicon Analytics.dc.html" style="height: 42px; padding: 0 18px; border-radius: 11px; border: 1px solid #3a4a1f; display: inline-flex; align-items: center; font-size: 13.5px; transition: background .2s;" style-hover="background: #1b2013;">Open dashboard</a>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#B8F23A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#B8F23A&quot;,&quot;#8FE388&quot;,&quot;#D8F98D&quot;,&quot;#7E95FF&quot;],&quot;section&quot;:&quot;Theme&quot;}}">
+class Component extends DCLogic {
+  state = { step: 'creds', busy: false, error: '', showPass: false, email: '' };
+
+  constructor(props) {
+    super(props);
+    this.emailRef = React.createRef();
+    this.passRef = React.createRef();
+  }
+
+  mask(email) {
+    if (!email || email.indexOf('@') < 1) return 'your registered device';
+    const parts = email.split('@');
+    const n = parts[0];
+    return n.slice(0, 2) + '•••@' + parts[1];
+  }
+
+  renderVals() {
+    const s = this.state;
+    return {
+      accent: this.props.accent || '#B8F23A',
+      stepCreds: s.step === 'creds',
+      stepCode: s.step === 'code',
+      stepDone: s.step === 'done',
+      hasError: !!s.error,
+      error: s.error,
+      busy: s.busy,
+      busyOpacity: s.busy ? 0.65 : 1,
+      submitLabel: s.busy ? 'Checking…' : 'Sign in',
+      passType: s.showPass ? 'text' : 'password',
+      passToggleLabel: s.showPass ? 'Hide' : 'Show',
+      maskedEmail: this.mask(s.email),
+      emailRef: this.emailRef,
+      passRef: this.passRef,
+      codeSlots: [0, 1, 2, 3, 4, 5].map(i => ({ idx: i, label: 'Digit ' + (i + 1) })),
+
+      togglePass: () => this.setState(st => ({ showPass: !st.showPass })),
+
+      submitCreds: (e) => {
+        e.preventDefault();
+        const email = (this.emailRef.current && this.emailRef.current.value || '').trim();
+        const pass = (this.passRef.current && this.passRef.current.value || '');
+        if (!email || !pass) { this.setState({ error: 'Enter both your work email and password.' }); return; }
+        if (email.indexOf('@') < 1) { this.setState({ error: 'That email address does not look right.' }); return; }
+        this.setState({ busy: true, error: '', email: email });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ busy: false, step: 'code' }), 900);
+      },
+
+      onCodeInput: (e) => {
+        const el = e.currentTarget;
+        el.value = el.value.replace(/[^0-9]/g, '').slice(0, 1);
+        if (el.value) {
+          const next = el.parentElement.children[Number(el.dataset.idx) + 1];
+          if (next && next.focus) next.focus();
+        }
+      },
+
+      submitCode: (e) => {
+        e.preventDefault();
+        this.setState({ step: 'done' });
+      },
+
+      backToCreds: () => this.setState({ step: 'creds', error: '' })
+    };
+  }
+
+  componentWillUnmount() { clearTimeout(this._t); }
+}
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "npm --prefix client install && npm --prefix client run build",
-    "dev": "npm --prefix server run dev"
+    "dev": "node --watch api/local-dev.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.3.0",

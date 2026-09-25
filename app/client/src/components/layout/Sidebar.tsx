@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import type { AuthUser } from '../../api';
 import { ChevronIcon, CollapseIcon } from '../icons';
 import { isNavGroup, type NavItem } from './navLinks';
@@ -24,7 +24,33 @@ function NavGroup({
   onCloseMobile: () => void;
 }) {
   const location = useLocation();
-  const isChildActive = item.children.some((c) => location.pathname === c.to);
+  const navigate = useNavigate();
+
+  const checkChildActive = (c: { to: string; end?: boolean }) => {
+    if (c.to === '/sale-reports/detail') {
+      return (
+        location.pathname.startsWith('/sale-reports/') &&
+        location.pathname !== '/sale-reports' &&
+        !location.pathname.startsWith('/sale-reports/new')
+      );
+    }
+    if (c.to === '/product-intelligence') {
+      return (
+        location.pathname === '/product-intelligence' ||
+        location.pathname === '/products/intelligence' ||
+        (location.pathname.startsWith('/products/') && location.pathname.endsWith('/intelligence'))
+      );
+    }
+    if (c.to === '/procurement/requirements') {
+      return location.pathname.startsWith('/procurement/requirements');
+    }
+    if (c.to === '/procurement/suppliers') {
+      return location.pathname.startsWith('/procurement/suppliers');
+    }
+    return location.pathname === c.to || (c.to !== '/' && location.pathname.startsWith(c.to + '/'));
+  };
+
+  const isChildActive = item.children.some(checkChildActive);
   const [expanded, setExpanded] = useState(isChildActive);
 
   // Auto-expand whenever navigation lands on one of this group's children (direct URL, refresh,
@@ -35,12 +61,19 @@ function NavGroup({
 
   const Icon = item.icon;
 
+  const handleParentClick = () => {
+    setExpanded((e) => !e);
+    if (item.label === 'Procurement') {
+      navigate('/procurement');
+    }
+  };
+
   return (
     <div className="nav-group">
       <button
         type="button"
         className={`nav-group-toggle${isChildActive ? ' active' : ''}`}
-        onClick={() => setExpanded((e) => !e)}
+        onClick={handleParentClick}
         title={collapsed ? item.label : undefined}
         aria-expanded={expanded}
       >
@@ -52,17 +85,21 @@ function NavGroup({
       </button>
       {expanded && !collapsed && (
         <div className="nav-group-children">
-          {item.children.map((c) => (
-            <NavLink
-              key={c.to}
-              to={c.to}
-              end={c.end}
-              onClick={onCloseMobile}
-              className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              <span>{c.label}</span>
-            </NavLink>
-          ))}
+          {item.children.map((c) => {
+            const active = checkChildActive(c);
+            const toPath = c.to === '/sale-reports/detail' && active ? location.pathname : (c.to === '/sale-reports/detail' ? '/sale-reports' : c.to);
+            return (
+              <NavLink
+                key={c.to}
+                to={toPath}
+                end={c.end}
+                onClick={onCloseMobile}
+                className={active ? 'active' : ''}
+              >
+                <span>{c.label}</span>
+              </NavLink>
+            );
+          })}
         </div>
       )}
     </div>

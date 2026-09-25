@@ -14,6 +14,8 @@ const routeTitles = {
   companies: 'Company Directory',
   products: 'Products Catalog',
   reports: 'Reports & Analytics',
+  'customer-health': 'Customer Health Dashboard',
+  'product-intelligence': 'Product Intelligence Dashboard',
   'admin-settings': 'Admin Settings',
   'user-management': 'User Management',
   'security-audit-log': 'Security & Audit Log',
@@ -29,7 +31,7 @@ function handleRoute() {
   // Render Sidebar and TopNav
   const sidebarContainer = document.getElementById('sidebar-container');
   const topnavContainer = document.getElementById('topnav-container');
-  const mainCanvas = document.getElementById('main-content-canvas');
+  const mainCanvas = document.getElementById('main-content-canvas') || document.querySelector('main');
 
   if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar(route);
   if (topnavContainer) topnavContainer.innerHTML = renderTopNav(routeTitles[route] || 'Dashboard');

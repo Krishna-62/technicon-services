@@ -28,11 +28,37 @@ const TREND_LABEL: Record<ProductTrendDirection, string> = {
 export default function ProductIntelligence() {
   const { id } = useParams();
   const [data, setData] = useState<ProductIntelligenceData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const loadIntelligence = () => {
     if (!id) return;
-    api.products.intelligence(Number(id)).then(setData).catch((e) => setError(e.message));
+    setLoading(true);
+    setError('');
+    api.products
+      .intelligence(Number(id))
+      .then((res) => {
+        setData(res);
+      })
+      .catch((err) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes('404')) {
+          setError('Product not found (404).');
+        } else if (msg.includes('401')) {
+          setError('Session expired or unauthorized. Please log in again.');
+        } else if (msg.includes('500')) {
+          setError('Server error while computing product intelligence (500). Please try again.');
+        } else {
+          setError(msg || 'Unable to load product intelligence. Please try again.');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadIntelligence();
   }, [id]);
 
   return (
@@ -40,8 +66,19 @@ export default function ProductIntelligence() {
       <p><Link to="/products">← Back to Products</Link></p>
       <h2>Product Intelligence</h2>
 
-      {error && <div className="error">{error}</div>}
-      {!error && !data && <p className="muted loading-text">Loading…</p>}
+      {error && (
+        <div className="error" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+          <span>{error}</span>
+          <button
+            onClick={loadIntelligence}
+            className="btn"
+            style={{ padding: '4px 12px', fontSize: '12px', cursor: 'pointer' }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {loading && !data && !error && <p className="muted loading-text">Loading…</p>}
 
       {data && (
         <>

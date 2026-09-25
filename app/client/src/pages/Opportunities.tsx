@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, type Opportunity, type OpportunityType } from '../api';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 import { Pagination } from '../components/Pagination';
 
 const PAGE_SIZE = 20;
@@ -12,15 +13,16 @@ const TYPE_LABELS: Record<OpportunityType, string> = {
   quotation_conversion: 'Quotation Conversion',
 };
 
-const PRIORITY_EMOJI: Record<string, string> = { high: '🔴', medium: '🟡', low: '🟢' };
+const PRIORITY_COLORS: Record<string, string> = {
+  high: '#E25757',
+  medium: '#D9A441',
+  low: '#B8F23A',
+};
 
 function formatCurrency(n: number) {
   return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
-// A short "why" line built purely from the evidence object the backend already returns for this
-// opportunity — no new metric, just a readable rendering of existing fields (shape differs per
-// opportunity type/sub-case, so this is a display-only switch, not a calculation).
 function evidenceSummary(o: Opportunity): string | null {
   const e = o.evidence || {};
   if (o.type === 'cross_sell') {
@@ -42,8 +44,6 @@ function evidenceSummary(o: Opportunity): string | null {
   return null;
 }
 
-// Reuses real existing routes only — quotation-scoped opportunities link to the actual quotation
-// when a single one is identifiable; everything else falls back to the company it's about.
 function opportunityLink(o: Opportunity): { to: string; label: string } | null {
   if (o.type === 'quotation_conversion' && o.evidence?.quotation_id) {
     return { to: `/quotations/${o.evidence.quotation_id}`, label: 'View Quotation' };
@@ -54,8 +54,6 @@ function opportunityLink(o: Opportunity): { to: string; label: string } | null {
   return null;
 }
 
-// Search matches across whichever of these fields exist for a given opportunity — never assumes a
-// field is present, since evidence shape differs per type.
 function matchesSearch(o: Opportunity, q: string): boolean {
   const haystack = [
     o.company_name,
@@ -73,20 +71,45 @@ function matchesSearch(o: Opportunity, q: string): boolean {
 
 export default function Opportunities() {
   const [data, setData] = useState<Opportunity[] | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
+  const loadOpportunities = () => {
+    setLoading(true);
+    setError('');
     api.opportunities
       .list()
-      .then((res) => setData(res.opportunities))
-      .catch(() => setError('Unable to load growth opportunities. Please try again.'));
+      .then((res) => {
+        setData(res.opportunities || []);
+      })
+      .catch((err) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes('401')) {
+          setError('Session expired or unauthorized. Please log in again.');
+        } else if (msg.includes('404')) {
+          setError('Growth opportunities service endpoint not found (404).');
+        } else if (msg.includes('500')) {
+          setError('Server error while computing growth opportunities (500). Please try again.');
+        } else {
+          setError(msg || 'Unable to load growth opportunities. Please try again.');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadOpportunities();
   }, []);
 
-  useEffect(() => { setPage(1); }, [search, typeFilter, priorityFilter]);
+  useEffect(() => {
+    setPage(1);
+  }, [search, typeFilter, priorityFilter]);
 
   const summary = useMemo(() => {
     if (!data) return null;
@@ -111,99 +134,175 @@ export default function Opportunities() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
-  const paged = useMemo(() => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE), [filtered, currentPage]);
+  const paged = useMemo(
+    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage]
+  );
 
   return (
-    <div>
-      <h2>Growth Opportunities</h2>
-      <p className="page-subtitle">Deterministic, evidence-backed opportunities detected from your real business data. Read-only — nothing here is sent or scheduled automatically.</p>
+    <div className="p-6 flex flex-col gap-6 bg-[#101312] text-[#F5F7F4] min-h-screen">
+      {/* Header & Stat Summary */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="margin-0 text-[34px] font-medium tracking-[-.02em] leading-[1.05]">
+            Growth Opportunities
+          </h1>
+          <p className="margin-0 text-[13.5px] text-[#A5AEA8]">
+            Evidence-backed recommendations detected from real transactional data. Read-only.
+          </p>
+        </div>
 
-      {error && <div className="error">{error}</div>}
-      {!error && !data && <p className="muted loading-text">Loading growth opportunities…</p>}
+        {summary && (
+          <div className="grid grid-cols-4 border border-[#292E2A] rounded-[12px] bg-[#171918] overflow-hidden">
+            <div className="p-[10px_14px] border-r border-[#1f2421] flex flex-col gap-[2px]">
+              <span className="text-[10.5px] tracking-[.08em] text-[#6d756f]">TOTAL</span>
+              <span className="text-[18px] font-medium text-[#F5F7F4]">{summary.total}</span>
+            </div>
+            <div className="p-[10px_14px] border-r border-[#1f2421] flex flex-col gap-[2px]">
+              <span className="text-[10.5px] tracking-[.08em] text-[#6d756f]">HIGH</span>
+              <span className="text-[18px] font-medium text-[#E25757]">{summary.high}</span>
+            </div>
+            <div className="p-[10px_14px] border-r border-[#1f2421] flex flex-col gap-[2px]">
+              <span className="text-[10.5px] tracking-[.08em] text-[#6d756f]">MEDIUM</span>
+              <span className="text-[18px] font-medium text-[#D9A441]">{summary.medium}</span>
+            </div>
+            <div className="p-[10px_14px] flex flex-col gap-[2px]">
+              <span className="text-[10.5px] tracking-[.08em] text-[#6d756f]">LOW</span>
+              <span className="text-[18px] font-medium text-[#B8F23A]">{summary.low}</span>
+            </div>
+          </div>
+        )}
+      </div>
 
-      {data && (
+      {error && (
+        <div className="p-4 rounded-[12px] bg-[#1b1414] border border-[#4a2a2a] text-[#E25757] text-[13px] flex items-center justify-between gap-4">
+          <span>{error}</span>
+          <button
+            onClick={loadOpportunities}
+            className="px-3 py-1.5 rounded-[8px] bg-[#291717] border border-[#4a2a2a] hover:bg-[#381c1c] text-[#F5F7F4] text-[12px] font-medium transition-colors cursor-pointer shrink-0"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {loading && !data && (
+        <div className="p-8 text-center text-[#A5AEA8] text-[13px]">Loading growth opportunities...</div>
+      )}
+
+      {!loading && !error && data && data.length === 0 && (
+        <div className="p-12 text-center bg-[#171918] border border-[#292E2A] rounded-[14px] text-[#A5AEA8] text-[13px]">
+          No growth opportunities detected from current transactional data.
+        </div>
+      )}
+
+      {data && data.length > 0 && (
         <>
-          {summary && (
-            <div className="stat-grid">
-              <div className="stat"><div className="label">Total Opportunities</div><div className="value">{summary.total}</div></div>
-              <div className="stat"><div className="label">High Priority</div><div className="value">{summary.high}</div></div>
-              <div className="stat"><div className="label">Medium Priority</div><div className="value">{summary.medium}</div></div>
-              <div className="stat"><div className="label">Low Priority</div><div className="value">{summary.low}</div></div>
+          {/* Filters Bar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 bg-[#171918] border border-[#292E2A] rounded-[14px] p-3.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <ExpandableSearch
+                value={search}
+                onChange={setSearch}
+                placeholder="Search company, product, quotation..."
+                ariaLabel="Search opportunities"
+                maxWidth="280px"
+              />
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="h-[30px] px-2 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none cursor-pointer"
+              >
+                <option value="">All Types</option>
+                {Object.entries(TYPE_LABELS).map(([k, label]) => (
+                  <option key={k} value={k}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+                className="h-[30px] px-2 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none cursor-pointer"
+              >
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+              </select>
             </div>
-          )}
+            <span className="text-[11.5px] text-[#6d756f]">
+              Showing {filtered.length} of {data.length} opportunities
+            </span>
+          </div>
 
-          {data.length === 0 ? (
-            <div className="card">
-              <p className="muted" style={{ margin: 0 }}>No growth opportunities identified. You're currently covered.</p>
-            </div>
-          ) : (
-            <>
-              <div className="filter-bar">
-                <div className="field">
-                  <label>Search</label>
-                  <input type="search" placeholder="Search company, product, quotation…" value={search} onChange={(e) => setSearch(e.target.value)} />
-                </div>
-                <div className="field">
-                  <label>Type</label>
-                  <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-                    <option value="">All Types</option>
-                    {Object.entries(TYPE_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>Priority</label>
-                  <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-                    <option value="">All Priority</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
-                <div className="filter-count muted">{filtered.length} of {data.length} opportunities</div>
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paged.map((o, i) => {
+              const link = opportunityLink(o);
+              const evidence = evidenceSummary(o);
+              const priorityColor = PRIORITY_COLORS[o.priority] || '#B8F23A';
+              return (
+                <article
+                  key={i}
+                  className="bg-[#171918] border border-[#292E2A] hover:border-[#37402f] rounded-[14px] p-4 flex flex-col justify-between gap-3 transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] tracking-[.08em] uppercase border border-[#3a4a1f] rounded-[7px] px-2 py-0.5 text-[#B8F23A]">
+                        {TYPE_LABELS[o.type]}
+                      </span>
+                      <span
+                        className="text-[11px] uppercase tracking-wider font-semibold flex items-center gap-1.5"
+                        style={{ color: priorityColor }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priorityColor }} />
+                        {o.priority}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[14px] font-medium text-[#F5F7F4]">{o.company_name}</span>
+                      <h4 className="margin-0 text-[13px] font-semibold text-[#B8F23A]">{o.title}</h4>
+                      <p className="margin-0 text-[12px] text-[#A5AEA8] leading-[1.45] text-pretty">
+                        {o.description}
+                      </p>
+                    </div>
+
+                    {evidence && (
+                      <div className="p-2 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[11.5px] text-[#A5AEA8]">
+                        <span className="font-semibold text-[#F5F7F4] block mb-0.5">Evidence:</span>
+                        {evidence}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-2.5 pt-2 border-t border-[#1f2421]">
+                    <div className="text-[12px] text-[#F5F7F4]">
+                      <span className="text-[#6d756f] font-medium mr-1">Action:</span>
+                      {o.action}
+                    </div>
+
+                    {link && (
+                      <Link
+                        to={link.to}
+                        className="h-[30px] px-3 rounded-[8px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] font-medium text-[12px] inline-flex items-center justify-center hover:bg-[#1b2013] transition-colors no-underline self-start"
+                      >
+                        {link.label} →
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="col-span-full p-8 text-center bg-[#171918] border border-[#292E2A] rounded-[14px] text-[#A5AEA8] text-[13px]">
+                No matching opportunities found.
               </div>
+            )}
+          </div>
 
-              <div className="card">
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Priority</th>
-                        <th>Type</th>
-                        <th>Company</th>
-                        <th>Opportunity</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paged.map((o, i) => {
-                        const link = opportunityLink(o);
-                        const evidence = evidenceSummary(o);
-                        return (
-                          <tr key={i}>
-                            <td><span className={`badge ${o.priority === 'high' ? 'rejected' : o.priority === 'medium' ? 'sent' : 'open'}`}>{PRIORITY_EMOJI[o.priority]} {o.priority}</span></td>
-                            <td>{TYPE_LABELS[o.type]}</td>
-                            <td>{o.company_name}</td>
-                            <td>
-                              <div style={{ fontWeight: 600 }}>{o.title}</div>
-                              <div className="muted" style={{ fontSize: 12.5 }}>{o.description}</div>
-                              {evidence && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>Evidence: {evidence}</div>}
-                              <div style={{ fontSize: 12.5, marginTop: 2 }}>→ {o.action}</div>
-                            </td>
-                            <td>{link && <Link className="btn small secondary" to={link.to}>{link.label}</Link>}</td>
-                          </tr>
-                        );
-                      })}
-                      {filtered.length === 0 && <tr><td colSpan={5} className="muted">No matches.</td></tr>}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
-            </>
-          )}
+          <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
     </div>

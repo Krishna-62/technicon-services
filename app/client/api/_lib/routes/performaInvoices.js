@@ -10,11 +10,13 @@ async function fullPI(id) {
     .prepare(
       `SELECT pi.*, q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
               po.number AS po_number, po.client_po_ref,
-              c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
+              c.name AS company_name, c.address AS company_address, c.state AS company_state,
+              c.gstin AS company_gstin, c.phone AS company_phone, u.username AS created_by_username
        FROM performa_invoice pi
        JOIN quotation q ON q.id = pi.quotation_id
        JOIN company c ON c.id = q.company_id
        LEFT JOIN purchase_order po ON po.id = pi.purchase_order_id
+       LEFT JOIN app_user u ON u.id = q.created_by_user_id
        WHERE pi.id = ?`
     )
     .get(id);

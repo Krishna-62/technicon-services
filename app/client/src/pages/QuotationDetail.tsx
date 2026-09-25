@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { api, PerformaInvoice, PurchaseOrder, Quotation, QuotationFollowUp } from '../api';
 
 function formatDate(d: string | null) {
   if (!d) return '-';
   return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
+
+const STAGE_COLORS: Record<string, string> = {
+  draft: '#A5AEA8',
+  sent: '#708D31',
+  accepted: '#B8F23A',
+  rejected: '#E25757',
+  po_created: '#7E95FF',
+  pi_created: '#7E95FF',
+};
 
 export default function QuotationDetail() {
   const { id } = useParams();
@@ -15,10 +24,6 @@ export default function QuotationDetail() {
   const [pis, setPis] = useState<PerformaInvoice[]>([]);
   const [error, setError] = useState('');
   const [clientPoRef, setClientPoRef] = useState('');
-  // Which single action is currently in flight ('sent' | 'accepted' | 'rejected' | 'po' | 'pi'),
-  // or null when idle. Still just one shared in-flight slot (same safety property as the old
-  // boolean `busy` — only one of these mutations can run at a time) but keyed so each button can
-  // show its own accurate "Converting…"-style label instead of a generic disabled state.
   const [busyAction, setBusyAction] = useState<string | null>(null);
 
   const [followUps, setFollowUps] = useState<QuotationFollowUp[] | null>(null);
@@ -148,242 +153,510 @@ export default function QuotationDetail() {
     }
   }
 
-  if (!quotation) return <p className="muted loading-text">Loading…</p>;
+  if (!quotation) {
+    return (
+      <div className="p-6 bg-[#101312] text-[#A5AEA8] min-h-screen text-[13px]">
+        Loading quotation details...
+      </div>
+    );
+  }
+
+  const statusColor = STAGE_COLORS[quotation.status] || '#A5AEA8';
 
   return (
-    <div>
-      <div className="toolbar">
-        <h2 style={{ margin: 0 }}>{quotation.number}</h2>
-        <a className="btn secondary" href={api.quotations.pdfUrl(quotationId)} target="_blank" rel="noreferrer">
-          View PDF
-        </a>
+    <div className="p-6 flex flex-col gap-6 bg-[#101312] text-[#F5F7F4] min-h-screen">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#20251f] pb-4">
+        <div className="flex items-center gap-3">
+          <Link to="/quotations" className="text-[13px] text-[#A5AEA8] hover:text-[#B8F23A]">
+            ← Quotations
+          </Link>
+          <span className="text-[#6d756f]">/</span>
+          <h1 className="margin-0 text-[28px] font-medium tracking-[-.02em]">{quotation.number}</h1>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[7px] border border-[#292E2A] text-[11px] capitalize" style={{ color: statusColor }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }} />
+            {quotation.status}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {quotation.status === 'draft' && (
+            <Link
+              to={`/quotations/${quotationId}/edit`}
+              className="h-[34px] px-3.5 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] hover:border-[#3a4237] text-[12.5px] font-medium inline-flex items-center gap-2 transition-colors no-underline"
+            >
+              <span>✎</span> Edit Quotation
+            </Link>
+          )}
+          <a
+            className="h-[34px] px-3.5 rounded-[9px] bg-[#171918] border border-[#292E2A] text-[#F5F7F4] hover:border-[#3a4237] text-[12.5px] font-medium inline-flex items-center gap-2 transition-colors no-underline"
+            href={api.quotations.pdfUrl(quotationId)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>▤</span> View PDF
+          </a>
+        </div>
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {error && (
+        <div className="p-3 rounded-[10px] border border-[#4a2a2a] bg-[#1b1414] text-[#E25757] text-[12.5px]">
+          {error}
+        </div>
+      )}
 
-      <div className="card">
-        <div className="row">
-          <div><strong>Company:</strong> {quotation.company_name}</div>
-          <div><strong>Date:</strong> {quotation.date}</div>
-          <div><strong>Status:</strong> <span className={`badge ${quotation.status}`}>{quotation.status}</span></div>
+      {/* Sales Workflow Stage Indicator */}
+      <div className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-4">
+        <div className="text-[11px] text-[#6d756f] uppercase tracking-wider mb-2 font-mono">SALES WORKFLOW STAGE</div>
+        <div className="flex items-center gap-2 overflow-x-auto text-[12px] font-medium">
+          <span className={`px-2.5 py-1 rounded-[6px] border ${quotation.status === 'draft' ? 'border-[#B8F23A] text-[#B8F23A] bg-[#1d2616]' : 'border-[#292E2A] text-[#A5AEA8]'}`}>
+            ✓ Created ({quotation.status})
+          </span>
+          <span className="text-[#6d756f]">→</span>
+          <span className={`px-2.5 py-1 rounded-[6px] border ${quotation.status === 'sent' ? 'border-[#B8F23A] text-[#B8F23A] bg-[#1d2616]' : 'border-[#292E2A] text-[#A5AEA8]'}`}>
+            {quotation.status === 'sent' || quotation.status === 'accepted' || pos.length > 0 ? '✓ Sent' : 'Sent'}
+          </span>
+          <span className="text-[#6d756f]">→</span>
+          <span className={`px-2.5 py-1 rounded-[6px] border ${quotation.status === 'accepted' ? 'border-[#B8F23A] text-[#B8F23A] bg-[#1d2616]' : 'border-[#292E2A] text-[#A5AEA8]'}`}>
+            {quotation.status === 'accepted' || pos.length > 0 ? '✓ Accepted' : 'Customer Acceptance'}
+          </span>
+          <span className="text-[#6d756f]">→</span>
+          <span className={`px-2.5 py-1 rounded-[6px] border ${pos.length > 0 ? 'border-[#B8F23A] text-[#B8F23A] bg-[#1d2616]' : 'border-[#292E2A] text-[#A5AEA8]'}`}>
+            {pos.length > 0 ? `✓ ${pos[0].number}` : 'Purchase Order'}
+          </span>
+          <span className="text-[#6d756f]">→</span>
+          <span className={`px-2.5 py-1 rounded-[6px] border ${pis.length > 0 ? 'border-[#B8F23A] text-[#B8F23A] bg-[#1d2616]' : 'border-[#292E2A] text-[#A5AEA8]'}`}>
+            {pis.length > 0 ? `✓ ${pis[0].number}` : 'Performa Invoice'}
+          </span>
+        </div>
+      </div>
+
+      {/* Main Quotation Summary Card */}
+      <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-[#20251f] pb-4 text-[13px]">
+          <div>
+            <span className="text-[#6d756f] text-[11px] uppercase tracking-wider block">CUSTOMER</span>
+            <span className="font-medium text-[#F5F7F4] text-[15px]">{quotation.company_name || '—'}</span>
+          </div>
+          <div>
+            <span className="text-[#6d756f] text-[11px] uppercase tracking-wider block">DATE</span>
+            <span className="font-medium text-[#F5F7F4]">{quotation.date}</span>
+          </div>
+          <div>
+            <span className="text-[#6d756f] text-[11px] uppercase tracking-wider block">TOTAL AMOUNT</span>
+            <span className="font-bold text-[#B8F23A] text-[18px]">
+              ₹{Number(quotation.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </span>
+          </div>
         </div>
 
-        <table style={{ marginTop: 16 }}>
-          <thead>
-            <tr><th>Part No</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Price</th><th>Amount</th></tr>
-          </thead>
-          <tbody>
-            {quotation.items?.map((it) => (
-              <tr key={it.id}>
-                <td>{it.part_no || '-'}</td>
-                <td>{it.description}</td>
-                <td>{it.hsn_sac || '-'}</td>
-                <td>{it.qty}</td>
-                <td>₹{Number(it.price).toLocaleString('en-IN')}</td>
-                <td>₹{Number(it.amount).toLocaleString('en-IN')}</td>
+        {/* Items Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[750px] border-collapse text-[12.5px]">
+            <thead>
+              <tr className="border-b border-[#20251f]">
+                <th className="text-left p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PART NO</th>
+                <th className="text-left p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DESCRIPTION</th>
+                <th className="text-left p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">HSN/SAC</th>
+                <th className="text-right p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">QTY</th>
+                <th className="text-right p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">ACTUAL PRICE</th>
+                <th className="text-center p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PRODUCT DISC</th>
+                <th className="text-right p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">FINAL PRICE</th>
+                <th className="text-right p-2.5 font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">LINE TOTAL</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {quotation.items?.map((it) => {
+                const actualPrice = Number(it.actual_unit_price !== undefined ? it.actual_unit_price : it.price);
+                const finalUnitPrice = Number(it.final_unit_price !== undefined ? it.final_unit_price : (it.amount ? it.amount / it.qty : actualPrice));
+                const lineTotal = Number(it.final_line_total !== undefined ? it.final_line_total : (it.amount || actualPrice * it.qty));
+                const hasProductDisc = Number(it.discount_value || 0) > 0;
 
-        <div className="totals">
-          <div>Subtotal: ₹{Number(quotation.subtotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-          <div>Tax ({quotation.tax_percent}%): ₹{Number(quotation.tax_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
-          <div><strong>Total: ₹{Number(quotation.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></div>
+                return (
+                  <tr key={it.id} className="border-b border-[#1a1f1c]">
+                    <td className="p-2.5 font-mono text-[12px] text-[#A5AEA8]">{it.part_no || '-'}</td>
+                    <td className="p-2.5 text-[#F5F7F4]">
+                      <div>{it.description}</div>
+                      {it.make && <div className="text-[11px] text-[#6d756f]">Make: {it.make}</div>}
+                    </td>
+                    <td className="p-2.5 text-[#A5AEA8]">{it.hsn_sac || '-'}</td>
+                    <td className="p-2.5 text-right font-medium">{it.qty}</td>
+                    <td className="p-2.5 text-right font-medium">₹{actualPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td className="p-2.5 text-center font-medium text-[12px]">
+                      {hasProductDisc ? (
+                        <span className="text-[#E25757]">
+                          {it.discount_type === 'percentage' ? `${it.discount_value}%` : `₹${it.discount_value}/unit`}
+                        </span>
+                      ) : (
+                        <span className="text-[#6d756f]">-</span>
+                      )}
+                    </td>
+                    <td className="p-2.5 text-right font-medium text-[#F5F7F4]">₹{finalUnitPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td className="p-2.5 text-right font-medium text-[#B8F23A]">₹{lineTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-        <div style={{ marginTop: 16 }}>
+        {/* Totals Summary */}
+        <div className="flex flex-col items-end gap-1.5 border-t border-[#20251f] pt-4 text-[13px]">
+          {Number(quotation.product_discount_total || 0) > 0 ? (
+            <>
+              <div className="flex justify-between w-72 text-[#A5AEA8]">
+                <span>Gross Subtotal:</span>
+                <span>₹{Number(quotation.gross_subtotal || quotation.subtotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex justify-between w-72 text-[#A5AEA8]">
+                <span>Product Discounts:</span>
+                <span className="text-[#E25757]">-₹{Number(quotation.product_discount_total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex justify-between w-72 text-[#A5AEA8]">
+                <span>Subtotal (Post-Prod Disc):</span>
+                <span>₹{Number(quotation.subtotal_after_product_discounts || quotation.subtotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-between w-72 text-[#A5AEA8]">
+              <span>Subtotal:</span>
+              <span>₹{Number(quotation.gross_subtotal || quotation.subtotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            </div>
+          )}
+
+          {Number(quotation.overall_discount_amount || quotation.discount_amount || 0) > 0 && (
+            <div className="flex justify-between w-72 text-[#A5AEA8]">
+              <span>
+                Overall Discount
+                {Number(quotation.overall_discount_value || quotation.discount_percent || 0) > 0 && quotation.overall_discount_type === 'percentage'
+                  ? ` (${quotation.overall_discount_value}%)`
+                  : ''}:
+              </span>
+              <span className="text-[#E25757]">
+                -₹{Number(quotation.overall_discount_amount || quotation.discount_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-between w-72 text-[#A5AEA8] font-medium pt-1 border-t border-[#20251f]">
+            <span>Net Taxable Subtotal:</span>
+            <span>₹{Number(quotation.net_subtotal || quotation.taxable_amount || quotation.subtotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+
+          <div className="flex justify-between w-72 text-[#A5AEA8]">
+            <span>GST Tax ({quotation.tax_percent}%):</span>
+            <span>₹{Number(quotation.tax_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+
+          {quotation.round_off !== undefined && quotation.round_off !== null && Number(quotation.round_off) !== 0 && (
+            <div className="flex justify-between w-72 text-[#A5AEA8]">
+              <span>Round Off:</span>
+              <span>₹{Number(quotation.round_off).toFixed(2)}</span>
+            </div>
+          )}
+
+          <div className="flex justify-between w-72 font-bold text-[#F5F7F4] text-[15px] border-t border-[#292E2A] pt-1.5 mt-1">
+            <span>Grand Total:</span>
+            <span className="text-[#B8F23A]">₹{Number(quotation.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+
+        {/* Stage Change Actions */}
+        <div className="flex gap-2 flex-wrap border-t border-[#20251f] pt-4">
           {quotation.status === 'draft' && (
-            <button className="btn secondary small" disabled={busyAction !== null} onClick={() => setStatus('sent')}>
+            <button
+              type="button"
+              disabled={busyAction !== null}
+              onClick={() => setStatus('sent')}
+              className="h-[34px] px-3.5 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12.5px] cursor-pointer hover:border-[#3a4237]"
+            >
               {busyAction === 'sent' ? 'Marking as Sent…' : 'Mark as Sent'}
             </button>
           )}
           {(quotation.status === 'draft' || quotation.status === 'sent') && (
             <>
-              {' '}
-              <button className="btn secondary small" disabled={busyAction !== null} onClick={() => setStatus('accepted')}>
+              <button
+                type="button"
+                disabled={busyAction !== null}
+                onClick={() => setStatus('accepted')}
+                className="h-[34px] px-3.5 rounded-[9px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] text-[12.5px] cursor-pointer hover:bg-[#1b2013]"
+              >
                 {busyAction === 'accepted' ? 'Marking as Accepted…' : 'Mark as Accepted'}
-              </button>{' '}
-              <button className="btn danger small" disabled={busyAction !== null} onClick={() => setStatus('rejected')}>
+              </button>
+              <button
+                type="button"
+                disabled={busyAction !== null}
+                onClick={() => setStatus('rejected')}
+                className="h-[34px] px-3.5 rounded-[9px] bg-transparent border border-[#4a2a2a] text-[#E25757] text-[12.5px] cursor-pointer hover:bg-[#1b1414]"
+              >
                 {busyAction === 'rejected' ? 'Marking as Rejected…' : 'Mark as Rejected'}
               </button>
             </>
           )}
         </div>
-      </div>
+      </section>
 
-      <div className="card">
-        <h3>Follow-Ups</h3>
-        <p className="muted" style={{ marginTop: -10, marginBottom: 16 }}>
-          Track customer follow-ups and record their responses.
-        </p>
+      {/* PO / PI Conversion Section */}
+      <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+        <h3 className="margin-0 text-[18px] font-medium">Fulfillment & Workflow</h3>
+        
+        {/* PO List / Convert Action */}
+        <div className="flex flex-col gap-3">
+          <span className="text-[12.5px] text-[#A5AEA8] font-medium">Purchase Orders</span>
+          {pos.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {pos.map((po) => (
+                <div key={po.id} className="p-3 rounded-[10px] bg-[#1D211E] border border-[#292E2A] flex justify-between items-center text-[13px]">
+                  <div>
+                    <span className="font-bold text-[#F5F7F4]">{po.number}</span>
+                    <span className="text-[#A5AEA8] ml-2">Date: {po.date}</span>
+                    {po.client_po_ref && <span className="text-[#6d756f] ml-2">Ref: {po.client_po_ref}</span>}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => createPI(po.id)}
+                    disabled={busyAction !== null}
+                    className="h-[28px] px-3 rounded-[7px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] text-[11.5px] cursor-pointer hover:bg-[#1b2013]"
+                  >
+                    Generate PI from PO
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder="Client PO Reference (optional)"
+                value={clientPoRef}
+                onChange={(e) => setClientPoRef(e.target.value)}
+                className="h-[34px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12.5px] outline-none w-64"
+              />
+              <button
+                type="button"
+                onClick={createPO}
+                disabled={busyAction !== null}
+                className="h-[34px] px-3.5 rounded-[9px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] text-[12.5px] cursor-pointer hover:bg-[#1b2013]"
+              >
+                {busyAction === 'po' ? 'Converting to PO...' : 'Convert to Purchase Order'}
+              </button>
+            </div>
+          )}
+        </div>
 
-        {followUpsError && <div className="error">{followUpsError}</div>}
+        {/* PI List / Create Action */}
+        <div className="flex flex-col gap-3 border-t border-[#20251f] pt-4">
+          <div className="flex justify-between items-center">
+            <span className="text-[12.5px] text-[#A5AEA8] font-medium">Performa Invoices</span>
+            <button
+              type="button"
+              onClick={() => createPI()}
+              disabled={busyAction !== null}
+              className="h-[30px] px-3 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] cursor-pointer hover:border-[#3a4237]"
+            >
+              {busyAction === 'pi' ? 'Generating PI...' : '+ Create Direct PI'}
+            </button>
+          </div>
+          {pis.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {pis.map((pi) => (
+                <div key={pi.id} className="p-3 rounded-[10px] bg-[#1D211E] border border-[#292E2A] flex justify-between items-center text-[13px]">
+                  <div>
+                    <span className="font-bold text-[#F5F7F4]">{pi.number}</span>
+                    <span className="text-[#A5AEA8] ml-2">Date: {pi.date}</span>
+                  </div>
+                  <span className="text-[#7E95FF] text-[12px] capitalize">{pi.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Follow-Ups Section */}
+      <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+        <div>
+          <h3 className="margin-0 text-[18px] font-medium">Follow-Up Log</h3>
+          <p className="margin-0 text-[12.5px] text-[#A5AEA8] mt-0.5">
+            Schedule follow-ups and log customer outcomes.
+          </p>
+        </div>
+
+        {followUpsError && (
+          <div className="p-3 rounded-[10px] border border-[#4a2a2a] bg-[#1b1414] text-[#E25757] text-[12.5px]">
+            {followUpsError}
+          </div>
+        )}
 
         {quotation.status === 'sent' && (
-          <form className="follow-up-form" onSubmit={createFollowUp} style={{ marginBottom: 20 }}>
-            <div className="row">
-              <div className="field">
-                <label>Follow-up Date</label>
-                <input type="date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} />
-              </div>
-              <div className="field">
-                <label>Notes (optional)</label>
-                <textarea
-                  rows={2}
+          <form onSubmit={createFollowUp} className="p-4 rounded-[12px] bg-[#1D211E] border border-[#292E2A] flex flex-col gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+                FOLLOW-UP DATE
+                <input
+                  type="date"
+                  value={followUpDate}
+                  onChange={(e) => setFollowUpDate(e.target.value)}
+                  className="h-[36px] px-3 rounded-[9px] bg-[#171918] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+                NOTES (OPTIONAL)
+                <input
+                  type="text"
+                  placeholder="Notes about follow-up call..."
                   value={followUpNotes}
                   onChange={(e) => setFollowUpNotes(e.target.value)}
-                  placeholder="Call the procurement team. Check whether they reviewed the quotation."
+                  className="h-[36px] px-3 rounded-[9px] bg-[#171918] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
                 />
-              </div>
+              </label>
             </div>
-            {followUpFormError && <div className="error">{followUpFormError}</div>}
-            <button className="btn small" type="submit" disabled={followUpSubmitting}>
-              {followUpSubmitting ? 'Scheduling…' : 'Schedule Follow-Up'}
+            {followUpFormError && <span className="text-[#E25757] text-[12px]">{followUpFormError}</span>}
+            <button
+              type="submit"
+              disabled={followUpSubmitting}
+              className="self-start h-[32px] px-3.5 rounded-[8px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] text-[12px] cursor-pointer hover:bg-[#1b2013]"
+            >
+              {followUpSubmitting ? 'Scheduling...' : 'Schedule Follow-Up'}
             </button>
           </form>
         )}
 
         {followUps === null ? (
-          <p className="muted loading-text">Loading…</p>
+          <p className="text-[12.5px] text-[#A5AEA8]">Loading follow-ups...</p>
         ) : followUps.length === 0 ? (
-          <p className="muted">
-            {quotation.status === 'sent' ? 'No follow-ups scheduled yet.' : 'No follow-up history for this quotation.'}
-          </p>
+          <p className="text-[12.5px] text-[#A5AEA8]">No follow-ups recorded.</p>
         ) : (
-          <div className="follow-up-list">
+          <div className="flex flex-col gap-2.5">
             {followUps.map((f) => (
-              <div className="follow-up-item" key={f.id}>
-                <div className="follow-up-meta">
-                  <span className="follow-up-date">{formatDate(f.follow_up_date)}</span>
-                  <span className={`badge ${f.status}`}>{f.status}</span>
+              <div key={f.id} className="p-3.5 rounded-[12px] bg-[#1D211E] border border-[#292E2A] flex flex-col gap-2 text-[13px]">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#F5F7F4]">Due: {formatDate(f.follow_up_date)}</span>
+                  <span
+                    className={`text-[11px] uppercase tracking-wider font-semibold ${
+                      f.status === 'completed'
+                        ? 'text-[#B8F23A]'
+                        : f.status === 'cancelled'
+                        ? 'text-[#6d756f]'
+                        : 'text-[#D9A441]'
+                    }`}
+                  >
+                    {f.status}
+                  </span>
                 </div>
-
-                {f.notes && <div className="follow-up-notes">{f.notes}</div>}
-
-                {f.status === 'completed' && (
-                  <div className="follow-up-outcome">
-                    <div>
-                      <strong>Outcome:</strong> {f.outcome || '-'}
-                    </div>
-                    {f.outcome_notes && <div>{f.outcome_notes}</div>}
-                    {f.completed_at && <div className="muted">Completed {formatDate(f.completed_at)}</div>}
-                  </div>
-                )}
-
-                {f.status === 'scheduled' && (
-                  <div className="follow-up-actions">
+                {f.notes && <p className="margin-0 text-[#A5AEA8] text-[12.5px]">"{f.notes}"</p>}
+                
+                {f.status === 'scheduled' && completingId !== f.id && (
+                  <div className="flex gap-2 mt-1">
                     <button
-                      className="btn small secondary"
-                      disabled={followUpBusy === f.id}
+                      type="button"
                       onClick={() => openComplete(f.id)}
+                      className="text-[12px] text-[#B8F23A] hover:underline"
                     >
                       Complete
                     </button>
                     <button
-                      className="btn small danger"
-                      disabled={followUpBusy === f.id}
+                      type="button"
                       onClick={() => cancelFollowUp(f.id)}
+                      disabled={followUpBusy === f.id}
+                      className="text-[12px] text-[#A5AEA8] hover:text-[#E25757]"
                     >
-                      {followUpBusy === f.id ? 'Cancelling…' : 'Cancel'}
+                      Cancel
                     </button>
-                  </div>
-                )}
-
-                {followUpActionErrors[f.id] && (
-                  <div className="error" style={{ marginTop: 8 }}>
-                    {followUpActionErrors[f.id]}
                   </div>
                 )}
 
                 {completingId === f.id && (
-                  <div className="follow-up-complete-form">
-                    <div className="field">
-                      <label>Outcome</label>
-                      <input
-                        value={outcome}
-                        onChange={(e) => setOutcome(e.target.value)}
-                        placeholder="responded, no response, requested more time..."
-                      />
+                  <div className="flex flex-col gap-2 p-3 rounded-[9px] bg-[#171918] border border-[#292E2A] mt-2">
+                    <input
+                      type="text"
+                      placeholder="Outcome (e.g. Price agreed)"
+                      value={outcome}
+                      onChange={(e) => setOutcome(e.target.value)}
+                      className="h-[32px] px-2.5 rounded-[7px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Outcome notes..."
+                      value={outcomeNotes}
+                      onChange={(e) => setOutcomeNotes(e.target.value)}
+                      className="h-[32px] px-2.5 rounded-[7px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] outline-none"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => submitComplete(f.id)}
+                        disabled={followUpBusy === f.id}
+                        className="h-[28px] px-3 rounded-[6px] bg-[#B8F23A] text-[#101312] font-medium text-[12px]"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCompletingId(null)}
+                        className="h-[28px] px-3 rounded-[6px] bg-[#292E2A] text-[#A5AEA8] text-[12px]"
+                      >
+                        Cancel
+                      </button>
                     </div>
-                    <div className="field">
-                      <label>Outcome Notes (optional)</label>
-                      <textarea rows={2} value={outcomeNotes} onChange={(e) => setOutcomeNotes(e.target.value)} />
-                    </div>
-                    <button className="btn small" disabled={followUpBusy === f.id} onClick={() => submitComplete(f.id)}>
-                      {followUpBusy === f.id ? 'Completing…' : 'Save'}
-                    </button>{' '}
-                    <button
-                      className="btn small secondary"
-                      disabled={followUpBusy === f.id}
-                      onClick={() => setCompletingId(null)}
-                    >
-                      Cancel
-                    </button>
                   </div>
                 )}
               </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="card">
-        <h3>Purchase Orders</h3>
-        {pos.length === 0 ? (
-          <>
-            <p className="muted">No purchase order yet.</p>
-            <div className="row">
-              <div className="field">
-                <label>Client PO Reference (optional)</label>
-                <input value={clientPoRef} onChange={(e) => setClientPoRef(e.target.value)} />
-              </div>
-            </div>
-            <button className="btn small" disabled={busyAction !== null} onClick={createPO}>
-              {busyAction === 'po' ? 'Converting…' : 'Convert to Purchase Order'}
-            </button>
-          </>
-        ) : (
-          <table>
-            <thead><tr><th>Number</th><th>Date</th><th>Client PO Ref</th><th></th></tr></thead>
-            <tbody>
-              {pos.map((po) => (
-                <tr key={po.id}>
-                  <td>{po.number}</td>
-                  <td>{po.date}</td>
-                  <td>{po.client_po_ref || '-'}</td>
-                  <td><a className="btn small secondary" href={api.purchaseOrders.pdfUrl(po.id)} target="_blank" rel="noreferrer">PDF</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      <div className="card">
-        <h3>Performa Invoices</h3>
-        {pis.length === 0 ? (
-          <>
-            <p className="muted">No performa invoice yet.</p>
-            <button className="btn small" disabled={busyAction !== null} onClick={() => createPI(pos[0]?.id)}>
-              {busyAction === 'pi' ? 'Generating…' : 'Generate Performa Invoice'}
-            </button>
-          </>
-        ) : (
-          <table>
-            <thead><tr><th>Number</th><th>Date</th><th></th></tr></thead>
-            <tbody>
-              {pis.map((pi) => (
-                <tr key={pi.id}>
-                  <td>{pi.number}</td>
-                  <td>{pi.date}</td>
-                  <td><a className="btn small secondary" href={api.performaInvoices.pdfUrl(pi.id)} target="_blank" rel="noreferrer">PDF</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {/* Step 2B — Activity Timeline Section */}
+      <QuotationTimelineSection quotationId={quotationId} />
     </div>
   );
 }
+
+function QuotationTimelineSection({ quotationId }: { quotationId: number }) {
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    import('../api').then(({ fetchQuotationTimeline }) => {
+      fetchQuotationTimeline(quotationId)
+        .then((res) => setEvents(res.timeline))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    });
+  }, [quotationId]);
+
+  if (loading) return <div className="text-xs text-[#6D756F]">Loading activity timeline...</div>;
+
+  return (
+    <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+      <h2 className="text-base font-bold text-[#F5F7F4] border-b border-[#292E2A] pb-2">
+        Activity & Commercial Event Timeline
+      </h2>
+      <p className="text-xs text-[#A5AEA8]">
+        Audited history of commercial events, revisions, follow-ups, and order progression for this quotation.
+      </p>
+
+      <div className="relative border-l border-[#292E2A] ml-3 pl-4 space-y-4">
+        {events.map((ev, idx) => (
+          <div key={idx} className="relative">
+            {/* Timeline bullet */}
+            <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[#B8F23A] border-2 border-[#171918]" />
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-[#F5F7F4]">{ev.title}</span>
+                <span className="text-[10px] text-[#A5AEA8] font-mono">{ev.event_timestamp}</span>
+                <span className="text-[10px] text-[#7E95FF]">by {ev.user_name}</span>
+              </div>
+              <p className="text-xs text-[#A5AEA8] margin-0">{ev.description}</p>
+            </div>
+          </div>
+        ))}
+
+        {events.length === 0 && (
+          <p className="text-xs text-[#6D756F]">No timeline events recorded yet.</p>
+        )}
+      </div>
+    </section>
+  );
+}
+

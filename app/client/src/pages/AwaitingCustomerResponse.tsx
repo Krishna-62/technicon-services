@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, type AwaitingCustomerResponseData } from '../api';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 function formatCurrency(n: number) {
   return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -40,13 +41,15 @@ export default function AwaitingCustomerResponse() {
         <div className="inactive-summary-hint">Sent to the customer but not yet accepted or rejected.</div>
       </div>
 
-      <input
-        type="search"
-        placeholder="Search by quotation number or company..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 320, marginBottom: 14 }}
-      />
+      <div style={{ marginBottom: 14 }}>
+        <ExpandableSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Search by quotation number or company..."
+          ariaLabel="Search awaiting customer response quotations"
+          maxWidth="320px"
+        />
+      </div>
 
       <div className="card">
         <div className="table-scroll">

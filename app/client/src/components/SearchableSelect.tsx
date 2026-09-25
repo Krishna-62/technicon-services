@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 export interface SearchableOption {
   value: string;
@@ -56,15 +57,30 @@ export default function SearchableSelect({
 
   return (
     <div className="searchable-select">
-      <input
-        type="text"
-        value={open ? query : selected?.label || ''}
-        placeholder={selected ? selected.label : placeholder}
-        onFocus={() => { setOpen(true); setQuery(''); setHighlight(0); }}
-        onChange={(e) => { setQuery(e.target.value); setHighlight(0); }}
-        onKeyDown={onKeyDown}
-        onBlur={() => setTimeout(() => setOpen(false), 120)}
-      />
+      <div className="relative flex items-center w-full">
+        <input
+          type="text"
+          value={open ? query : selected?.label || ''}
+          placeholder={selected ? selected.label : placeholder}
+          onFocus={() => { setOpen(true); setQuery(''); setHighlight(0); }}
+          onChange={(e) => { setQuery(e.target.value); setHighlight(0); }}
+          onKeyDown={onKeyDown}
+          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          className="w-full bg-[#101312] border border-[#292E2A] rounded-lg pl-3.5 pr-9 py-2 text-sm text-[#F5F7F4] focus:outline-none focus:border-[#B8F23A] transition-colors truncate"
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setOpen((prev) => !prev);
+          }}
+          className="absolute right-2.5 p-1 text-[#A5AEA8] hover:text-[#B8F23A] transition-transform duration-200 cursor-pointer flex items-center justify-center"
+          aria-label="Toggle dropdown options"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180 text-[#B8F23A]' : ''}`} />
+        </button>
+      </div>
       {open && (
         <div className="searchable-select-menu">
           {filtered.length === 0 && <div className="searchable-select-empty">No matches</div>}

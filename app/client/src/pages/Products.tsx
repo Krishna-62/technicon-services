@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api, Product } from '../api';
 import { useAuth } from '../auth';
 import { Pagination } from '../components/Pagination';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 import ProductImport from '../components/ProductImport';
 
 const empty: Partial<Product> = { part_no: '', hsn_sac: '', description: '', unit: 'Nos', default_price: 0 };
@@ -24,7 +25,9 @@ export default function Products() {
     api.products.list().then(setProducts).catch((e) => setError(e.message));
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -83,101 +86,259 @@ export default function Products() {
   const hasFilter = nameFilter || partNoFilter;
 
   return (
-    <div>
-      <h2>Products</h2>
-
-      {error && <div className="error">{error}</div>}
-
-      <div className="toolbar" style={{ justifyContent: 'flex-end' }}>
-        <a className="btn small secondary" href={api.products.templateUrl()}>Download Excel Template</a>{' '}
-        <button className="btn secondary" onClick={() => { setShowImport(true); setEditing(null); }}>Upload / Import Excel</button>{' '}
-        <button className="btn" onClick={() => { setEditing({ ...empty }); setShowImport(false); }}>+ Add Product</button>
-      </div>
-
-      <div className="filter-bar">
-        <div className="field">
-          <label>Product Name</label>
-          <input placeholder="Filter by name…" value={nameFilter} onChange={(e) => setNameFilter(e.target.value)} />
+    <div className="p-6 flex flex-col gap-6 bg-[#101312] text-[#F5F7F4] min-h-screen">
+      {/* Header Bar & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="margin-0 text-[34px] font-medium tracking-[-.02em] leading-[1.05]">
+            Products
+          </h1>
+          <p className="margin-0 text-[13.5px] text-[#A5AEA8]">
+            {products.length} product catalogue records with price and unit specification.
+          </p>
         </div>
-        <div className="field">
-          <label>Part No</label>
-          <input placeholder="Filter by part no…" value={partNoFilter} onChange={(e) => setPartNoFilter(e.target.value)} />
-        </div>
-        {hasFilter && (
-          <button className="btn small secondary" onClick={() => { setNameFilter(''); setPartNoFilter(''); }} style={{ alignSelf: 'end' }}>
-            Clear filters
+        <div className="flex gap-2 flex-wrap">
+          <a
+            href={api.products.templateUrl()}
+            className="h-[34px] px-3.5 rounded-[9px] bg-[#171918] border border-[#292E2A] text-[#F5F7F4] hover:border-[#3a4237] text-[12.5px] font-medium inline-flex items-center transition-colors no-underline"
+          >
+            Download Excel Template
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setShowImport(true);
+              setEditing(null);
+            }}
+            className="h-[34px] px-3.5 rounded-[9px] bg-[#171918] border border-[#292E2A] text-[#F5F7F4] hover:border-[#3a4237] text-[12.5px] font-medium cursor-pointer transition-colors"
+          >
+            Import Catalogue
           </button>
-        )}
-        <div className="filter-count muted">{filteredProducts.length} of {products.length} products</div>
+          <button
+            type="button"
+            onClick={() => {
+              setEditing({ ...empty });
+              setShowImport(false);
+            }}
+            className="h-[34px] px-3.5 rounded-[9px] bg-transparent border border-[#3a4a1f] text-[#B8F23A] font-medium text-[12.5px] cursor-pointer hover:bg-[#1b2013] transition-colors"
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
+
+      {error && (
+        <div className="p-3 rounded-[10px] border border-[#4a2a2a] bg-[#1b1414] text-[#E25757] text-[12.5px]">
+          {error}
+        </div>
+      )}
 
       {showImport && (
-        <ProductImport onImported={() => { load(); }} onClose={() => setShowImport(false)} />
-      )}
-
-      {editing && (
-        <div className="card">
-          <h3>{editing.id ? 'Edit Product' : 'New Product'}</h3>
-          <div className="row">
-            <div className="field">
-              <label>Part No</label>
-              <input value={editing.part_no || ''} onChange={(e) => setEditing({ ...editing, part_no: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>HSN/SAC</label>
-              <input value={editing.hsn_sac || ''} onChange={(e) => setEditing({ ...editing, hsn_sac: e.target.value })} />
-            </div>
-          </div>
-          <div className="field">
-            <label>Description</label>
-            <input value={editing.description || ''} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
-          </div>
-          <div className="row">
-            <div className="field">
-              <label>Unit</label>
-              <input value={editing.unit || 'Nos'} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Default Price</label>
-              <input type="number" value={editing.default_price ?? 0} onChange={(e) => setEditing({ ...editing, default_price: Number(e.target.value) })} />
-            </div>
-          </div>
-          <button className="btn" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>{' '}
-          <button className="btn secondary" onClick={() => setEditing(null)} disabled={saving}>Cancel</button>
+        <div className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6">
+          <ProductImport
+            onImported={() => {
+              load();
+            }}
+            onClose={() => setShowImport(false)}
+          />
         </div>
       )}
 
-      <div className="card">
-        <div className="table-scroll">
-          <table>
+      {/* Edit / New Product Form */}
+      {editing && (
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+          <h3 className="margin-0 text-[18px] font-medium">
+            {editing.id ? 'Edit Product' : 'New Product'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              PART NO
+              <input
+                value={editing.part_no || ''}
+                onChange={(e) => setEditing({ ...editing, part_no: e.target.value })}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              HSN/SAC
+              <input
+                value={editing.hsn_sac || ''}
+                onChange={(e) => setEditing({ ...editing, hsn_sac: e.target.value })}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider md:col-span-2">
+              DESCRIPTION
+              <input
+                value={editing.description || ''}
+                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              UNIT
+              <input
+                value={editing.unit || 'Nos'}
+                onChange={(e) => setEditing({ ...editing, unit: e.target.value })}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              DEFAULT PRICE (₹)
+              <input
+                type="number"
+                value={editing.default_price ?? 0}
+                onChange={(e) => setEditing({ ...editing, default_price: Number(e.target.value) })}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+          </div>
+          <div className="flex gap-2 justify-end mt-2">
+            <button
+              type="button"
+              onClick={() => setEditing(null)}
+              disabled={saving}
+              className="h-[34px] px-4 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#A5AEA8] text-[12.5px] cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              disabled={saving}
+              className="h-[34px] px-4 rounded-[9px] bg-[#B8F23A] text-[#101312] font-bold text-[12.5px] cursor-pointer"
+            >
+              {saving ? 'Saving...' : 'Save Product'}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* Main Table Container Card */}
+      <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-[16px_18px_12px] flex flex-col gap-4">
+        {/* Search & Filter Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 border-b border-[#20251f] pb-3.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <ExpandableSearch
+              value={nameFilter}
+              onChange={setNameFilter}
+              placeholder="Filter by description..."
+              ariaLabel="Filter products by description"
+              maxWidth="260px"
+            />
+            <ExpandableSearch
+              value={partNoFilter}
+              onChange={setPartNoFilter}
+              placeholder="Filter by part no..."
+              ariaLabel="Filter products by part number"
+              maxWidth="220px"
+            />
+            {hasFilter && (
+              <button
+                type="button"
+                onClick={() => {
+                  setNameFilter('');
+                  setPartNoFilter('');
+                }}
+                className="h-[30px] px-2.5 rounded-[8px] bg-[#1D211E] border border-[#292E2A] text-[#A5AEA8] text-[12px] cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <span className="text-[11.5px] text-[#6d756f]">
+            Showing {filteredProducts.length} of {products.length}
+          </span>
+        </div>
+
+        {/* Products Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] border-collapse text-[12.5px]">
             <thead>
-              <tr><th>Part No</th><th>Description</th><th>HSN/SAC</th><th>Unit</th><th>Price</th><th></th></tr>
+              <tr className="border-b border-[#20251f]">
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  PART CODE
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  DESCRIPTION
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  HSN/SAC
+                </th>
+                <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  UNIT
+                </th>
+                <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  PRICE
+                </th>
+                <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">
+                  ACTIONS
+                </th>
+              </tr>
             </thead>
             <tbody>
               {pagedProducts.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.part_no}</td>
-                  <td>{p.description}</td>
-                  <td>{p.hsn_sac || '-'}</td>
-                  <td>{p.unit}</td>
-                  <td>₹{Number(p.default_price).toLocaleString('en-IN')}</td>
-                  <td>
-                    <Link className="btn small secondary" to={`/products/${p.id}/intelligence`}>Intelligence</Link>{' '}
-                    <button className="btn small secondary" onClick={() => { setEditing(p); setShowImport(false); }} disabled={deletingId === p.id}>Edit</button>{' '}
-                    {user?.role === 'admin' && (
-                      <button className="btn small danger" onClick={() => remove(p.id)} disabled={deletingId === p.id}>
-                        {deletingId === p.id ? 'Deleting…' : 'Delete'}
+                <tr key={p.id} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                  <td className="p-[11px_10px]">
+                    <Link
+                      to={`/products/${p.id}/intelligence`}
+                      className="text-[#B8F23A] hover:underline font-mono text-[12px]"
+                    >
+                      {p.part_no}
+                    </Link>
+                  </td>
+                  <td className="p-[11px_10px] text-[#F5F7F4] font-medium">{p.description}</td>
+                  <td className="p-[11px_10px] text-[#A5AEA8] font-mono text-[11.5px]">{p.hsn_sac || '—'}</td>
+                  <td className="p-[11px_10px] text-[#A5AEA8]">{p.unit}</td>
+                  <td className="p-[11px_10px] text-right font-medium text-[#F5F7F4]">
+                    ₹{Number(p.default_price || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  </td>
+                  <td className="p-[11px_10px] text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        to={`/products/${p.id}/intelligence`}
+                        className="text-[12px] text-[#B8F23A] hover:underline font-medium"
+                      >
+                        Intelligence
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(p);
+                          setShowImport(false);
+                        }}
+                        disabled={deletingId === p.id}
+                        className="text-[12px] text-[#A5AEA8] hover:text-[#F5F7F4] cursor-pointer"
+                      >
+                        Edit
                       </button>
-                    )}
+                      {user?.role === 'admin' && (
+                        <button
+                          type="button"
+                          onClick={() => remove(p.id)}
+                          disabled={deletingId === p.id}
+                          className="text-[12px] text-[#E25757] hover:underline cursor-pointer"
+                        >
+                          {deletingId === p.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
-              {filteredProducts.length === 0 && <tr><td colSpan={6} className="muted">No matches.</td></tr>}
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-[#A5AEA8] text-[13px]">
+                    No products found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
+      {/* Pagination Footer */}
       <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );

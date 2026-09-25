@@ -8,7 +8,11 @@ const router = Router();
 function fullPO(id) {
   const po = db
     .prepare(
-      `SELECT po.*, q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
+      `SELECT po.*, 
+              COALESCE(po.sales_engineer_id, q.sales_engineer_id) AS sales_engineer_id,
+              COALESCE(po.firm_id, q.firm_id) AS firm_id,
+              COALESCE(po.branch_id, q.branch_id) AS branch_id,
+              q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
               c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
        FROM purchase_order po
        JOIN quotation q ON q.id = po.quotation_id
@@ -24,7 +28,9 @@ function fullPO(id) {
 router.get('/', (req, res) => {
   const rows = db
     .prepare(
-      `SELECT po.*, q.number AS quotation_number, q.total, c.name AS company_name
+      `SELECT po.*, 
+              COALESCE(po.sales_engineer_id, q.sales_engineer_id) AS sales_engineer_id,
+              q.number AS quotation_number, q.total, c.name AS company_name
        FROM purchase_order po
        JOIN quotation q ON q.id = po.quotation_id
        JOIN company c ON c.id = q.company_id
@@ -46,11 +52,15 @@ router.post('/', (req, res) => {
   const quotation = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(quotation_id);
   if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
 
+  const sales_engineer_id = quotation.sales_engineer_id || null;
+  const firm_id = quotation.firm_id || null;
+  const branch_id = quotation.branch_id || null;
+
   const prefix = db.prepare(`SELECT po_prefix FROM company_settings WHERE id = 1`).get().po_prefix;
   const number = nextNumber(prefix, 'purchase_order');
   const info = db
-    .prepare(`INSERT INTO purchase_order (number, date, quotation_id, client_po_ref) VALUES (?, ?, ?, ?)`)
-    .run(number, date || new Date().toISOString().slice(0, 10), quotation_id, client_po_ref || null);
+    .prepare(`INSERT INTO purchase_order (number, date, quotation_id, client_po_ref, sales_engineer_id, firm_id, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    .run(number, date || new Date().toISOString().slice(0, 10), quotation_id, client_po_ref || null, sales_engineer_id, firm_id, branch_id);
 
   db.prepare(`UPDATE quotation SET status = 'accepted' WHERE id = ?`).run(quotation_id);
 

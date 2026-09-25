@@ -1,4 +1,4 @@
-﻿node_modules
+node_modules
 .env
 .env.local
 dist
@@ -12,3 +12,8 @@ scratchpad
 *.tsbuildinfo
 build
 .DS_Store
+scratch/
+app/scratch/
+app/server/scratch/
+*.pdf
+

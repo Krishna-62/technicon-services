@@ -121,3 +121,23 @@ export function SettingsIcon() {
     </svg>
   );
 }
+
+export function InventoryIcon() {
+  return (
+    <svg {...common}>
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+      <path d="m3.3 7 8.7 5 8.7-5" />
+      <path d="M12 22V12" />
+    </svg>
+  );
+}
+
+export function WarehouseIcon() {
+  return (
+    <svg {...common}>
+      <path d="M3 21V8l9-5 9 5v13" />
+      <path d="M9 21v-7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v7" />
+      <path d="M3 21h18" />
+    </svg>
+  );
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useState, useRef, type ComponentType } from 'react';
 import { Link } from 'react-router-dom';
 import {
   api,
@@ -8,9 +8,15 @@ import {
   type DashboardFollowUpsData,
   type DraftQuotationSummary,
   type PipelineData,
-  type PipelineStageKey,
   type RecentActivityItem,
 } from '../api';
+import {
+  getDateRangePresets,
+  DATE_RANGE_EVENT,
+  broadcastDateRange,
+  getStoredDateRange,
+  type DateRangePreset,
+} from '../lib/date-presets';
 import { RevenueLineChart } from '../components/RevenueLineChart';
 import { PipelineDonutChart } from '../components/PipelineDonutChart';
 import { HorizontalBarChart } from '../components/HorizontalBarChart';
@@ -20,7 +26,15 @@ import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { QuoteIcon, PurchaseOrderIcon, InvoiceIcon } from '../components/icons';
-import { ArrowRightIcon, CalendarIcon, PlusIcon, RefreshCwIcon, SparklesIcon, AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
+import {
+  ArrowRightIcon,
+  CalendarIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  SparklesIcon,
+  AlertCircleIcon,
+  CheckCircle2Icon,
+} from 'lucide-react';
 
 function formatCurrency(n: number) {
   return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -29,8 +43,9 @@ function formatCurrency(n: number) {
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatMonth(m: string) {
+  if (!m) return '';
   const [y, mo] = m.split('-');
-  return `${MONTH_NAMES[Number(mo) - 1]} ${y}`;
+  return `${MONTH_NAMES[Number(mo) - 1] || mo} ${y}`;
 }
 
 function formatDate(d: string) {
@@ -66,15 +81,6 @@ const ACTIVITY_META: Record<ActivityType, { icon: ComponentType; to: (id: number
   performa_invoice: { icon: InvoiceIcon, to: () => '/performa-invoices', label: 'Performa Invoice' },
 };
 
-const PIPELINE_STAGE_ROUTE: Record<PipelineStageKey, string> = {
-  draft: '/quotations',
-  sent: '/quotations',
-  accepted: '/quotations',
-  purchase_order: '/purchase-orders',
-  performa_invoice: '/performa-invoices',
-  lost: '/quotations',
-};
-
 // Widget Error Boundary Fallback Component
 function WidgetErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
@@ -87,6 +93,8 @@ function WidgetErrorState({ message, onRetry }: { message: string; onRetry: () =
   );
 }
 
+type PeriodTabKey = 'thisMonth' | 'thisQuarter' | 'thisYear';
+
 export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState('');
@@ -94,9 +102,9 @@ export default function Dashboard() {
   const [attention, setAttention] = useState<AttentionData | null>(null);
   const [attentionError, setAttentionError] = useState('');
 
-  const [draftQuotations, setDraftQuotations] = useState<DraftQuotationSummary[] | null>(null);
-  const [draftQuotationsTotal, setDraftQuotationsTotal] = useState(0);
-  const [draftQuotationsError, setDraftQuotationsError] = useState('');
+  const [, setDraftQuotations] = useState<DraftQuotationSummary[] | null>(null);
+  const [, setDraftQuotationsTotal] = useState(0);
+  const [, setDraftQuotationsError] = useState('');
 
   const [pipeline, setPipeline] = useState<PipelineData | null>(null);
   const [pipelineError, setPipelineError] = useState('');
@@ -109,7 +117,49 @@ export default function Dashboard() {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchAllData = () => {
+  // Date range state
+  const [currentRange, setCurrentRange] = useState<DateRangePreset>(getStoredDateRange);
+  const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
+  const dateDropdownRef = useRef<HTMLDivElement>(null);
+  const presets = getDateRangePresets();
+
+  // Revenue Analytics period tab state ('thisMonth' | 'thisQuarter' | 'thisYear')
+  const [activePeriodTab, setActivePeriodTab] = useState<PeriodTabKey>('thisMonth');
+
+  // Listen to global date range broadcasts (e.g. from header pill)
+  useEffect(() => {
+    const handleRangeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<DateRangePreset>;
+      if (customEvent.detail) {
+        setCurrentRange(customEvent.detail);
+        fetchAllData(customEvent.detail);
+      }
+    };
+    window.addEventListener(DATE_RANGE_EVENT, handleRangeChange);
+    return () => window.removeEventListener(DATE_RANGE_EVENT, handleRangeChange);
+  }, []);
+
+  // Close calendar popover on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dateDropdownRef.current && !dateDropdownRef.current.contains(e.target as Node)) {
+        setDateDropdownOpen(false);
+      }
+    };
+    if (dateDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dateDropdownOpen]);
+
+  const handleSelectRangePreset = (preset: DateRangePreset) => {
+    setCurrentRange(preset);
+    broadcastDateRange(preset);
+    setDateDropdownOpen(false);
+    fetchAllData(preset);
+  };
+
+  const fetchAllData = (range: DateRangePreset = currentRange) => {
     setRefreshing(true);
     setError('');
     setAttentionError('');
@@ -118,25 +168,32 @@ export default function Dashboard() {
     setFollowUpsError('');
     setRecentActivityError('');
 
-    Promise.all([
-      api.dashboard.get().then(setData),
-      api.dashboard.attention().then(setAttention),
-      api.dashboard.draftQuotations().then((draftData) => {
-        setDraftQuotationsTotal(draftData.count);
-        setDraftQuotations(draftData.quotations.slice(0, 5));
-      }),
-      api.dashboard.pipeline().then(setPipeline),
-      api.dashboard.followUps().then(setFollowUps),
-      api.dashboard.recentActivity().then((activityData) => setRecentActivity(activityData.activity)),
-    ])
-      .catch((e) => setError(e.message))
-      .finally(() => setRefreshing(false));
+    const queryParams = { start: range.start, end: range.end };
+
+    Promise.allSettled([
+      api.dashboard.get(queryParams).then(setData).catch((e) => setError(e.message)),
+      api.dashboard.attention().then(setAttention).catch((e) => setAttentionError(e.message)),
+      api.dashboard
+        .draftQuotations()
+        .then((draftData) => {
+          setDraftQuotationsTotal(draftData.count);
+          setDraftQuotations(draftData.quotations.slice(0, 5));
+        })
+        .catch((e) => setDraftQuotationsError(e.message)),
+      api.dashboard.pipeline(queryParams).then(setPipeline).catch((e) => setPipelineError(e.message)),
+      api.dashboard.followUps().then(setFollowUps).catch((e) => setFollowUpsError(e.message)),
+      api.dashboard
+        .recentActivity()
+        .then((activityData) => setRecentActivity(activityData.activity))
+        .catch((e) => setRecentActivityError(e.message)),
+    ]).finally(() => setRefreshing(false));
   };
 
   useEffect(() => {
-    fetchAllData();
+    fetchAllData(currentRange);
   }, []);
 
+  // Analytics data transformations
   const monthlyChartData = data ? data.monthlyTrend.map((m) => ({ label: formatMonth(m.month), value: m.total })) : [];
   const topCompaniesChartData = data
     ? data.topCompanies.slice(0, 5).map((c) => ({ label: c.company_name, sublabel: `${c.orders} orders`, value: c.total }))
@@ -145,19 +202,28 @@ export default function Dashboard() {
     ? data.topProducts.slice(0, 5).map((p) => ({ label: p.product_description, sublabel: p.part_no, value: p.total }))
     : [];
 
-  // Map pipeline stages with REJECTED status instead of lost
-  const mappedStages = pipeline
-    ? pipeline.stages.map((s) => ({
-        ...s,
-        label: s.key === 'lost' ? 'Rejected' : s.label,
-      }))
-    : [];
+  // Authentic quotation pipeline stages
+  const pipelineStages = pipeline ? pipeline.stages : [];
+  const pipelineTotalValue = pipeline?.summary.totalValue ?? 0;
+  const pipelineAcceptedRate = pipeline?.summary.acceptedRate ?? 0;
 
-  const openPipelineStages = mappedStages.filter((s) => s.key !== 'lost');
-  const openPipelineValue = openPipelineStages.reduce((sum, s) => sum + s.value, 0);
-  const openPipelineCount = openPipelineStages.reduce((sum, s) => sum + s.count, 0);
-  const acceptedValue = mappedStages.find((s) => s.key === 'accepted')?.value || 0;
-  const acceptedRate = openPipelineValue > 0 ? Math.round((acceptedValue / openPipelineValue) * 100) : 0;
+  // Active Period Tab Data for Revenue Analytics
+  const periodData = data?.periodTabs?.[activePeriodTab];
+  const displayedRevenue = periodData ? periodData.total : (data?.historicalRevenue || 0);
+  const displayedSubtitle = periodData
+    ? `Revenue closed for ${periodData.label}`
+    : 'Historical Revenue (2024 Closed Volume)';
+  const displayedChartData = periodData && periodData.trend && periodData.trend.length > 0
+    ? periodData.trend
+    : monthlyChartData;
+
+  // Follow-ups destination link
+  const followUpsViewAllLink =
+    followUps && followUps.summary.overdueCount > 0
+      ? '/overdue-follow-ups'
+      : followUps && followUps.summary.dueTodayCount > 0
+      ? '/follow-ups-due-today'
+      : '/quotations';
 
   return (
     <div className="dashboard-analytics-theme bg-[#101312] text-[#F5F7F4] min-h-screen p-4 md:p-6 -m-4 md:-m-6 flex flex-col gap-6">
@@ -172,17 +238,57 @@ export default function Dashboard() {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchAllData}
+            onClick={() => fetchAllData(currentRange)}
             disabled={refreshing}
             className="h-9 border-[#292E2A] bg-[#171918] text-[#F5F7F4] hover:bg-[#1D211E] text-xs font-semibold gap-1.5"
           >
             <RefreshCwIcon className={`size-3.5 ${refreshing ? 'animate-spin text-[#B8F23A]' : 'text-[#A5AEA8]'}`} />
             <span>Refresh</span>
           </Button>
-          <Button variant="outline" size="sm" className="h-9 border-[#292E2A] bg-[#171918] text-[#F5F7F4] hover:bg-[#1D211E] text-xs font-semibold gap-2">
-            <CalendarIcon className="size-3.5 text-[#B8F23A]" />
-            <span>Last 30 Days</span>
-          </Button>
+
+          {/* Interactive Date Range Selector Button */}
+          <div className="relative" ref={dateDropdownRef}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDateDropdownOpen(!dateDropdownOpen)}
+              className="h-9 border-[#292E2A] bg-[#171918] text-[#F5F7F4] hover:bg-[#1D211E] text-xs font-semibold gap-2"
+              title="Click to change period"
+            >
+              <CalendarIcon className="size-3.5 text-[#B8F23A]" />
+              <span>{currentRange.label}</span>
+              <span className="text-[8px] text-[#A5AEA8]">▼</span>
+            </Button>
+
+            {dateDropdownOpen && (
+              <div className="absolute right-0 top-11 z-50 min-w-[180px] p-1.5 rounded-[10px] bg-[#1D211E] border border-[#333c31] shadow-[0_18px_40px_rgba(0,0,0,0.55)] animate-in fade-in duration-150">
+                <div className="px-2 py-1 border-b border-[#292E2A] mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#A5AEA8]">Filter by Period</span>
+                </div>
+                <div className="space-y-0.5">
+                  {presets.map((p) => {
+                    const isActive = currentRange.id === p.id || currentRange.label === p.label;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSelectRangePreset(p)}
+                        className={`w-full text-left px-2 py-1.5 rounded-[7px] text-[12px] font-medium transition-colors flex items-center justify-between ${
+                          isActive
+                            ? 'bg-[#171918] text-[#B8F23A] font-bold border border-[#292E2A]'
+                            : 'text-[#A5AEA8] hover:text-[#F5F7F4] hover:bg-[#292E2A]/50'
+                        }`}
+                      >
+                        <span>{p.label}</span>
+                        {isActive && <span className="text-[#B8F23A] text-xs">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           <Button asChild size="sm" className="h-9 gap-2 font-bold bg-[#B8F23A] text-[#101312] hover:bg-[#D8F98D]">
             <Link to="/quotations/new">
               <PlusIcon className="size-4" />
@@ -194,7 +300,7 @@ export default function Dashboard() {
 
       {/* 2. EXECUTIVE SUPPORTING KPI STRIP */}
       {error ? (
-        <WidgetErrorState message="Unable to load summary metrics." onRetry={fetchAllData} />
+        <WidgetErrorState message="Unable to load summary metrics." onRetry={() => fetchAllData(currentRange)} />
       ) : !data ? (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
@@ -237,16 +343,56 @@ export default function Dashboard() {
                 <CardTitle className="text-base font-bold text-[#F5F7F4]">Revenue Analytics</CardTitle>
                 <CardDescription className="text-xs text-[#A5AEA8] mt-0.5">Revenue performance across the selected period.</CardDescription>
               </div>
+
+              {/* Interactive Period Tabs */}
               <div className="flex items-center gap-1 bg-[#101312] p-1 rounded-lg border border-[#292E2A] text-xs font-semibold text-[#A5AEA8]">
-                <Button size="sm" variant="ghost" className="h-7 px-2.5 text-xs font-bold bg-[#171918] text-[#B8F23A] shadow-2xs">This Month</Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2.5 text-xs text-[#A5AEA8] hover:text-[#F5F7F4]">This Quarter</Button>
-                <Button size="sm" variant="ghost" className="h-7 px-2.5 text-xs text-[#A5AEA8] hover:text-[#F5F7F4]">This Year</Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setActivePeriodTab('thisMonth')}
+                  className={`h-7 px-2.5 text-xs transition-colors ${
+                    activePeriodTab === 'thisMonth'
+                      ? 'bg-[#171918] text-[#B8F23A] font-bold shadow-2xs'
+                      : 'text-[#A5AEA8] hover:text-[#F5F7F4]'
+                  }`}
+                >
+                  This Month
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setActivePeriodTab('thisQuarter')}
+                  className={`h-7 px-2.5 text-xs transition-colors ${
+                    activePeriodTab === 'thisQuarter'
+                      ? 'bg-[#171918] text-[#B8F23A] font-bold shadow-2xs'
+                      : 'text-[#A5AEA8] hover:text-[#F5F7F4]'
+                  }`}
+                >
+                  This Quarter
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setActivePeriodTab('thisYear')}
+                  className={`h-7 px-2.5 text-xs transition-colors ${
+                    activePeriodTab === 'thisYear'
+                      ? 'bg-[#171918] text-[#B8F23A] font-bold shadow-2xs'
+                      : 'text-[#A5AEA8] hover:text-[#F5F7F4]'
+                  }`}
+                >
+                  This Year
+                </Button>
               </div>
             </div>
 
+            {/* Dynamic Revenue Display */}
             <div className="mt-3">
-              <div className="text-3xl font-extrabold text-[#F5F7F4] tracking-tight">{data ? formatCurrency(data.historicalRevenue) : '—'}</div>
-              <div className="text-xs font-semibold text-[#A5AEA8] mt-0.5">Historical Revenue (2024 Closed Volume)</div>
+              <div className="text-3xl font-extrabold text-[#F5F7F4] tracking-tight">
+                {!data ? '—' : formatCurrency(displayedRevenue)}
+              </div>
+              <div className="text-xs font-semibold text-[#A5AEA8] mt-0.5">
+                {displayedSubtitle}
+              </div>
             </div>
           </CardHeader>
 
@@ -254,7 +400,7 @@ export default function Dashboard() {
             {!data ? (
               <Skeleton className="h-[240px] w-full rounded-lg bg-[#101312]" />
             ) : (
-              <RevenueLineChart data={monthlyChartData} />
+              <RevenueLineChart data={displayedChartData} />
             )}
           </CardContent>
         </Card>
@@ -287,11 +433,18 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="p-5 pt-0">
             {pipelineError ? (
-              <WidgetErrorState message="Unable to load pipeline." onRetry={() => api.dashboard.pipeline().then(setPipeline)} />
+              <WidgetErrorState
+                message="Unable to load pipeline."
+                onRetry={() => api.dashboard.pipeline({ start: currentRange.start, end: currentRange.end }).then(setPipeline)}
+              />
             ) : !pipeline ? (
               <Skeleton className="h-48 w-full rounded-lg bg-[#101312]" />
             ) : (
-              <PipelineDonutChart stages={mappedStages} totalValue={openPipelineValue} acceptedRate={acceptedRate} />
+              <PipelineDonutChart
+                stages={pipelineStages}
+                totalValue={pipelineTotalValue}
+                acceptedRate={pipelineAcceptedRate}
+              />
             )}
           </CardContent>
         </Card>
@@ -306,15 +459,21 @@ export default function Dashboard() {
             <CardDescription className="text-xs text-[#A5AEA8] mt-0.5">Operational summary derived from active data.</CardDescription>
           </CardHeader>
           <CardContent className="p-5 pt-0 space-y-3">
-            {attention && attention.items.length > 0 && (
-              <div className="p-3 rounded-lg bg-[#1D211E] border border-[#292E2A] flex items-start gap-3">
+            {attentionError ? (
+              <WidgetErrorState message="Unable to load alerts." onRetry={() => api.dashboard.attention().then(setAttention)} />
+            ) : attention && attention.items.length > 0 ? (
+              <Link
+                to={attention.items[0].route}
+                className="p-3 rounded-lg bg-[#1D211E] border border-[#292E2A] hover:border-[#3a4237] transition-colors flex items-start gap-3 block"
+              >
                 <AlertCircleIcon className="size-4 text-[#E25757] mt-0.5 shrink-0" />
                 <div className="text-xs">
                   <span className="font-bold text-[#F5F7F4] block">{attention.items[0].title}</span>
                   <span className="text-[#A5AEA8] mt-0.5 block">{attention.items[0].description}</span>
                 </div>
-              </div>
-            )}
+              </Link>
+            ) : null}
+
             {data && (
               <div className="p-3 rounded-lg bg-[#1D211E] border border-[#292E2A] flex items-start gap-3">
                 <CheckCircle2Icon className="size-4 text-[#B8F23A] mt-0.5 shrink-0" />
@@ -324,14 +483,22 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
             {followUps && (
-              <div className="p-3 rounded-lg bg-[#1D211E] border border-[#292E2A] flex items-start gap-3">
+              <Link
+                to={followUpsViewAllLink}
+                className="p-3 rounded-lg bg-[#1D211E] border border-[#292E2A] hover:border-[#3a4237] transition-colors flex items-start gap-3 block"
+              >
                 <CalendarIcon className="size-4 text-[#708D31] mt-0.5 shrink-0" />
                 <div className="text-xs">
                   <span className="font-bold text-[#F5F7F4] block">{followUps.summary.totalScheduledCount} Scheduled Customer Follow-Ups</span>
-                  <span className="text-[#A5AEA8] mt-0.5 block">{followUps.summary.overdueCount} overdue touchpoints requiring immediate action.</span>
+                  <span className="text-[#A5AEA8] mt-0.5 block">
+                    {followUps.summary.overdueCount > 0
+                      ? `${followUps.summary.overdueCount} overdue touchpoints requiring immediate action.`
+                      : 'All scheduled touchpoints are currently up to date.'}
+                  </span>
                 </div>
-              </div>
+              </Link>
             )}
           </CardContent>
         </Card>
@@ -349,7 +516,7 @@ export default function Dashboard() {
               <CardDescription className="text-xs text-[#A5AEA8] mt-0.5">Scheduled customer touchpoints.</CardDescription>
             </div>
             <Button asChild size="sm" variant="ghost" className="h-7 text-xs font-bold text-[#B8F23A] hover:bg-[#1D211E]">
-              <Link to="/quotations">View All →</Link>
+              <Link to={followUpsViewAllLink}>View All →</Link>
             </Button>
           </CardHeader>
           <CardContent className="p-5 pt-0">
@@ -365,6 +532,9 @@ export default function Dashboard() {
                   <FollowUpRow key={f.id} item={f} />
                 ))}
                 {followUps.dueToday.slice(0, 2).map((f) => (
+                  <FollowUpRow key={f.id} item={f} />
+                ))}
+                {followUps.overdue.length === 0 && followUps.dueToday.length === 0 && followUps.upcoming.slice(0, 3).map((f) => (
                   <FollowUpRow key={f.id} item={f} />
                 ))}
               </div>
@@ -397,7 +567,10 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="p-5 pt-0">
           {recentActivityError ? (
-            <WidgetErrorState message="Unable to load recent activity." onRetry={() => api.dashboard.recentActivity().then((d) => setRecentActivity(d.activity))} />
+            <WidgetErrorState
+              message="Unable to load recent activity."
+              onRetry={() => api.dashboard.recentActivity().then((d) => setRecentActivity(d.activity))}
+            />
           ) : recentActivity === null ? (
             <Skeleton className="h-32 w-full rounded-lg bg-[#101312]" />
           ) : recentActivity.length === 0 ? (
@@ -426,7 +599,7 @@ export default function Dashboard() {
                       <TableCell className="py-2.5 text-xs text-[#A5AEA8]">{item.company_name || '—'}</TableCell>
                       <TableCell className="py-2.5">
                         <Badge variant="outline" className="text-[10px] capitalize font-semibold border-[#292E2A] text-[#F5F7F4] bg-[#101312]">
-                          {item.status === 'lost' ? 'rejected' : item.status}
+                          {item.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="py-2.5 text-xs text-[#A5AEA8] text-right font-medium">{formatDate(item.date)}</TableCell>

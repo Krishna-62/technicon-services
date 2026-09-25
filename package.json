@@ -5,7 +5,9 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Build complete'"
   },
   "keywords": ["dashboard", "glassmorphism", "tailwind", "ai-control-room"],
   "author": "Antigravity",

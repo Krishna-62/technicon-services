@@ -58,11 +58,22 @@ CREATE TABLE IF NOT EXISTS company_settings (
   company_name TEXT NOT NULL DEFAULT 'TECHNICON SERVICES',
   address TEXT DEFAULT '',
   gstin TEXT DEFAULT '',
+  state TEXT DEFAULT '',
   phone TEXT DEFAULT '',
+  landline TEXT DEFAULT '',
   email TEXT DEFAULT '',
-  bank_details TEXT DEFAULT '',
-  terms_conditions TEXT DEFAULT '',
-  logo_path TEXT DEFAULT '',
+  -- Stored as base64 data URIs (not file paths) since the app targets a serverless deploy with
+  -- no persistent local disk — embedding the bytes directly in Postgres avoids needing separate
+  -- object storage for two small images.
+  logo_image TEXT DEFAULT '',
+  signature_image TEXT DEFAULT '',
+  bank_name TEXT DEFAULT '',
+  bank_account_no TEXT DEFAULT '',
+  bank_ifsc TEXT DEFAULT '',
+  bank_account_holder TEXT DEFAULT '',
+  quotation_validity_days INTEGER DEFAULT 15,
+  payment_terms TEXT DEFAULT '',
+  delivery_time TEXT DEFAULT '',
   quotation_prefix TEXT DEFAULT 'QTN',
   po_prefix TEXT DEFAULT 'PO',
   pi_prefix TEXT DEFAULT 'PI',
@@ -100,6 +111,7 @@ CREATE TABLE IF NOT EXISTS quotation (
   tax_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
   total DOUBLE PRECISION NOT NULL DEFAULT 0,
   notes TEXT DEFAULT '',
+  created_by_user_id INTEGER REFERENCES app_user(id),
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -110,6 +122,7 @@ CREATE TABLE IF NOT EXISTS quotation_item (
   part_no TEXT,
   description TEXT NOT NULL,
   hsn_sac TEXT,
+  make TEXT,
   qty DOUBLE PRECISION NOT NULL DEFAULT 1,
   price DOUBLE PRECISION NOT NULL DEFAULT 0,
   amount DOUBLE PRECISION NOT NULL DEFAULT 0

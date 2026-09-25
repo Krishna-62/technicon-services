@@ -67,19 +67,19 @@
         </a>
 
         <!-- Quotations (ACTIVE) -->
-        <a href="/quotations.html" class="nav-item-active px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+        <a href="/index.html#quotations" class="nav-item-active px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
           <i data-lucide="file-text" class="w-4 h-4 text-white"></i>
           <span>Quotations</span>
         </a>
 
         <!-- Purchase Orders -->
-        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+        <a href="/index.html#purchase-orders" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
           <i data-lucide="shopping-cart" class="w-4 h-4 text-[#76a891]"></i>
           <span>Purchase Orders</span>
         </a>
 
         <!-- Performa Invoices -->
-        <a href="#" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
+        <a href="/index.html#performa-invoices" class="nav-item-inactive px-3 py-2.5 flex items-center gap-3 text-sm transition-colors">
           <i data-lucide="receipt" class="w-4 h-4 text-[#76a891]"></i>
           <span>Performa Invoices</span>
         </a>
@@ -322,7 +322,7 @@
             <tbody id="quotations-table-body" class="divide-y divide-[#eceeed] text-xs font-medium">
               
               <!-- Row 1: QTN-104 -->
-              <tr class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
+              <tr onclick="window.location.href='/quotation-detail.html?id=104'" class="hover:bg-[#f8faf9] cursor-pointer transition-colors">
                 <td class="py-4 px-4 font-bold text-[#191c1c]">QTN-104</td>
                 <td class="py-4 px-4 font-semibold text-[#191c1c]">ABC Industries</td>
                 <td class="py-4 px-4 font-bold text-[#191c1c]">₹4.5L</td>
@@ -333,8 +333,8 @@
                     Accepted
                   </span>
                 </td>
-                <td class="py-4 px-4 text-right">
-                  <button class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
+                <td class="py-4 px-4 text-right" onclick="event.stopPropagation()">
+                  <button onclick="window.location.href='/quotation-detail.html?id=104'" class="text-[#717973] hover:text-[#191c1c] p-1 font-bold">···</button>
                 </td>
               </tr>
 

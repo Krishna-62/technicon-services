@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, type PurchaseOrdersNotInvoicedData } from '../api';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 function formatCurrency(n: number) {
   return `₹${Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -45,13 +46,15 @@ export default function PurchaseOrdersNotInvoiced() {
         <div className="inactive-summary-hint">These orders have no performa invoice issued yet.</div>
       </div>
 
-      <input
-        type="search"
-        placeholder="Search by PO number, quotation number, or company..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 340, marginBottom: 14 }}
-      />
+      <div className="mb-3">
+        <ExpandableSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Search by PO number, quotation number, or company..."
+          ariaLabel="Search purchase orders not invoiced"
+          maxWidth="340px"
+        />
+      </div>
 
       <div className="card">
         <div className="table-scroll">

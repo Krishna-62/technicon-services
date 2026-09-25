@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, type InactiveCustomersData } from '../api';
 import { Pagination } from '../components/Pagination';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 const PAGE_SIZE = 20;
 
@@ -50,13 +51,15 @@ export default function InactiveCustomers() {
         <div className="inactive-summary-hint">No purchases in the last {data.months} months.</div>
       </div>
 
-      <input
-        type="search"
-        placeholder="Search inactive customers..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 280, marginBottom: 14 }}
-      />
+      <div className="mb-3">
+        <ExpandableSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Search inactive customers..."
+          ariaLabel="Search inactive customers"
+          maxWidth="280px"
+        />
+      </div>
 
       <div className="card">
         <div className="table-scroll">

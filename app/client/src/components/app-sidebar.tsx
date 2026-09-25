@@ -1,225 +1,313 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from './ui/sidebar';
-import {
-  BarChart3Icon,
-  Building2Icon,
-  FileCheckIcon,
-  FileTextIcon,
-  HelpCircleIcon,
-  LayoutGridIcon,
-  PackageIcon,
-  PlusIcon,
-  SearchIcon,
-  SettingsIcon,
-  ShieldIcon,
-  SparklesIcon,
-  UsersIcon,
-  LogOutIcon,
-} from 'lucide-react';
 
-export function AppSidebar() {
-  const { user, logout } = useAuth();
+interface NavSubItemDef {
+  label: string;
+  path: string;
+  exact?: boolean;
+  isDetailPattern?: boolean;
+}
+
+interface NavItemDef {
+  label: string;
+  path: string;
+  children?: NavSubItemDef[];
+}
+
+const MAIN_NAV: NavItemDef[] = [
+  { label: 'Dashboard', path: '/' },
+  { label: 'Quotations', path: '/quotations' },
+  { label: 'Purchase Orders', path: '/purchase-orders' },
+  { label: 'Performa Invoices', path: '/performa-invoices' },
+  {
+    label: 'Sale Reports',
+    path: '/sale-reports',
+    children: [
+      { label: 'Sale Report List', path: '/sale-reports', exact: true },
+      { label: 'Create Sale Report', path: '/sale-reports/new' },
+      { label: 'Sale Report Detail', path: '/sale-reports/detail', isDetailPattern: true },
+    ],
+  },
+  {
+    label: 'Sales Pipeline',
+    path: '/sales/pipeline',
+    children: [
+      { label: 'Pipeline Control', path: '/sales/pipeline', exact: true },
+      { label: 'Due Today Follow-ups', path: '/follow-ups/due-today' },
+      { label: 'Overdue Follow-ups', path: '/follow-ups/overdue' },
+      { label: 'Sales Overview', path: '/sales' },
+      { label: 'Sales Activity Log', path: '/sales/activity' },
+    ],
+  },
+  { label: 'Sales Engineers', path: '/sales/engineers' },
+  { label: 'Companies', path: '/companies' },
+  { label: 'Products', path: '/products' },
+];
+
+const INVENTORY_NAV: NavItemDef[] = [
+  {
+    label: 'Inventory',
+    path: '/inventory',
+    children: [
+      { label: 'Overview', path: '/inventory', exact: true },
+      { label: 'Warehouses', path: '/inventory/warehouses' },
+      { label: 'Stock', path: '/inventory/stock' },
+      { label: 'Stock Inward', path: '/inventory/stock-inward' },
+      { label: 'Reservations', path: '/inventory/reservations' },
+      { label: 'Stock Intelligence', path: '/inventory/intelligence' },
+    ],
+  },
+];
+
+const REPORTS_NAV: NavItemDef[] = [
+  {
+    label: 'Reports',
+    path: '/reports',
+    children: [
+      { label: 'Business Health', path: '/business-health' },
+      { label: 'Customer Health', path: '/customer-health' },
+      { label: 'Engineer Sales', path: '/reports/engineer-sales' },
+      { label: 'Growth Opportunities', path: '/opportunities' },
+      { label: 'Product Intelligence', path: '/product-intelligence' },
+      { label: 'Chat with AI', path: '/chat-with-ai' },
+    ],
+  },
+];
+
+const SYSTEM_NAV: NavItemDef[] = [
+  { label: 'Settings', path: '/settings' },
+  { label: 'Multi-Firm & Branches', path: '/settings/multi-firm' },
+  { label: 'Admin', path: '/admin' },
+];
+
+function CollapsibleNavItem({
+  item,
+  currentPath,
+  onMobileClose,
+}: {
+  item: NavItemDef;
+  currentPath: string;
+  onMobileClose?: () => void;
+}) {
+  const navigate = useNavigate();
+
+  const isChildActive = (child: NavSubItemDef) => {
+    if (child.isDetailPattern) {
+      return (
+        currentPath.startsWith('/sale-reports/') &&
+        currentPath !== '/sale-reports' &&
+        !currentPath.startsWith('/sale-reports/new')
+      );
+    }
+    if (child.path === '/product-intelligence') {
+      return (
+        currentPath === '/product-intelligence' ||
+        currentPath === '/products/intelligence' ||
+        (currentPath.startsWith('/products/') && currentPath.endsWith('/intelligence'))
+      );
+    }
+    if (child.exact) {
+      return currentPath === child.path;
+    }
+    return currentPath === child.path || currentPath.startsWith(child.path + '/');
+  };
+
+  const isGroupActive = Boolean(
+    item.children?.some(isChildActive) || (item.path && currentPath.startsWith(item.path))
+  );
+
+  const [expanded, setExpanded] = useState(isGroupActive);
+
+  useEffect(() => {
+    if (isGroupActive) {
+      setExpanded(true);
+    }
+  }, [isGroupActive]);
+
+  if (!item.children) return null;
+
+  const handleParentClick = () => {
+    setExpanded((prev) => !prev);
+    if (item.path && currentPath !== item.path) {
+      navigate(item.path);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        type="button"
+        onClick={handleParentClick}
+        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13.5px] transition-all duration-200 border cursor-pointer select-none ${
+          isGroupActive
+            ? 'bg-[#1D211E] text-[#F5F7F4] border-[#333c31] shadow-[inset_2px_0_0_#B8F23A]'
+            : 'bg-transparent text-[#A5AEA8] border-transparent hover:bg-[#161A18] hover:text-[#F5F7F4]'
+        }`}
+      >
+        <div className="flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className={`w-1.5 h-1.5 rounded-[2px] shrink-0 ${isGroupActive ? 'bg-[#B8F23A]' : 'bg-[#3c443d]'}`}
+          />
+          <span className="font-medium">{item.label}</span>
+        </div>
+        <svg
+          className={`w-3.5 h-3.5 text-[#A5AEA8] transition-transform duration-200 ${expanded ? 'rotate-90 text-[#B8F23A]' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      {expanded && (
+        <div className="flex flex-col gap-1 pl-3.5 ml-2.5 border-l border-[#242e27]">
+          {item.children.map((child) => {
+            const active = isChildActive(child);
+            const targetPath = child.isDetailPattern && active ? currentPath : (child.isDetailPattern ? '/sale-reports' : child.path);
+            return (
+              <Link
+                key={child.label}
+                to={targetPath}
+                onClick={() => onMobileClose && onMobileClose()}
+                aria-current={active ? 'page' : undefined}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[12.5px] no-underline transition-all duration-150 ${
+                  active
+                    ? 'bg-[#1e251d] text-[#B8F23A] font-semibold'
+                    : 'text-[#A5AEA8] hover:text-[#F5F7F4] hover:bg-[#161A18]'
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`w-1 h-1 rounded-full shrink-0 ${active ? 'bg-[#B8F23A]' : 'bg-[#4b554d]'}`}
+                />
+                <span>{child.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function AppSidebar({ mobileOpen = false, onMobileClose }: { mobileOpen?: boolean; onMobileClose?: () => void }) {
+  const { user } = useAuth();
   const location = useLocation();
 
   if (!user) return null;
 
-  const isCurrent = (path: string) => location.pathname === path;
-  const isReportsActive = ['/business-health', '/customer-health', '/opportunities', '/product-intelligence', '/chat-with-ai'].includes(location.pathname);
+  const isCurrent = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  const renderNavGroup = (title: string, items: NavItemDef[]) => (
+    <nav aria-label={title} className="flex flex-col gap-1">
+      <div className="text-[10.5px] tracking-[.14em] text-[#6d756f] px-2 pb-1.5 uppercase font-medium">
+        {title}
+      </div>
+      {items.map((item) => {
+        if (item.path === '/admin' && user.role !== 'admin') return null;
+
+        if (item.children) {
+          return (
+            <CollapsibleNavItem
+              key={item.label}
+              item={item}
+              currentPath={location.pathname}
+              onMobileClose={onMobileClose}
+            />
+          );
+        }
+
+        const active = isCurrent(item.path);
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            onClick={() => onMobileClose && onMobileClose()}
+            aria-current={active ? 'page' : undefined}
+            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13.5px] no-underline transition-all duration-200 border ${
+              active
+                ? 'bg-[#1D211E] text-[#F5F7F4] border-[#333c31] shadow-[inset_2px_0_0_#B8F23A]'
+                : 'bg-transparent text-[#A5AEA8] border-transparent hover:bg-[#161A18] hover:text-[#F5F7F4]'
+            }`}
+          >
+            <span
+              aria-hidden="true"
+              className={`w-1.5 h-1.5 rounded-[2px] shrink-0 ${active ? 'bg-[#B8F23A]' : 'bg-[#3c443d]'}`}
+            />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+
+  const getInitials = (name: string) => {
+    if (!name) return 'TS';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const sidebarContent = (
+    <aside
+      data-nav="1"
+      data-scroll="1"
+      className="w-[246px] shrink-0 bg-[#0B0D0D] border-r border-[#292E2A] flex flex-col p-[18px_14px_14px] gap-[22px] h-screen sticky top-0 overflow-y-auto z-50 select-none no-scrollbar"
+    >
+      {/* Brand Header */}
+      <div className="flex items-center gap-2.5 px-1 py-0.5">
+        <div className="w-[30px] h-[30px] rounded-[9px] border border-[#3a4a1f] bg-[#1D211E] text-[#B8F23A] grid place-items-center text-[12px] font-semibold tracking-[.02em] shrink-0">
+          TS
+        </div>
+        <div className="flex flex-col leading-[1.1]">
+          <span className="text-[13.5px] font-semibold tracking-[.04em] text-[#F5F7F4]">TECHNICON</span>
+          <span className="text-[10.5px] tracking-[.18em] text-[#A5AEA8]">SERVICES</span>
+        </div>
+      </div>
+
+      {/* Navigation Sections */}
+      {renderNavGroup('MAIN', MAIN_NAV)}
+      {renderNavGroup('INVENTORY', INVENTORY_NAV)}
+      {renderNavGroup('REPORTS', REPORTS_NAV)}
+      {renderNavGroup('SYSTEM', SYSTEM_NAV)}
+
+      {/* User Profile Block */}
+      <div className="mt-auto border-t border-[#1c211e] pt-3 flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-full bg-[#1D211E] border border-[#333c31] grid place-items-center text-[12px] font-bold text-[#B8F23A] shrink-0">
+          {getInitials(user.username)}
+        </div>
+        <div className="flex flex-col leading-[1.25] min-w-0">
+          <span className="text-[12.5px] font-medium text-[#F5F7F4] truncate">{user.username}</span>
+          <span className="text-[11px] text-[#6d756f] capitalize">{user.role} Operations</span>
+        </div>
+      </div>
+    </aside>
+  );
 
   return (
-    <Sidebar collapsible="icon" variant="inset" className="border-r border-[#E3E8E4] bg-[#003B2B] text-white">
-      {/* Brand Header */}
-      <SidebarHeader className="h-16 justify-center px-4 border-b border-white/10">
-        <SidebarMenuButton asChild size="lg" className="hover:bg-white/10">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-[#9CF45D] text-[#003B2B] flex items-center justify-center font-extrabold text-sm shrink-0">
-              TS
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-extrabold text-sm tracking-tight text-white leading-tight">TECHNICON</span>
-              <span className="text-[10px] font-bold text-[#9CF45D] tracking-wider uppercase">SERVICES</span>
-            </div>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarHeader>
+    <>
+      {/* Desktop Fixed Sidebar */}
+      <div className="hidden tablet-lg:block">{sidebarContent}</div>
 
-      {/* Main Navigation Content */}
-      <SidebarContent className="px-2 py-3 space-y-4">
-        
-        {/* Quick Action Button */}
-        <SidebarGroup>
-          <SidebarMenuItem className="flex items-center gap-2 px-2">
-            <SidebarMenuButton asChild className="bg-[#9CF45D] text-[#003B2B] hover:bg-[#8ee84f] font-bold">
-              <Link to="/quotations/new" className="flex items-center gap-2 justify-center w-full">
-                <PlusIcon className="size-4" />
-                <span>+ New Quotation</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarGroup>
-
-        {/* Primary Operational Modules */}
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/')} tooltip="Dashboard" className="hover:bg-white/10 text-white">
-                <Link to="/">
-                  <LayoutGridIcon className="size-4" />
-                  <span>Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/quotations')} tooltip="Quotations" className="hover:bg-white/10 text-white">
-                <Link to="/quotations">
-                  <FileTextIcon className="size-4" />
-                  <span>Quotations</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/purchase-orders')} tooltip="Purchase Orders" className="hover:bg-white/10 text-white">
-                <Link to="/purchase-orders">
-                  <FileCheckIcon className="size-4" />
-                  <span>Purchase Orders</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/performa-invoices')} tooltip="Performa Invoices" className="hover:bg-white/10 text-white">
-                <Link to="/performa-invoices">
-                  <FileTextIcon className="size-4" />
-                  <span>Performa Invoices</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/companies')} tooltip="Companies" className="hover:bg-white/10 text-white">
-                <Link to="/companies">
-                  <Building2Icon className="size-4" />
-                  <span>Companies</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/products')} tooltip="Products" className="hover:bg-white/10 text-white">
-                <Link to="/products">
-                  <PackageIcon className="size-4" />
-                  <span>Products</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-
-        {/* Reports & AI Section */}
-        <SidebarGroup>
-          <div className="px-3 text-[10px] font-bold text-[#9CF45D] uppercase tracking-wider mb-1">Intelligence & Reports</div>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/business-health')} tooltip="Business Health" className="hover:bg-white/10 text-white">
-                <Link to="/business-health">
-                  <BarChart3Icon className="size-4" />
-                  <span>Business Health</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/customer-health')} tooltip="Customer Health" className="hover:bg-white/10 text-white">
-                <Link to="/customer-health">
-                  <UsersIcon className="size-4" />
-                  <span>Customer Health</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/opportunities')} tooltip="Growth Opportunities" className="hover:bg-white/10 text-white">
-                <Link to="/opportunities">
-                  <SparklesIcon className="size-4" />
-                  <span>Growth Opportunities</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/product-intelligence')} tooltip="Product Intelligence" className="hover:bg-white/10 text-white">
-                <Link to="/product-intelligence">
-                  <PackageIcon className="size-4" />
-                  <span>Product Intelligence</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/chat-with-ai')} tooltip="Ask TECHNICON" className="hover:bg-white/10 text-[#9CF45D] font-bold">
-                <Link to="/chat-with-ai">
-                  <SparklesIcon className="size-4 text-[#9CF45D]" />
-                  <span>Ask TECHNICON AI</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-
-        {/* System Settings & Admin */}
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isCurrent('/settings')} tooltip="Settings" className="hover:bg-white/10 text-white">
-                <Link to="/settings">
-                  <SettingsIcon className="size-4" />
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {user.role === 'admin' && (
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isCurrent('/admin')} tooltip="Admin" className="hover:bg-white/10 text-white">
-                  <Link to="/admin">
-                    <ShieldIcon className="size-4" />
-                    <span>Admin</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
-          </SidebarMenu>
-        </SidebarGroup>
-
-      </SidebarContent>
-
-      {/* Sidebar Footer User & Logout */}
-      <SidebarFooter className="p-3 border-t border-white/10">
-        <div className="flex items-center justify-between p-2 rounded-lg bg-white/5 text-xs text-white">
-          <div className="flex flex-col min-w-0">
-            <span className="font-bold truncate">{user.username}</span>
-            <span className="text-[10px] text-[#9CF45D] uppercase font-semibold">{user.role}</span>
+      {/* Mobile Off-Canvas Drawer */}
+      {mobileOpen && (
+        <div className="tablet-lg:hidden fixed inset-0 z-50 flex">
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            onClick={onMobileClose}
+          />
+          <div className="relative z-10 w-[246px] h-full shadow-[40px_0_80px_rgba(0,0,0,0.6)] animate-in slide-in-from-left duration-200">
+            {sidebarContent}
           </div>
-          <button onClick={logout} className="p-1.5 rounded hover:bg-white/10 text-white/70 hover:text-white transition-colors" title="Logout">
-            <LogOutIcon className="size-4" />
-          </button>
         </div>
-      </SidebarFooter>
-    </Sidebar>
+      )}
+    </>
   );
 }
+

@@ -8,7 +8,11 @@ const router = Router();
 function fullPI(id) {
   const pi = db
     .prepare(
-      `SELECT pi.*, q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
+      `SELECT pi.*,
+              COALESCE(pi.sales_engineer_id, po.sales_engineer_id, q.sales_engineer_id) AS sales_engineer_id,
+              COALESCE(pi.firm_id, po.firm_id, q.firm_id) AS firm_id,
+              COALESCE(pi.branch_id, po.branch_id, q.branch_id) AS branch_id,
+              q.number AS quotation_number, q.subtotal, q.tax_percent, q.tax_amount, q.total,
               po.number AS po_number, po.client_po_ref,
               c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
        FROM performa_invoice pi
@@ -26,10 +30,13 @@ function fullPI(id) {
 router.get('/', (req, res) => {
   const rows = db
     .prepare(
-      `SELECT pi.*, q.number AS quotation_number, q.total, c.name AS company_name
+      `SELECT pi.*,
+              COALESCE(pi.sales_engineer_id, po.sales_engineer_id, q.sales_engineer_id) AS sales_engineer_id,
+              q.number AS quotation_number, q.total, c.name AS company_name
        FROM performa_invoice pi
        JOIN quotation q ON q.id = pi.quotation_id
        JOIN company c ON c.id = q.company_id
+       LEFT JOIN purchase_order po ON po.id = pi.purchase_order_id
        ORDER BY pi.id DESC`
     )
     .all();
@@ -48,11 +55,24 @@ router.post('/', (req, res) => {
   const quotation = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(quotation_id);
   if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
 
+  let sales_engineer_id = quotation.sales_engineer_id || null;
+  let firm_id = quotation.firm_id || null;
+  let branch_id = quotation.branch_id || null;
+
+  if (purchase_order_id) {
+    const po = db.prepare(`SELECT * FROM purchase_order WHERE id = ?`).get(purchase_order_id);
+    if (po) {
+      if (po.sales_engineer_id) sales_engineer_id = po.sales_engineer_id;
+      if (po.firm_id) firm_id = po.firm_id;
+      if (po.branch_id) branch_id = po.branch_id;
+    }
+  }
+
   const prefix = db.prepare(`SELECT pi_prefix FROM company_settings WHERE id = 1`).get().pi_prefix;
   const number = nextNumber(prefix, 'performa_invoice');
   const info = db
-    .prepare(`INSERT INTO performa_invoice (number, date, quotation_id, purchase_order_id) VALUES (?, ?, ?, ?)`)
-    .run(number, date || new Date().toISOString().slice(0, 10), quotation_id, purchase_order_id || null);
+    .prepare(`INSERT INTO performa_invoice (number, date, quotation_id, purchase_order_id, sales_engineer_id, firm_id, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    .run(number, date || new Date().toISOString().slice(0, 10), quotation_id, purchase_order_id || null, sales_engineer_id, firm_id, branch_id);
 
   const row = db.prepare(`SELECT * FROM performa_invoice WHERE id = ?`).get(info.lastInsertRowid);
   res.status(201).json(row);

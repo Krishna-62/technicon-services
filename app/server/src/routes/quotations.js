@@ -2,20 +2,119 @@ import { Router } from 'express';
 import db from '../db/index.js';
 import { nextNumber } from '../db/numbering.js';
 import { streamQuotationPdf } from '../pdf/documents.js';
+import { getQuotationStockAnalysis } from '../services/inventoryService.js';
+import { calculateQuotationPricing } from '../services/quotationPricingService.js';
 
 const router = Router();
 
-function computeTotals(items, taxPercent) {
-  const subtotal = items.reduce((sum, it) => sum + Number(it.qty) * Number(it.price), 0);
-  const taxAmount = subtotal * (Number(taxPercent) / 100);
-  return { subtotal, taxAmount, total: subtotal + taxAmount };
-}
+/**
+ * POST /api/quotations/calculate-pricing
+ * Real-time live quotation pricing preview endpoint
+ */
+router.post('/calculate-pricing', (req, res) => {
+  try {
+    const { items } = req.body;
+    const oType = req.body.overall_discount_type || req.body.overallDiscountType || req.body.discount_type || req.body.discountType || 'none';
+    const oVal = req.body.overall_discount_value !== undefined
+      ? req.body.overall_discount_value
+      : (req.body.overallDiscountValue !== undefined
+        ? req.body.overallDiscountValue
+        : (req.body.discount_value !== undefined
+          ? req.body.discount_value
+          : (req.body.discountValue !== undefined ? req.body.discountValue : 0)));
+    const taxPct = req.body.tax_percent !== undefined
+      ? req.body.tax_percent
+      : (req.body.taxPercent !== undefined ? req.body.taxPercent : 18);
+
+    const calculation = calculateQuotationPricing({
+      items: Array.isArray(items) ? items : [],
+      overallDiscountType: oType,
+      overallDiscountValue: oVal,
+      taxPercent: Number(taxPct),
+    });
+    res.json(calculation);
+  } catch (err) {
+    console.error('Failed to calculate quotation pricing:', err);
+    res.status(400).json({ error: err.message || 'Failed to calculate pricing' });
+  }
+});
+
+/**
+ * READ-ONLY Live Quotation Stock Analysis Endpoint
+ */
+router.get('/stock-analysis', (req, res) => {
+  try {
+    const { productId, warehouseId, requestedQuantity } = req.query;
+    if (!productId) return res.status(400).json({ error: 'productId query param is required' });
+    const analysis = getQuotationStockAnalysis({
+      productId: Number(productId),
+      warehouseId: warehouseId ? Number(warehouseId) : null,
+      requestedQuantity: requestedQuantity ? Number(requestedQuantity) : 1,
+    });
+    res.json(analysis);
+  } catch (err) {
+    console.error('Failed to analyze quotation stock:', err);
+    res.status(400).json({ error: err.message || 'Failed to analyze quotation stock' });
+  }
+});
+
+router.post('/stock-analysis', (req, res) => {
+  try {
+    const { warehouse_id, warehouseId, items } = req.body;
+    const targetWhId = warehouse_id || warehouseId;
+    
+    const itemArray = Array.isArray(items) ? items : [];
+    const analyzed = itemArray.map((it) => {
+      const pId = it.product_id || it.productId;
+      const partNo = it.part_no || it.partNo;
+      const qty = Number(it.qty || it.quantity || 1);
+
+      return getQuotationStockAnalysis({
+        productId: pId,
+        partNo: partNo,
+        warehouseId: targetWhId,
+        requestedQuantity: qty,
+      });
+    });
+
+    const hasShortage = analyzed.some((i) => i.status === 'PARTIAL' || i.status === 'OUT_OF_STOCK');
+    const totalShortageUnits = analyzed.reduce((sum, i) => sum + (i.shortage || 0), 0);
+
+    let whName = null;
+    if (targetWhId) {
+      const wh = db.prepare(`SELECT name FROM warehouse WHERE id = ?`).get(targetWhId);
+      if (wh) whName = wh.name;
+    }
+
+    res.json({
+      warehouse_id: targetWhId ? Number(targetWhId) : null,
+      warehouse_name: whName,
+      items: analyzed,
+      summary: {
+        total_items: analyzed.length,
+        available_count: analyzed.filter((i) => i.status === 'AVAILABLE').length,
+        partial_count: analyzed.filter((i) => i.status === 'PARTIAL').length,
+        incoming_count: analyzed.filter((i) => i.status === 'INCOMING').length,
+        out_of_stock_count: analyzed.filter((i) => i.status === 'OUT_OF_STOCK').length,
+        not_tracked_count: analyzed.filter((i) => i.status === 'NOT_TRACKED').length,
+        has_shortage: hasShortage,
+        total_shortage_units: totalShortageUnits,
+      },
+    });
+  } catch (err) {
+    console.error('Failed to analyze quotation stock:', err);
+    res.status(400).json({ error: err.message || 'Failed to analyze quotation stock' });
+  }
+});
 
 router.get('/', (req, res) => {
   const rows = db
     .prepare(
-      `SELECT q.*, c.name AS company_name
-       FROM quotation q JOIN company c ON c.id = q.company_id
+      `SELECT q.*, c.name AS company_name, e.name AS sales_engineer_name, e.employee_code AS sales_engineer_code, b.branch_name
+       FROM quotation q 
+       JOIN company c ON c.id = q.company_id
+       LEFT JOIN sales_engineer e ON e.id = q.sales_engineer_id
+       LEFT JOIN branch b ON b.id = q.branch_id
        ORDER BY q.id DESC`
     )
     .all();
@@ -25,8 +124,13 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const quotation = db
     .prepare(
-      `SELECT q.*, c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
-       FROM quotation q JOIN company c ON c.id = q.company_id WHERE q.id = ?`
+      `SELECT q.*, c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin,
+              e.name AS sales_engineer_name, e.employee_code AS sales_engineer_code, b.branch_name
+       FROM quotation q 
+       JOIN company c ON c.id = q.company_id 
+       LEFT JOIN sales_engineer e ON e.id = q.sales_engineer_id
+       LEFT JOIN branch b ON b.id = q.branch_id
+       WHERE q.id = ?`
     )
     .get(req.params.id);
   if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
@@ -35,80 +139,215 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { company_id, date, items, tax_percent, notes } = req.body;
-  if (!company_id) return res.status(400).json({ error: 'company_id is required' });
-  if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
+  try {
+    const { company_id, date, items, tax_percent, notes, discount_type, discount_value, overall_discount_type, overall_discount_value, sales_engineer_id, firm_id, branch_id } = req.body;
+    if (!company_id) return res.status(400).json({ error: 'company_id is required' });
+    if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
 
-  const company = db.prepare(`SELECT id FROM company WHERE id = ?`).get(company_id);
-  if (!company) return res.status(404).json({ error: 'Company not found' });
+    const company = db.prepare(`SELECT id FROM company WHERE id = ?`).get(company_id);
+    if (!company) return res.status(404).json({ error: 'Company not found' });
 
-  const taxPercent = tax_percent ?? 18;
-  const { subtotal, taxAmount, total } = computeTotals(items, taxPercent);
+    const oType = overall_discount_type || discount_type || 'none';
+    const oVal = overall_discount_value !== undefined ? overall_discount_value : (discount_value !== undefined ? discount_value : 0);
+    const taxPct = tax_percent !== undefined ? Number(tax_percent) : 18;
 
-  const tx = db.transaction(() => {
-    const prefix = db.prepare(`SELECT quotation_prefix FROM company_settings WHERE id = 1`).get().quotation_prefix;
-    const number = nextNumber(prefix, 'quotation');
-    const info = db
-      .prepare(
-        `INSERT INTO quotation (number, date, company_id, status, subtotal, tax_percent, tax_amount, total, notes)
-         VALUES (?, ?, ?, 'draft', ?, ?, ?, ?, ?)`
-      )
-      .run(number, date || new Date().toISOString().slice(0, 10), company_id, subtotal, taxPercent, taxAmount, total, notes || '');
+    const calc = calculateQuotationPricing({
+      items,
+      overallDiscountType: oType,
+      overallDiscountValue: oVal,
+      taxPercent: taxPct,
+    });
 
-    const quotationId = info.lastInsertRowid;
-    const insertItem = db.prepare(
-      `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, qty, price, amount)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    );
-    for (const it of items) {
-      insertItem.run(
-        quotationId,
-        it.product_id || null,
-        it.part_no || null,
-        it.description,
-        it.hsn_sac || null,
-        it.qty,
-        it.price,
-        Number(it.qty) * Number(it.price)
-      );
+    // Defaults for firm & branch
+    let targetFirmId = firm_id ? Number(firm_id) : null;
+    let targetBranchId = branch_id ? Number(branch_id) : null;
+    if (!targetFirmId || !targetBranchId) {
+      const defaultBranch = db.prepare(`SELECT id, firm_id FROM branch WHERE is_default = 1 LIMIT 1`).get();
+      if (defaultBranch) {
+        if (!targetFirmId) targetFirmId = defaultBranch.firm_id;
+        if (!targetBranchId) targetBranchId = defaultBranch.id;
+      }
     }
-    return quotationId;
-  });
 
-  const quotationId = tx();
-  const row = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(quotationId);
-  res.status(201).json(row);
+    const tx = db.transaction(() => {
+      const prefix = db.prepare(`SELECT quotation_prefix FROM company_settings WHERE id = 1`).get().quotation_prefix;
+      const number = nextNumber(prefix, 'quotation');
+      const info = db
+        .prepare(
+          `INSERT INTO quotation (
+            number, date, company_id, status,
+            gross_subtotal, product_discount_total, subtotal_after_product_discounts,
+            overall_discount_type, overall_discount_value, overall_discount_amount, net_subtotal,
+            subtotal, discount_type, discount_value, discount_percent, discount_amount,
+            taxable_amount, tax_percent, tax_amount, round_off, total, notes,
+            sales_engineer_id, firm_id, branch_id
+           ) VALUES (?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+        .run(
+          number,
+          date || new Date().toISOString().slice(0, 10),
+          company_id,
+          calc.gross_subtotal,
+          calc.product_discount_total,
+          calc.subtotal_after_product_discounts,
+          calc.overall_discount_type,
+          calc.overall_discount_value,
+          calc.overall_discount_amount,
+          calc.net_subtotal,
+          calc.subtotal,
+          calc.discount_type,
+          calc.discount_value,
+          calc.discount_percent,
+          calc.discount_amount,
+          calc.taxable_amount,
+          calc.tax_percent,
+          calc.tax_amount,
+          calc.round_off,
+          calc.total,
+          notes || '',
+          sales_engineer_id ? Number(sales_engineer_id) : null,
+          targetFirmId,
+          targetBranchId
+        );
+
+      const quotationId = info.lastInsertRowid;
+      const insertItem = db.prepare(
+        `INSERT INTO quotation_item (
+          quotation_id, product_id, part_no, description, hsn_sac, make, qty,
+          actual_unit_price, discount_type, discount_value, product_discount_amount,
+          after_product_discount_amount, overall_discount_allocated, final_unit_price,
+          final_line_total, price, amount
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+      for (const it of calc.items) {
+        insertItem.run(
+          quotationId,
+          it.product_id || null,
+          it.part_no || null,
+          it.description,
+          it.hsn_sac || null,
+          it.make || null,
+          it.qty,
+          it.actual_unit_price,
+          it.discount_type,
+          it.discount_value,
+          it.product_discount_amount,
+          it.after_product_discount_amount,
+          it.overall_discount_allocated,
+          it.final_unit_price,
+          it.final_line_total,
+          it.price,
+          it.amount
+        );
+      }
+      return quotationId;
+    });
+
+    const quotationId = tx();
+    const row = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(quotationId);
+    res.status(201).json(row);
+  } catch (err) {
+    console.error('Failed to create quotation:', err);
+    res.status(400).json({ error: err.message || 'Failed to create quotation' });
+  }
 });
 
 router.put('/:id', (req, res) => {
-  const existing = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
-  if (!existing) return res.status(404).json({ error: 'Quotation not found' });
-  if (existing.status !== 'draft') return res.status(400).json({ error: 'Only draft quotations can be edited' });
+  try {
+    const existing = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Quotation not found' });
+    if (existing.status !== 'draft') return res.status(400).json({ error: 'Only draft quotations can be edited' });
 
-  const { company_id, date, items, tax_percent, notes } = req.body;
-  if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
+    const { company_id, date, items, tax_percent, notes, discount_type, discount_value, overall_discount_type, overall_discount_value, sales_engineer_id, firm_id, branch_id } = req.body;
+    if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
 
-  const taxPercent = tax_percent ?? existing.tax_percent;
-  const { subtotal, taxAmount, total } = computeTotals(items, taxPercent);
+    const oType = overall_discount_type !== undefined ? overall_discount_type : (discount_type !== undefined ? discount_type : (existing.overall_discount_type || existing.discount_type || 'none'));
+    const oVal = overall_discount_value !== undefined ? overall_discount_value : (discount_value !== undefined ? discount_value : (existing.overall_discount_value || existing.discount_value || 0));
+    const taxPct = tax_percent !== undefined ? Number(tax_percent) : existing.tax_percent;
 
-  const tx = db.transaction(() => {
-    db.prepare(
-      `UPDATE quotation SET company_id = ?, date = ?, subtotal = ?, tax_percent = ?, tax_amount = ?, total = ?, notes = ? WHERE id = ?`
-    ).run(company_id || existing.company_id, date || existing.date, subtotal, taxPercent, taxAmount, total, notes ?? existing.notes, req.params.id);
+    const calc = calculateQuotationPricing({
+      items,
+      overallDiscountType: oType,
+      overallDiscountValue: oVal,
+      taxPercent: taxPct,
+    });
 
-    db.prepare(`DELETE FROM quotation_item WHERE quotation_id = ?`).run(req.params.id);
-    const insertItem = db.prepare(
-      `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, qty, price, amount)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    );
-    for (const it of items) {
-      insertItem.run(req.params.id, it.product_id || null, it.part_no || null, it.description, it.hsn_sac || null, it.qty, it.price, Number(it.qty) * Number(it.price));
-    }
-  });
-  tx();
+    const tx = db.transaction(() => {
+      db.prepare(
+        `UPDATE quotation
+         SET company_id = ?, date = ?,
+             gross_subtotal = ?, product_discount_total = ?, subtotal_after_product_discounts = ?,
+             overall_discount_type = ?, overall_discount_value = ?, overall_discount_amount = ?, net_subtotal = ?,
+             subtotal = ?, discount_type = ?, discount_value = ?, discount_percent = ?, discount_amount = ?,
+             taxable_amount = ?, tax_percent = ?, tax_amount = ?, round_off = ?, total = ?, notes = ?,
+             sales_engineer_id = ?, firm_id = ?, branch_id = ?
+         WHERE id = ?`
+      ).run(
+        company_id || existing.company_id,
+        date || existing.date,
+        calc.gross_subtotal,
+        calc.product_discount_total,
+        calc.subtotal_after_product_discounts,
+        calc.overall_discount_type,
+        calc.overall_discount_value,
+        calc.overall_discount_amount,
+        calc.net_subtotal,
+        calc.subtotal,
+        calc.discount_type,
+        calc.discount_value,
+        calc.discount_percent,
+        calc.discount_amount,
+        calc.taxable_amount,
+        calc.tax_percent,
+        calc.tax_amount,
+        calc.round_off,
+        calc.total,
+        notes ?? existing.notes,
+        sales_engineer_id !== undefined ? (sales_engineer_id ? Number(sales_engineer_id) : null) : existing.sales_engineer_id,
+        firm_id !== undefined ? (firm_id ? Number(firm_id) : null) : existing.firm_id,
+        branch_id !== undefined ? (branch_id ? Number(branch_id) : null) : existing.branch_id,
+        req.params.id
+      );
 
-  const row = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
-  res.json(row);
+      db.prepare(`DELETE FROM quotation_item WHERE quotation_id = ?`).run(req.params.id);
+      const insertItem = db.prepare(
+        `INSERT INTO quotation_item (
+          quotation_id, product_id, part_no, description, hsn_sac, make, qty,
+          actual_unit_price, discount_type, discount_value, product_discount_amount,
+          after_product_discount_amount, overall_discount_allocated, final_unit_price,
+          final_line_total, price, amount
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+      for (const it of calc.items) {
+        insertItem.run(
+          req.params.id,
+          it.product_id || null,
+          it.part_no || null,
+          it.description,
+          it.hsn_sac || null,
+          it.make || null,
+          it.qty,
+          it.actual_unit_price,
+          it.discount_type,
+          it.discount_value,
+          it.product_discount_amount,
+          it.after_product_discount_amount,
+          it.overall_discount_allocated,
+          it.final_unit_price,
+          it.final_line_total,
+          it.price,
+          it.amount
+        );
+      }
+    });
+    tx();
+
+    const row = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
+    res.json(row);
+  } catch (err) {
+    console.error('Failed to update quotation:', err);
+    res.status(400).json({ error: err.message || 'Failed to update quotation' });
+  }
 });
 
 router.post('/:id/status', (req, res) => {
@@ -118,8 +357,97 @@ router.post('/:id/status', (req, res) => {
   }
   const existing = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
   if (!existing) return res.status(404).json({ error: 'Quotation not found' });
-  db.prepare(`UPDATE quotation SET status = ? WHERE id = ?`).run(status, req.params.id);
+
+  const tx = db.transaction(() => {
+    db.prepare(`UPDATE quotation SET status = ? WHERE id = ?`).run(status, req.params.id);
+    if (['accepted', 'rejected'].includes(status)) {
+      db.prepare(`UPDATE quotation_follow_up SET status = 'cancelled' WHERE quotation_id = ? AND status = 'scheduled'`).run(req.params.id);
+    }
+  });
+  tx();
+
   res.json(db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id));
+});
+
+router.post('/:id/follow-ups', (req, res) => {
+  const { follow_up_date, notes } = req.body;
+  if (!follow_up_date) return res.status(400).json({ error: 'follow_up_date is required' });
+
+  const quotation = db.prepare(`SELECT * FROM quotation WHERE id = ?`).get(req.params.id);
+  if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+  if (quotation.status !== 'sent') {
+    return res.status(400).json({ error: 'Follow-ups can only be scheduled for quotations with status "sent"' });
+  }
+
+  const userId = req.user?.id || 1;
+  const info = db
+    .prepare(
+      `INSERT INTO quotation_follow_up (quotation_id, follow_up_date, notes, status, created_by)
+       VALUES (?, ?, ?, 'scheduled', ?)`
+    )
+    .run(req.params.id, follow_up_date, notes || '', userId);
+
+  const row = db.prepare(`SELECT * FROM quotation_follow_up WHERE id = ?`).get(info.lastInsertRowid);
+  res.status(201).json(row);
+});
+
+router.get('/:id/follow-ups', (req, res) => {
+  const quotation = db.prepare(`SELECT id FROM quotation WHERE id = ?`).get(req.params.id);
+  if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+
+  const rows = db
+    .prepare(
+      `SELECT f.*, creator.username AS created_by_username, completer.username AS completed_by_username
+       FROM quotation_follow_up f
+       JOIN user creator ON creator.id = f.created_by
+       LEFT JOIN user completer ON completer.id = f.completed_by
+       WHERE f.quotation_id = ?
+       ORDER BY f.follow_up_date DESC, f.id DESC`
+    )
+    .all(req.params.id);
+  res.json({ followUps: rows });
+});
+
+router.post('/:quotationId/follow-ups/:followUpId/complete', (req, res) => {
+  const { outcome, outcome_notes } = req.body;
+
+  const quotation = db.prepare(`SELECT id FROM quotation WHERE id = ?`).get(req.params.quotationId);
+  if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+
+  const followUp = db.prepare(`SELECT * FROM quotation_follow_up WHERE id = ?`).get(req.params.followUpId);
+  if (!followUp) return res.status(404).json({ error: 'Follow-up not found' });
+  if (Number(followUp.quotation_id) !== Number(req.params.quotationId)) {
+    return res.status(400).json({ error: 'Follow-up does not belong to this quotation' });
+  }
+  if (followUp.status !== 'scheduled') {
+    return res.status(400).json({ error: 'Only scheduled follow-ups can be completed' });
+  }
+
+  const userId = req.user?.id || 1;
+  db.prepare(
+    `UPDATE quotation_follow_up
+     SET status = 'completed', completed_at = datetime('now'), completed_by = ?, outcome = ?, outcome_notes = ?
+     WHERE id = ?`
+  ).run(userId, outcome || null, outcome_notes || null, req.params.followUpId);
+
+  res.json(db.prepare(`SELECT * FROM quotation_follow_up WHERE id = ?`).get(req.params.followUpId));
+});
+
+router.post('/:quotationId/follow-ups/:followUpId/cancel', (req, res) => {
+  const quotation = db.prepare(`SELECT id FROM quotation WHERE id = ?`).get(req.params.quotationId);
+  if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+
+  const followUp = db.prepare(`SELECT * FROM quotation_follow_up WHERE id = ?`).get(req.params.followUpId);
+  if (!followUp) return res.status(404).json({ error: 'Follow-up not found' });
+  if (Number(followUp.quotation_id) !== Number(req.params.quotationId)) {
+    return res.status(400).json({ error: 'Follow-up does not belong to this quotation' });
+  }
+  if (followUp.status !== 'scheduled') {
+    return res.status(400).json({ error: 'Only scheduled follow-ups can be cancelled' });
+  }
+
+  db.prepare(`UPDATE quotation_follow_up SET status = 'cancelled' WHERE id = ?`).run(req.params.followUpId);
+  res.json({ ok: true });
 });
 
 router.get('/:id/pdf', (req, res) => {

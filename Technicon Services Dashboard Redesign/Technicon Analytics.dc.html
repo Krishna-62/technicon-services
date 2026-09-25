@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #101312; }
+  * { box-sizing: border-box; }
+  a { color: #B8F23A; text-decoration: none; }
+  a:hover { color: #D8F98D; }
+  [data-app] { --accent: #B8F23A; }
+  ::selection { background: rgba(184,242,58,.25); }
+  [data-app] *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  [data-scroll]::-webkit-scrollbar { width: 8px; height: 8px; }
+  [data-scroll]::-webkit-scrollbar-thumb { background: #292E2A; border-radius: 8px; }
+  [data-scroll]::-webkit-scrollbar-track { background: transparent; }
+  @keyframes drawLine { from { stroke-dashoffset: 3200; } to { stroke-dashoffset: 0; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes areaIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes segIn { from { stroke-dasharray: 0 var(--c); } to { stroke-dasharray: var(--len) var(--c); } }
+  @keyframes barIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes centerIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  @keyframes spinOnce { to { transform: rotate(360deg); } }
+  @keyframes shimmer { from { background-position: -280px 0; } to { background-position: 380px 0; } }
+  @media (max-width: 1180px) { [data-grid="main"] { grid-template-columns: minmax(0,1fr) !important; } [data-grid="lower"] { grid-template-columns: minmax(0,1fr) !important; } }
+  @media (max-width: 860px) {
+    [data-nav] { position: fixed !important; z-index: 60; top: 0; bottom: 0; left: 0; transform: translateX(-100%); transition: transform .26s ease; box-shadow: 0 0 0 100vmax rgba(0,0,0,0); }
+    [data-nav][data-open="true"] { transform: translateX(0); box-shadow: 40px 0 80px rgba(0,0,0,.6); }
+    [data-navtoggle] { display: inline-flex !important; }
+    [data-grid="pipeline"] { grid-template-columns: minmax(0,1fr) !important; }
+    [data-kpis] { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-app] *, [data-app] *::before, [data-app] *::after { animation: none !important; transition: none !important; }
+    [data-spot] { display: none !important; }
+  }
+</style>
+</helmet>
+<div data-app="1" style="--accent: {{ accent }}; display: flex; min-height: 100vh; background: #101312; color: #F5F7F4; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;">
+
+  <aside data-nav="1" data-open="{{ navOpenStr }}" data-scroll="1" style="width: 246px; flex: 0 0 246px; background: #0B0D0D; border-right: 1px solid #292E2A; display: flex; flex-direction: column; padding: 18px 14px 14px; gap: 22px; height: 100vh; position: sticky; top: 0; overflow-y: auto;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 2px 6px;">
+      <div style="width: 30px; height: 30px; border-radius: 9px; border: 1px solid #3a4a1f; background: #1D211E; color: var(--accent); display: grid; place-items: center; font-size: 12px; font-weight: 600; letter-spacing: .02em;">TS</div>
+      <div style="display: flex; flex-direction: column; line-height: 1.1;">
+        <span style="font-size: 13.5px; font-weight: 600; letter-spacing: .04em;">TECHNICON</span>
+        <span style="font-size: 10.5px; letter-spacing: .18em; color: #A5AEA8;">SERVICES</span>
+      </div>
+    </div>
+
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="font-size: 10.5px; letter-spacing: .14em; color: #6d756f; padding: 0 8px 6px;">MAIN</div>
+      <sc-for list="{{ navMain }}" as="i" hint-placeholder-count="6">
+        <a href="#" data-view="{{ i.view }}" aria-current="{{ i.current }}" onClick="{{ go }}" style="display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; text-decoration: none; background: {{ i.bg }}; color: {{ i.color }}; border: 1px solid {{ i.bd }}; box-shadow: {{ i.ring }}; transition: background .2s, color .2s;" style-hover="background-color: #161A18; color: #F5F7F4;">
+          <span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 2px; background: {{ i.mark }};"></span>{{ i.label }}</a>
+      </sc-for>
+    </nav>
+
+    <nav aria-label="Reports" style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="font-size: 10.5px; letter-spacing: .14em; color: #6d756f; padding: 0 8px 6px;">REPORTS</div>
+      <sc-for list="{{ navReports }}" as="i" hint-placeholder-count="5">
+        <a href="#" data-view="{{ i.view }}" aria-current="{{ i.current }}" onClick="{{ go }}" style="display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; text-decoration: none; background: {{ i.bg }}; color: {{ i.color }}; border: 1px solid {{ i.bd }}; box-shadow: {{ i.ring }}; transition: background .2s, color .2s;" style-hover="background-color: #161A18; color: #F5F7F4;">
+          <span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 2px; background: {{ i.mark }};"></span>{{ i.label }}</a>
+      </sc-for>
+    </nav>
+
+    <nav aria-label="System" style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="font-size: 10.5px; letter-spacing: .14em; color: #6d756f; padding: 0 8px 6px;">SYSTEM</div>
+      <sc-for list="{{ navSystem }}" as="i" hint-placeholder-count="2">
+        <a href="#" data-view="{{ i.view }}" aria-current="{{ i.current }}" onClick="{{ go }}" style="display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; text-decoration: none; background: {{ i.bg }}; color: {{ i.color }}; border: 1px solid {{ i.bd }}; box-shadow: {{ i.ring }}; transition: background .2s, color .2s;" style-hover="background-color: #161A18; color: #F5F7F4;">
+          <span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 2px; background: {{ i.mark }};"></span>{{ i.label }}</a>
+      </sc-for>
+    </nav>
+
+    <div style="margin-top: auto; border-top: 1px solid #1c211e; padding-top: 12px; display: flex; align-items: center; gap: 10px;">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: #1D211E; border: 1px solid #333c31; display: grid; place-items: center; font-size: 12px; color: var(--accent);">RM</div>
+      <div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">
+        <span style="font-size: 12.5px;">R. Mehta</span>
+        <span style="font-size: 11px; color: #6d756f;">Sales Operations</span>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
+
+    <header style="position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 14px; padding: 12px 24px; background: rgba(16,19,18,.86); backdrop-filter: blur(12px); border-bottom: 1px solid #1c211e;">
+      <button type="button" data-navtoggle="1" aria-label="Open navigation" onClick="{{ toggleNav }}" style="display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 9px; background: #171918; border: 1px solid #292E2A; color: #A5AEA8; cursor: pointer; flex: 0 0 auto;">≡</button>
+      <label style="flex: 1; min-width: 0; max-width: 520px; display: flex; align-items: center; gap: 9px; height: 36px; padding: 0 10px 0 12px; border-radius: 10px; background: #171918; border: 1px solid #292E2A; transition: border-color .2s;" style-hover="border-color: #3a4237;">
+        <span aria-hidden="true" style="color: #6d756f; font-size: 13px;">⌕</span>
+        <input type="search" placeholder="Search anything" aria-label="Search anything" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #F5F7F4; font-family: inherit; font-size: 13px;" />
+        <span style="display: flex; gap: 4px; color: #6d756f; font-size: 10.5px;"><kbd style="padding: 2px 5px; border: 1px solid #292E2A; border-radius: 5px; background: #1D211E;">⌘</kbd><kbd style="padding: 2px 5px; border: 1px solid #292E2A; border-radius: 5px; background: #1D211E;">K</kbd></span>
+      </label>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+        <button type="button" aria-label="Refresh data" onClick="{{ onRefresh }}" style="width: 34px; height: 34px; border-radius: 9px; background: #171918; border: 1px solid #292E2A; color: #A5AEA8; cursor: pointer; display: grid; place-items: center; transition: border-color .2s, color .2s;" style-hover="border-color: #3a4237; color: #F5F7F4;">
+          <span ref="{{ refreshRef }}" aria-hidden="true" style="display: block; font-size: 14px; line-height: 1;">⟳</span>
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 9px; background: #171918; border: 1px solid #292E2A; font-size: 12.5px; color: #A5AEA8;">
+          <span aria-hidden="true">▤</span><span>{{ dateRangeLabel }}</span>
+        </div>
+        <button type="button" aria-label="Notifications, 3 unread" style="position: relative; width: 34px; height: 34px; border-radius: 9px; background: #171918; border: 1px solid #292E2A; color: #A5AEA8; cursor: pointer; transition: border-color .2s, color .2s;" style-hover="border-color: #3a4237; color: #F5F7F4;">
+          <span aria-hidden="true">◔</span>
+          <span style="position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></span>
+        </button>
+        <button type="button" style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px 0 4px; border-radius: 9px; background: #171918; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 12.5px; cursor: pointer;" style-hover="border-color: #3a4237;">
+          <span style="width: 26px; height: 26px; border-radius: 7px; background: #1D211E; color: var(--accent); display: grid; place-items: center; font-size: 11px;">RM</span>Profile
+        </button>
+      </div>
+    </header>
+
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px;">
+
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Business Analytics</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8; max-width: 62ch; text-wrap: pretty;">Real-time view of revenue, quotations, customers and business performance.</p>
+        </div>
+        <div data-kpis="1" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 0; border: 1px solid #292E2A; border-radius: 12px; background: #171918; overflow: hidden;">
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">REVENUE</span>
+            <span style="font-size: 20px; font-weight: 500;">{{ totalLabel }}</span>
+          </div>
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">ORDERS</span>
+            <span style="font-size: 20px; font-weight: 500;">{{ ordersTotal }}</span>
+          </div>
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">OPEN QUOTES</span>
+            <span style="font-size: 20px; font-weight: 500;">17</span>
+          </div>
+          <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">CUSTOMERS</span>
+            <span style="font-size: 20px; font-weight: 500;">152</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-grid="main" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+
+        <div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+
+          <section onMouseMove="{{ onCardSpot }}" onMouseLeave="{{ onCardSpotOut }}" aria-label="Revenue Analytics" style="position: relative; overflow: hidden; background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 20px 20px 12px; transition: border-color .25s ease, transform .25s ease;" style-hover="border-color: #37402f;">
+            <div data-spot="1" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(260px circle at 50% 0%, rgba(184,242,58,.07), transparent 70%);"></div>
+            <div style="position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <h2 style="margin: 0; font-size: 19px; font-weight: 500; letter-spacing: -.01em;">Revenue Analytics</h2>
+                <p style="margin: 0; font-size: 12.5px; color: #A5AEA8;">Revenue performance across the selected period.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <div style="position: relative;">
+                  <button type="button" aria-haspopup="listbox" aria-expanded="{{ metricOpen }}" onClick="{{ toggleMetric }}" style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 10px; border-radius: 8px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 12px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">{{ metricLabel }}<span aria-hidden="true" style="color: #6d756f; font-size: 9px;">▾</span></button>
+                  <sc-if value="{{ metricOpen }}" hint-placeholder-val="{{ false }}">
+                    <ul role="listbox" style="position: absolute; z-index: 30; top: 36px; right: 0; margin: 0; padding: 5px; list-style: none; min-width: 148px; background: #1D211E; border: 1px solid #333c31; border-radius: 10px; box-shadow: 0 18px 40px rgba(0,0,0,.55); animation: fadeUp .17s ease both;">
+                      <sc-for list="{{ metricOptions }}" as="opt" hint-placeholder-count="3">
+                        <li><button type="button" role="option" aria-selected="{{ opt.selected }}" data-value="{{ opt.name }}" onClick="{{ pickMetric }}" style="width: 100%; text-align: left; padding: 7px 9px; border-radius: 7px; border: 0; background: transparent; color: #F5F7F4; font-family: inherit; font-size: 12.5px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px;" style-hover="background: #23271f;">{{ opt.name }}<span style="color: {{ opt.tick }};">✓</span></button></li>
+                      </sc-for>
+                    </ul>
+                  </sc-if>
+                </div>
+                <div style="position: relative;">
+                  <button type="button" aria-haspopup="listbox" aria-expanded="{{ periodOpen }}" onClick="{{ togglePeriod }}" style="display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 10px; border-radius: 8px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 12px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">{{ periodLabel }}<span aria-hidden="true" style="color: #6d756f; font-size: 9px;">▾</span></button>
+                  <sc-if value="{{ periodOpen }}" hint-placeholder-val="{{ false }}">
+                    <ul role="listbox" style="position: absolute; z-index: 30; top: 36px; right: 0; margin: 0; padding: 5px; list-style: none; min-width: 148px; background: #1D211E; border: 1px solid #333c31; border-radius: 10px; box-shadow: 0 18px 40px rgba(0,0,0,.55); animation: fadeUp .17s ease both;">
+                      <sc-for list="{{ periodOptions }}" as="opt" hint-placeholder-count="3">
+                        <li><button type="button" role="option" aria-selected="{{ opt.selected }}" data-value="{{ opt.name }}" onClick="{{ pickPeriod }}" style="width: 100%; text-align: left; padding: 7px 9px; border-radius: 7px; border: 0; background: transparent; color: #F5F7F4; font-family: inherit; font-size: 12.5px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px;" style-hover="background: #23271f;">{{ opt.name }}<span style="color: {{ opt.tick }};">✓</span></button></li>
+                      </sc-for>
+                    </ul>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+
+            <div style="position: relative; display: flex; align-items: center; gap: 12px; margin: 16px 0 4px;">
+              <span style="font-size: 12.5px; color: #A5AEA8;">Total</span>
+              <span style="font-size: 30px; font-weight: 500; letter-spacing: -.02em; line-height: 1;">{{ totalLabel }}</span>
+              <span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; border: 1px solid #3a4a1f; color: var(--accent); font-size: 11.5px;">▲ {{ deltaLabel }}</span>
+              <span style="font-size: 11.5px; color: #6d756f;">vs previous period</span>
+            </div>
+
+            <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="height: 316px; margin-top: 8px; border-radius: 12px; background: linear-gradient(90deg, #1a1e1c 0%, #22271f 40%, #1a1e1c 80%); background-size: 600px 100%; animation: shimmer 1.1s linear infinite;"></div>
+            </sc-if>
+
+            <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+              <figure style="position: relative; margin: 8px 0 0;">
+                <figcaption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">{{ chartDescription }}</figcaption>
+                <svg viewBox="0 0 920 320" role="img" aria-label="{{ chartDescription }}" style="display: block; width: 100%; height: auto; overflow: visible;">
+                  <defs>
+                    <linearGradient id="tcArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.34"></stop>
+                      <stop offset="60%" stop-color="var(--accent)" stop-opacity="0.07"></stop>
+                      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <g>
+                    <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="6">
+                      <line x1="46" x2="908" y1="{{ t.y }}" y2="{{ t.y }}" stroke="#20251f" stroke-width="1"></line>
+                    </sc-for>
+                  </g>
+                  <path d="{{ areaPath }}" fill="url(#tcArea)" style="animation: areaIn .8s ease .45s both;"></path>
+                  <path d="{{ ordersPath }}" fill="none" stroke="#708D31" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3200" style="opacity: {{ ordersOpacity }}; animation: drawLine 1.15s cubic-bezier(.4,0,.2,1) .3s both;"></path>
+                  <path d="{{ revenuePath }}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3200" style="animation: drawLine 1.15s cubic-bezier(.4,0,.2,1) both;"></path>
+                  <line ref="{{ guideRef }}" x1="0" x2="0" y1="16" y2="286" stroke="#4a5347" stroke-width="1" stroke-dasharray="3 4" style="opacity: 0;"></line>
+                  <circle ref="{{ dotRef }}" r="5" fill="#101312" stroke="var(--accent)" stroke-width="2.4" cx="0" cy="0" style="opacity: 0; filter: drop-shadow(0 0 6px rgba(184,242,58,.55));"></circle>
+                  <rect x="46" y="16" width="862" height="270" fill="transparent" onMouseMove="{{ onChartMove }}" onMouseLeave="{{ onChartLeave }}" onTouchMove="{{ onChartMove }}" style="cursor: crosshair;"></rect>
+                </svg>
+                <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; font-size: 10.5px; color: #6d756f; line-height: 1;">
+                  <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="6">
+                    <span style="position: absolute; left: 0; width: 4%; text-align: right; top: {{ t.topPct }}%; transform: translateY(-50%);">{{ t.label }}</span>
+                  </sc-for>
+                  <sc-for list="{{ xTicks }}" as="t" hint-placeholder-count="12">
+                    <span style="position: absolute; top: 96%; left: {{ t.leftPct }}%; transform: translateX(-50%);">{{ t.label }}</span>
+                  </sc-for>
+                </div>
+                <div ref="{{ tipRef }}" role="status" style="position: absolute; left: 0; top: 0; opacity: 0; transform: translate(-50%, -8px); pointer-events: none; min-width: 118px; padding: 9px 11px; border-radius: 10px; background: #0d100e; border: 1px solid #333c31; box-shadow: 0 16px 34px rgba(0,0,0,.6); transition: opacity .16s ease, transform .16s ease; display: flex; flex-direction: column; gap: 3px;">
+                  <span data-tip-month="1" style="font-size: 10.5px; color: #A5AEA8; letter-spacing: .04em;">—</span>
+                  <span data-tip-rev="1" style="font-size: 16px; font-weight: 500;">—</span>
+                  <span data-tip-ord="1" style="font-size: 11px; color: var(--accent);">—</span>
+                </div>
+              </figure>
+              <div style="display: flex; gap: 18px; padding: 6px 0 4px 46px;">
+                <span style="display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: #A5AEA8;"><span style="width: 14px; height: 2px; background: var(--accent); border-radius: 2px;"></span>Revenue</span>
+                <span style="display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: #A5AEA8;"><span style="width: 14px; height: 2px; background: #708D31; border-radius: 2px;"></span>Orders</span>
+              </div>
+            </sc-if>
+          </section>
+
+          <section onMouseMove="{{ onCardSpot }}" onMouseLeave="{{ onCardSpotOut }}" aria-label="Quotation Pipeline" style="position: relative; overflow: hidden; background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 20px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <div data-spot="1" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(240px circle at 50% 0%, rgba(184,242,58,.06), transparent 70%);"></div>
+            <div style="position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                <h2 style="margin: 0; font-size: 19px; font-weight: 500;">Quotation Pipeline</h2>
+                <p style="margin: 0; font-size: 12.5px; color: #A5AEA8;">Stage distribution for the selected period.</p>
+              </div>
+              <span style="font-size: 11.5px; color: #6d756f; border: 1px solid #292E2A; border-radius: 8px; padding: 5px 9px;">{{ pipelineTotal }} quotations</span>
+            </div>
+
+            <div data-grid="pipeline" style="position: relative; display: grid; grid-template-columns: 236px minmax(0,1fr); gap: 26px; align-items: center; margin-top: 18px;">
+              <div style="position: relative; display: grid; place-items: center;">
+                <svg viewBox="0 0 200 200" role="img" aria-label="{{ donutDescription }}" style="width: 100%; max-width: 212px; height: auto; transform: rotate(-90deg);">
+                  <circle cx="100" cy="100" r="76" fill="none" stroke="#1D211E" stroke-width="18"></circle>
+                  <g data-donut="1" onMouseLeave="{{ onSegLeave }}">
+                    <sc-for list="{{ stages }}" as="s" hint-placeholder-count="5">
+                      <circle cx="100" cy="100" r="76" fill="none" stroke="{{ s.color }}" stroke-width="18" stroke-linecap="butt" data-stage="{{ s.name }}" onMouseEnter="{{ onSegEnter }}" style="--c: 477.5; --len: {{ s.len }}; stroke-dasharray: 0 477.5; transform: rotate({{ s.rot }}deg); transform-origin: 100px 100px; transition: stroke-width .2s ease, opacity .2s ease; animation: segIn .9s cubic-bezier(.4,0,.2,1) {{ s.delay }}s both; cursor: pointer;" style-hover="stroke-width: 23;"></circle>
+                    </sc-for>
+                  </g>
+                </svg>
+                <div ref="{{ donutCenterRef }}" style="position: absolute; display: flex; flex-direction: column; align-items: center; gap: 1px; animation: centerIn .5s ease .95s both; pointer-events: none;">
+                  <span data-center-value="1" style="font-size: 30px; font-weight: 500; letter-spacing: -.02em;">{{ acceptedRate }}</span>
+                  <span data-center-label="1" style="font-size: 11.5px; color: #A5AEA8;">Accepted rate</span>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column;">
+                <sc-for list="{{ stages }}" as="s" hint-placeholder-count="5">
+                  <div style="display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; padding: 9px 10px; border-radius: 9px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                    <div style="display: flex; align-items: center; gap: 9px; min-width: 0;">
+                      <span style="width: 8px; height: 8px; border-radius: 3px; background: {{ s.color }}; flex: 0 0 auto;"></span>
+                      <span style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ s.name }}</span>
+                    </div>
+                    <div style="display: flex; align-items: baseline; gap: 10px; font-size: 12.5px;">
+                      <span style="color: #F5F7F4;">{{ s.count }}</span>
+                      <span style="color: #6d756f; min-width: 52px; text-align: right;">{{ s.value }}</span>
+                    </div>
+                    <div style="grid-column: 1 / -1; height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;">
+                      <div style="height: 100%; width: {{ s.pct }}%; background: {{ s.color }}; border-radius: 3px; transform-origin: left; animation: barIn .62s cubic-bezier(.4,0,.2,1) {{ s.delay }}s both;"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div ref="{{ donutTipRef }}" role="status" style="position: absolute; left: 0; top: 0; opacity: 0; transform: translate(-50%, -8px); pointer-events: none; padding: 8px 11px; border-radius: 10px; background: #0d100e; border: 1px solid #333c31; box-shadow: 0 16px 34px rgba(0,0,0,.6); transition: opacity .16s ease, transform .16s ease; display: flex; flex-direction: column; gap: 2px;">
+              <span data-dtip-stage="1" style="font-size: 10.5px; color: #A5AEA8;">—</span>
+              <span data-dtip-count="1" style="font-size: 14px; font-weight: 500;">—</span>
+              <span data-dtip-value="1" style="font-size: 11px; color: var(--accent);">—</span>
+            </div>
+          </section>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+
+          <section aria-label="Customer Performance" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Customer Performance</h2>
+              <span style="font-size: 11.5px; color: #A5AEA8; border: 1px solid #292E2A; border-radius: 8px; padding: 4px 9px;">Repeat vs new</span>
+            </div>
+            <svg viewBox="0 0 320 110" role="img" aria-label="Revenue contribution trend from repeat customer accounts" style="display: block; width: 100%; height: auto;">
+              <defs>
+                <linearGradient id="tcArea2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.42"></stop>
+                  <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <path d="{{ segmentArea }}" fill="url(#tcArea2)" style="animation: areaIn .8s ease .3s both;"></path>
+              <path d="{{ segmentLine }}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3200" style="animation: drawLine 1.1s cubic-bezier(.4,0,.2,1) both;"></path>
+            </svg>
+            <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 28px; font-weight: 500; letter-spacing: -.02em; line-height: 1;">{{ totalLabel }}</span>
+              <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 11.5px;">▲ {{ deltaLabel }}</span>
+            </div>
+            <p style="margin: 0; font-size: 12px; color: #A5AEA8;">Driven mainly by repeat accounts <span style="color: var(--accent);">(+18%)</span> — 68% of period revenue.</p>
+          </section>
+
+          <section aria-label="Top Customers" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Top Customers</h2>
+              <span style="font-size: 11.5px; color: #6d756f;">by revenue</span>
+            </div>
+            <sc-for list="{{ customers }}" as="c" hint-placeholder-count="5">
+              <div style="display: grid; grid-template-columns: 28px minmax(0,1fr) auto; gap: 4px 10px; align-items: center; padding: 6px; border-radius: 9px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                <span style="width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: var(--accent); display: grid; place-items: center; font-size: 11px;">{{ c.initial }}</span>
+                <span style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.name }}</span>
+                <span style="display: flex; gap: 10px; align-items: baseline; font-size: 12.5px;"><span>{{ c.value }}</span><span style="color: #6d756f;">{{ c.pctLabel }}</span></span>
+                <div style="grid-column: 2 / -1; height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;">
+                  <div style="height: 100%; width: {{ c.pct }}%; background: linear-gradient(90deg, #708D31, var(--accent)); border-radius: 3px; transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) {{ c.delay }}s both;"></div>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+
+          <section aria-label="Key Business Insights" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <h2 style="margin: 0 0 2px; font-size: 16px; font-weight: 500;">Key Business Insights</h2>
+            <div style="display: flex; gap: 11px; padding: 9px; border-radius: 10px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: #D9A441; display: grid; place-items: center; font-size: 12px;">!</span>
+              <div style="min-width: 0;">
+                <p style="margin: 0; font-size: 13px;">3 quotations worth ₹2.4L need follow-up</p>
+                <p style="margin: 2px 0 0; font-size: 11.5px; color: #A5AEA8;">Sent over 9 days ago with no customer response. <a href="#">Review</a></p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 11px; padding: 9px; border-radius: 10px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: var(--accent); display: grid; place-items: center; font-size: 12px;">▲</span>
+              <div style="min-width: 0;">
+                <p style="margin: 0; font-size: 13px;">ABC Industries generated ₹8.4L this period</p>
+                <p style="margin: 2px 0 0; font-size: 11.5px; color: #A5AEA8;">35% of total revenue, up 21% on the previous period.</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 11px; padding: 9px; border-radius: 10px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: #E25757; display: grid; place-items: center; font-size: 12px;">◦</span>
+              <div style="min-width: 0;">
+                <p style="margin: 0; font-size: 13px;">14 customers are currently inactive</p>
+                <p style="margin: 2px 0 0; font-size: 11.5px; color: #A5AEA8;">No quotation activity in 90 days. <a href="#">Open list</a></p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 11px; padding: 9px; border-radius: 10px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: #7E95FF; display: grid; place-items: center; font-size: 12px;">◆</span>
+              <div style="min-width: 0;">
+                <p style="margin: 0; font-size: 13px;">Product N9310066 is your strongest revenue product</p>
+                <p style="margin: 2px 0 0; font-size: 11.5px; color: #A5AEA8;">₹5.1L across 28 orders and 19 customers.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div data-grid="lower" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+
+        <section aria-label="Follow-Up Activity" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <h2 style="margin: 0; font-size: 19px; font-weight: 500;">Follow-Up Activity</h2>
+            <div style="display: flex; gap: 8px; font-size: 11.5px;">
+              <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 8px; border: 1px solid #3d2626; color: #E25757;">Overdue 5</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 8px; border: 1px solid #3f3520; color: #D9A441;">Due today 3</span>
+              <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 8px; border: 1px solid #3a4a1f; color: var(--accent);">Upcoming 9</span>
+            </div>
+          </div>
+          <div data-scroll="1" style="margin-top: 12px; overflow-x: auto;">
+            <table style="width: 100%; min-width: 540px; border-collapse: collapse; font-size: 12.5px;">
+              <thead>
+                <tr>
+                  <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CUSTOMER</th>
+                  <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">QUOTATION</th>
+                  <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">AMOUNT</th>
+                  <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ followUps }}" as="f" hint-placeholder-count="5">
+                  <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                    <td style="padding: 10px; border-bottom: 1px solid #1a1f1c;">{{ f.customer }}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ f.quote }}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">{{ f.amount }}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">
+                      <span style="display: inline-flex; align-items: center; gap: 6px; color: {{ f.color }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ f.color }};"></span>{{ f.status }}</span>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+          <section aria-label="Product Performance" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <h2 style="margin: 0 0 2px; font-size: 16px; font-weight: 500;">Product Performance</h2>
+            <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
+              <div style="display: grid; grid-template-columns: minmax(0,1fr) 72px auto; gap: 10px; align-items: center; padding: 8px; border-radius: 9px; transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                <div style="min-width: 0;">
+                  <p style="margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ p.code }}</p>
+                  <p style="margin: 2px 0 0; font-size: 11.5px; color: #6d756f;">{{ p.meta }}</p>
+                </div>
+                <svg viewBox="0 0 72 26" aria-hidden="true" style="display: block; width: 72px; height: 26px;">
+                  <polyline points="{{ p.spark }}" fill="none" stroke="{{ p.color }}" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3200" style="animation: drawLine 1s ease .2s both;"></polyline>
+                </svg>
+                <div style="text-align: right;">
+                  <p style="margin: 0; font-size: 13px;">{{ p.revenue }}</p>
+                  <p style="margin: 2px 0 0; font-size: 11.5px; color: {{ p.color }};">{{ p.trend }}</p>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+
+          <section aria-label="Recent Activity" style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 2px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+            <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 500;">Recent Activity</h2>
+            <sc-for list="{{ activity }}" as="a" hint-placeholder-count="5">
+              <div style="display: grid; grid-template-columns: 14px minmax(0,1fr) auto; gap: 10px; align-items: start; padding: 7px 0;">
+                <span aria-hidden="true" style="margin-top: 5px; width: 7px; height: 7px; border-radius: 50%; background: {{ a.color }}; box-shadow: 0 0 0 3px #1D211E;"></span>
+                <span style="font-size: 12.5px; color: #cfd6d0;">{{ a.text }}</span>
+                <span style="font-size: 11px; color: #6d756f; white-space: nowrap;">{{ a.time }}</span>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isQuotations }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Quotations</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Every quotation with its stage, value and follow-up position.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 12.5px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">Export</button>
+          <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">New quotation</button>
+        </div>
+      </div>
+
+      <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding-bottom: 12px;">
+          <div style="display: flex; gap: 7px; flex-wrap: wrap;">
+            <sc-for list="{{ qChips }}" as="c" hint-placeholder-count="5">
+              <button type="button" data-value="{{ c.name }}" onClick="{{ setQFilter }}" style="display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; border-radius: 8px; font-family: inherit; font-size: 12px; cursor: pointer; background: {{ c.bg }}; border: 1px solid {{ c.bd }}; color: {{ c.color }}; transition: background .2s, border-color .2s;" style-hover="border-color: #3a4237;">{{ c.name }}<span style="color: #6d756f;">{{ c.count }}</span></button>
+            </sc-for>
+          </div>
+          <span style="font-size: 11.5px; color: #6d756f;">Showing {{ qCount }}</span>
+        </div>
+        <div data-scroll="1" style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 760px; border-collapse: collapse; font-size: 12.5px;">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">QUOTATION</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CUSTOMER</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">DATE</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">ITEMS</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">AMOUNT</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">STAGE</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">FOLLOW-UP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ quotes }}" as="q" hint-placeholder-count="8">
+                <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;"><a href="#">{{ q.id }}</a></td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">{{ q.customer }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ q.date }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right; color: #A5AEA8;">{{ q.items }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">{{ q.amount }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;"><span style="display: inline-flex; align-items: center; gap: 6px; color: {{ q.tone }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ q.tone }};"></span>{{ q.stage }}</span></td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right; color: {{ q.followTone }};">{{ q.follow }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isPO }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Purchase Orders</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Orders raised against accepted quotations, by fulfilment state.</p>
+        </div>
+        <div data-kpis="1" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border: 1px solid #292E2A; border-radius: 12px; background: #171918; overflow: hidden;">
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">OPEN VALUE</span><span style="font-size: 20px; font-weight: 500;">₹5.35L</span>
+          </div>
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">DELIVERED</span><span style="font-size: 20px; font-weight: 500;">₹4.97L</span>
+          </div>
+          <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">THIS MONTH</span><span style="font-size: 20px; font-weight: 500;">6</span>
+          </div>
+        </div>
+      </div>
+      <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+        <div data-scroll="1" style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12.5px;">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">ORDER</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CUSTOMER</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">LINKED QUOTE</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">RAISED</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">AMOUNT</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ pos }}" as="p" hint-placeholder-count="6">
+                <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;"><a href="#">{{ p.id }}</a></td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">{{ p.customer }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ p.quote }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ p.date }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">{{ p.amount }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;"><span style="display: inline-flex; align-items: center; gap: 6px; color: {{ p.tone }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ p.tone }};"></span>{{ p.status }}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isPI }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Performa Invoices</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Issued invoices and where collection currently stands.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 7px; min-width: 260px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #A5AEA8;"><span>Collected this period</span><span style="color: #F5F7F4;">₹6.06L of ₹9.21L</span></div>
+          <div style="height: 6px; border-radius: 4px; background: #1D211E; overflow: hidden;">
+            <div style="height: 100%; width: 66%; background: linear-gradient(90deg, #708D31, var(--accent)); transform-origin: left; animation: barIn .7s cubic-bezier(.4,0,.2,1) both;"></div>
+          </div>
+          <span style="font-size: 11px; color: #6d756f;">₹1.9L past due across 3 invoices</span>
+        </div>
+      </div>
+      <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+        <div data-scroll="1" style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 780px; border-collapse: collapse; font-size: 12.5px;">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">INVOICE</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CUSTOMER</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">ISSUED</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">DUE</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">AMOUNT</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f; width: 150px;">PAYMENT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ pis }}" as="p" hint-placeholder-count="6">
+                <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;"><a href="#">{{ p.id }}</a></td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">{{ p.customer }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ p.issued }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ p.due }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">{{ p.amount }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                      <span style="font-size: 11.5px; color: {{ p.tone }};">{{ p.status }}</span>
+                      <div style="height: 3px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ p.pct }}%; background: {{ p.tone }};"></div></div>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isCompanies }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Companies</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">152 customer records, ranked by revenue this period.</p>
+        </div>
+        <label style="display: flex; align-items: center; gap: 9px; height: 34px; padding: 0 12px; border-radius: 10px; background: #171918; border: 1px solid #292E2A; min-width: 240px;">
+          <span aria-hidden="true" style="color: #6d756f; font-size: 13px;">⌕</span>
+          <input type="search" placeholder="Filter companies" aria-label="Filter companies" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #F5F7F4; font-family: inherit; font-size: 12.5px;" />
+        </label>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 14px;">
+        <sc-for list="{{ companies }}" as="c" hint-placeholder-count="8">
+          <article style="background: #171918; border: 1px solid #292E2A; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; transition: border-color .25s ease, transform .25s ease;" style-hover="border-color: #37402f; transform: translateY(-1px);">
+            <div style="display: flex; align-items: flex-start; gap: 11px;">
+              <span style="width: 34px; height: 34px; flex: 0 0 auto; border-radius: 10px; background: #1D211E; border: 1px solid #2f362e; color: var(--accent); display: grid; place-items: center; font-size: 12px;">{{ c.initial }}</span>
+              <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.name }}</span>
+                <span style="font-size: 11.5px; color: #6d756f;">{{ c.city }}</span>
+              </div>
+              <span style="margin-left: auto; font-size: 11px; color: {{ c.tone }}; border: 1px solid #292E2A; border-radius: 7px; padding: 3px 8px; white-space: nowrap;">{{ c.health }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #1f2421; padding-top: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">REVENUE</span>
+                <span style="font-size: 18px; font-weight: 500;">{{ c.revenue }}</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 2px; text-align: right;">
+                <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">OPEN QUOTES</span>
+                <span style="font-size: 18px; font-weight: 500;">{{ c.open }}</span>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Products</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Catalogue with price, stock position and ordering trend.</p>
+        </div>
+        <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Import catalogue</button>
+      </div>
+      <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+        <div data-scroll="1" style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 820px; border-collapse: collapse; font-size: 12.5px;">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CODE</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">DESCRIPTION</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CATEGORY</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">UNIT PRICE</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">STOCK</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">ORDERS</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">TREND</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ products }}" as="p" hint-placeholder-count="7">
+                <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;"><a href="#">{{ p.code }}</a></td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">{{ p.name }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ p.cat }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;">{{ p.price }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right; color: #A5AEA8;">{{ p.stock }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right; color: #A5AEA8;">{{ p.orders }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                      <svg viewBox="0 0 72 26" aria-hidden="true" style="width: 72px; height: 22px;"><polyline points="{{ p.spark }}" fill="none" stroke="{{ p.tone }}" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3200" style="animation: drawLine 1s ease .15s both;"></polyline></svg>
+                      <span style="color: {{ p.tone }}; min-width: 40px; text-align: right;">{{ p.trend }}</span>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isBHealth }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Business Health</h1>
+        <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">A composite read of momentum, pipeline, collections, retention and mix.</p>
+      </div>
+      <div data-grid="main" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+        <section onMouseMove="{{ onCardSpot }}" onMouseLeave="{{ onCardSpotOut }}" style="position: relative; overflow: hidden; background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 20px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+          <div data-spot="1" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s ease;"></div>
+          <div style="position: relative; display: flex; align-items: center; gap: 28px; flex-wrap: wrap;">
+            <div style="position: relative; display: grid; place-items: center; width: 168px; height: 168px;">
+              <svg viewBox="0 0 200 200" role="img" aria-label="Overall business health score 74 out of 100" style="width: 168px; height: 168px; transform: rotate(-90deg);">
+                <circle cx="100" cy="100" r="78" fill="none" stroke="#1D211E" stroke-width="14"></circle>
+                <circle cx="100" cy="100" r="78" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" style="--c: 490; --len: 363; stroke-dasharray: 0 490; animation: segIn 1s cubic-bezier(.4,0,.2,1) both;"></circle>
+              </svg>
+              <div style="position: absolute; display: flex; flex-direction: column; align-items: center; animation: centerIn .5s ease .9s both;">
+                <span style="font-size: 38px; font-weight: 500; letter-spacing: -.02em; line-height: 1;">74</span>
+                <span style="font-size: 11.5px; color: #A5AEA8;">out of 100</span>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 12px;">
+              <sc-for list="{{ healthParts }}" as="h" hint-placeholder-count="5">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px;"><span>{{ h.name }}</span><span style="color: {{ h.tone }};">{{ h.score }}</span></div>
+                  <div style="height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ h.score }}%; background: {{ h.tone }}; transform-origin: left; animation: barIn .65s cubic-bezier(.4,0,.2,1) both;"></div></div>
+                  <span style="font-size: 11px; color: #6d756f;">{{ h.note }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 500;">What is pulling the score</h2>
+          <div style="display: flex; gap: 11px; padding: 9px 0; border-bottom: 1px solid #1f2421;">
+            <span aria-hidden="true" style="flex: 0 0 auto; width: 26px; height: 26px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: #D9A441; display: grid; place-items: center; font-size: 12px;">!</span>
+            <p style="margin: 0; font-size: 12.5px; color: #cfd6d0;">Collections is the weakest component — ₹1.9L is past due, all of it older than 30 days.</p>
+          </div>
+          <div style="display: flex; gap: 11px; padding: 9px 0; border-bottom: 1px solid #1f2421;">
+            <span aria-hidden="true" style="flex: 0 0 auto; width: 26px; height: 26px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: #D9A441; display: grid; place-items: center; font-size: 12px;">◦</span>
+            <p style="margin: 0; font-size: 12.5px; color: #cfd6d0;">Product mix is concentrated: three codes carry 61% of revenue.</p>
+          </div>
+          <div style="display: flex; gap: 11px; padding: 9px 0;">
+            <span aria-hidden="true" style="flex: 0 0 auto; width: 26px; height: 26px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: var(--accent); display: grid; place-items: center; font-size: 12px;">▲</span>
+            <p style="margin: 0; font-size: 12.5px; color: #cfd6d0;">Revenue momentum and retention are both improving quarter on quarter.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isCHealth }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Customer Health</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Account scores from order recency, frequency and value movement.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 300px;">
+          <div style="display: flex; height: 8px; border-radius: 5px; overflow: hidden; background: #1D211E;">
+            <div style="width: 63%; background: var(--accent); transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) both;"></div>
+            <div style="width: 28%; background: #D9A441; transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) .1s both;"></div>
+            <div style="width: 9%; background: #E25757; transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) .2s both;"></div>
+          </div>
+          <div style="display: flex; gap: 16px; font-size: 11.5px; color: #A5AEA8;">
+            <span style="display: inline-flex; gap: 6px; align-items: center;"><span style="width: 8px; height: 8px; border-radius: 2px; background: var(--accent);"></span>Healthy 96</span>
+            <span style="display: inline-flex; gap: 6px; align-items: center;"><span style="width: 8px; height: 8px; border-radius: 2px; background: #D9A441;"></span>Watch 42</span>
+            <span style="display: inline-flex; gap: 6px; align-items: center;"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E25757;"></span>At risk 14</span>
+          </div>
+        </div>
+      </div>
+      <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+        <div data-scroll="1" style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12.5px;">
+            <thead>
+              <tr>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">CUSTOMER</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f; width: 200px;">HEALTH SCORE</th>
+                <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">LAST ORDER</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">VALUE TREND</th>
+                <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">BAND</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ cohorts }}" as="c" hint-placeholder-count="6">
+                <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">{{ c.name }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <div style="flex: 1; height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ c.score }}%; background: {{ c.tone }}; transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) both;"></div></div>
+                      <span style="min-width: 22px; text-align: right;">{{ c.score }}</span>
+                    </div>
+                  </td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ c.last }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right; color: {{ c.tone }};">{{ c.trend }}</td>
+                  <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;"><span style="font-size: 11px; color: {{ c.tone }}; border: 1px solid #292E2A; border-radius: 7px; padding: 3px 8px;">{{ c.risk }}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isGrowth }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Growth Opportunities</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Reorder, cross-sell and win-back moves ranked by expected value.</p>
+        </div>
+        <div data-kpis="1" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border: 1px solid #292E2A; border-radius: 12px; background: #171918; overflow: hidden;">
+          <div style="padding: 10px 16px; border-right: 1px solid #1f2421; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">TOTAL POTENTIAL</span><span style="font-size: 20px; font-weight: 500;">₹5.18L</span>
+          </div>
+          <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 11px; letter-spacing: .08em; color: #6d756f;">OPPORTUNITIES</span><span style="font-size: 20px; font-weight: 500;">5</span>
+          </div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
+        <sc-for list="{{ opportunities }}" as="o" hint-placeholder-count="5">
+          <article style="background: #171918; border: 1px solid #292E2A; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: border-color .25s ease, transform .25s ease;" style-hover="border-color: #37402f; transform: translateY(-1px);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 11px; letter-spacing: .08em; color: var(--accent); border: 1px solid #3a4a1f; border-radius: 7px; padding: 3px 8px;">{{ o.type }}</span>
+              <span style="font-size: 18px; font-weight: 500;">{{ o.value }}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-size: 14px;">{{ o.customer }}</span>
+              <p style="margin: 0; font-size: 12px; color: #A5AEA8; text-wrap: pretty;">{{ o.note }}</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #6d756f;"><span>Confidence</span><span>{{ o.conf }}%</span></div>
+              <div style="height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ o.conf }}%; background: linear-gradient(90deg, #708D31, var(--accent)); transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) both;"></div></div>
+            </div>
+            <div style="display: flex; gap: 8px; border-top: 1px solid #1f2421; padding-top: 12px;">
+              <button type="button" style="height: 30px; padding: 0 12px; border-radius: 8px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 12px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Create quotation</button>
+              <button type="button" style="height: 30px; padding: 0 12px; border-radius: 8px; background: transparent; border: 1px solid #292E2A; color: #A5AEA8; font-family: inherit; font-size: 12px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">Dismiss</button>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isPIntel }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Product Intelligence</h1>
+        <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Which codes carry revenue, which are slipping, and what sells alongside what.</p>
+      </div>
+      <div data-grid="main" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Revenue leaders</h2>
+          <sc-for list="{{ leaders }}" as="l" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 5px 12px; padding: 4px 0;">
+              <span style="font-size: 13px;">{{ l.code }}</span>
+              <span style="font-size: 13px;">{{ l.v }}</span>
+              <div style="grid-column: 1 / -1; height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ l.pct }}%; background: linear-gradient(90deg, #708D31, var(--accent)); transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) both;"></div></div>
+            </div>
+          </sc-for>
+          <div style="border-top: 1px solid #1f2421; padding-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Frequently bought together</h2>
+            <sc-for list="{{ attach }}" as="a" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="flex: 1; min-width: 0; font-size: 12.5px; color: #cfd6d0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ a.pair }}</span>
+                <div style="width: 120px; height: 4px; border-radius: 3px; background: #1D211E; overflow: hidden;"><div style="height: 100%; width: {{ a.pct }}%; background: #708D31; transform-origin: left; animation: barIn .6s cubic-bezier(.4,0,.2,1) both;"></div></div>
+                <span style="font-size: 12px; color: #A5AEA8; min-width: 34px; text-align: right;">{{ a.pct }}%</span>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: border-color .25s ease;" style-hover="border-color: #37402f;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Needs attention</h2>
+          <sc-for list="{{ laggards }}" as="l" hint-placeholder-count="3">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1f2421;">
+              <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                <span style="font-size: 13px;">{{ l.code }}</span>
+                <span style="font-size: 11.5px; color: #6d756f;">{{ l.note }}</span>
+              </div>
+              <span style="font-size: 13px; color: #D9A441;">{{ l.v }}</span>
+            </div>
+          </sc-for>
+          <p style="margin: 6px 0 0; font-size: 12px; color: #A5AEA8; text-wrap: pretty;">Coupling C5590327 has fallen for three consecutive months while the housing it pairs with has grown 22% — a likely attach-rate gap.</p>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 28px; display: flex; flex-direction: column; gap: 16px; animation: fadeUp .22s ease both; min-height: calc(100vh - 60px);">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Chat with AI</h1>
+        <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Ask questions against your live Technicon data. Read-only.</p>
+      </div>
+      <section style="flex: 1; display: flex; flex-direction: column; gap: 14px; background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px;">
+        <div data-scroll="1" style="flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 52vh; padding-right: 4px;">
+          <sc-for list="{{ messages }}" as="m" hint-placeholder-count="2">
+            <div style="display: flex; gap: 11px; align-items: flex-start; animation: fadeUp .2s ease both;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: #1D211E; border: 1px solid #2f362e; color: var(--accent); display: grid; place-items: center; font-size: 10.5px;">{{ m.badge }}</span>
+              <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #e4e8e3; max-width: 76ch; text-wrap: pretty;">{{ m.text }}</p>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="4">
+            <button type="button" data-q="{{ s }}" onClick="{{ askSuggestion }}" style="height: 30px; padding: 0 11px; border-radius: 999px; background: transparent; border: 1px solid #292E2A; color: #A5AEA8; font-family: inherit; font-size: 12px; cursor: pointer; transition: border-color .2s, color .2s;" style-hover="border-color: #3a4a1f; color: var(--accent);">{{ s }}</button>
+          </sc-for>
+        </div>
+        <form onSubmit="{{ sendChat }}" style="display: flex; gap: 8px; align-items: center; border-top: 1px solid #1f2421; padding-top: 14px;">
+          <input ref="{{ chatRef }}" type="text" aria-label="Ask a question about your data" placeholder="Ask about revenue, quotations, customers or products" style="flex: 1; min-width: 0; height: 38px; padding: 0 13px; border-radius: 10px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; outline: none;" />
+          <button type="submit" style="height: 38px; padding: 0 16px; border-radius: 10px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 13px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Ask</button>
+        </form>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Settings</h1>
+        <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Organisation details, document numbering and follow-up defaults.</p>
+      </div>
+      <div data-grid="lower" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 18px;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 500;">Organisation</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">LEGAL NAME
+              <input type="text" value="Technicon Services Pvt Ltd" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">GSTIN
+              <input type="text" value="27AABCT1234E1Z5" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">QUOTATION PREFIX
+              <input type="text" value="QT-2026-" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">DEFAULT VALIDITY
+              <input type="text" value="30 days" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">FOLLOW-UP CADENCE
+              <input type="text" value="3, 7, 14 days after sending" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; letter-spacing: .08em; color: #6d756f;">CURRENCY
+              <input type="text" value="INR (₹), lakh format" style="height: 36px; padding: 0 11px; border-radius: 9px; background: #1D211E; border: 1px solid #292E2A; color: #F5F7F4; font-family: inherit; font-size: 13px; letter-spacing: normal; outline: none;" />
+            </label>
+          </div>
+          <div style="display: flex; gap: 8px; border-top: 1px solid #1f2421; padding-top: 16px;">
+            <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Save changes</button>
+            <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: transparent; border: 1px solid #292E2A; color: #A5AEA8; font-family: inherit; font-size: 12.5px; cursor: pointer; transition: border-color .2s;" style-hover="border-color: #3a4237;">Discard</button>
+          </div>
+        </section>
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px;">
+          <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 500;">Notifications</h2>
+          <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid #1f2421;">
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 13px;">{{ t.label }}</span>
+                <span style="font-size: 11.5px; color: #6d756f; text-wrap: pretty;">{{ t.note }}</span>
+              </div>
+              <button type="button" role="switch" aria-checked="{{ t.ariaOn }}" aria-label="{{ t.label }}" data-key="{{ t.key }}" onClick="{{ toggleSetting }}" style="flex: 0 0 auto; position: relative; width: 38px; height: 22px; border-radius: 999px; border: 1px solid #292E2A; background: {{ t.bg }}; cursor: pointer; transition: background .22s ease;">
+                <span aria-hidden="true" style="position: absolute; top: 2px; left: {{ t.knob }}; width: 16px; height: 16px; border-radius: 50%; background: #0B0D0D; transition: left .22s cubic-bezier(.4,0,.2,1);"></span>
+              </button>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+    <div data-scroll="1" style="padding: 26px 24px 40px; display: flex; flex-direction: column; gap: 18px; animation: fadeUp .22s ease both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 style="margin: 0; font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1.05;">Admin</h1>
+          <p style="margin: 0; font-size: 13.5px; color: #A5AEA8;">Users, roles and the audit trail for this workspace.</p>
+        </div>
+        <button type="button" style="height: 34px; padding: 0 14px; border-radius: 9px; background: transparent; border: 1px solid #3a4a1f; color: var(--accent); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: background .2s;" style-hover="background: #1b2013;">Invite user</button>
+      </div>
+      <div data-grid="lower" style="display: grid; grid-template-columns: minmax(0,1.62fr) minmax(0,1fr); gap: 18px; align-items: start;">
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 16px 18px 6px;">
+          <div data-scroll="1" style="overflow-x: auto;">
+            <table style="width: 100%; min-width: 620px; border-collapse: collapse; font-size: 12.5px;">
+              <thead>
+                <tr>
+                  <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">USER</th>
+                  <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">ROLE</th>
+                  <th scope="col" style="text-align: left; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">LAST ACTIVE</th>
+                  <th scope="col" style="text-align: right; padding: 8px 10px; font-weight: 400; font-size: 11px; letter-spacing: .08em; color: #6d756f; border-bottom: 1px solid #20251f;">STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
+                  <tr style="transition: background .2s ease;" style-hover="background: #1a1e1c;">
+                    <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c;">
+                      <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span>{{ u.name }}</span><span style="font-size: 11.5px; color: #6d756f;">{{ u.email }}</span>
+                      </div>
+                    </td>
+                    <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ u.role }}</td>
+                    <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; color: #A5AEA8;">{{ u.last }}</td>
+                    <td style="padding: 11px 10px; border-bottom: 1px solid #1a1f1c; text-align: right;"><span style="display: inline-flex; align-items: center; gap: 6px; color: {{ u.tone }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ u.tone }};"></span>{{ u.status }}</span></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section style="background: #171918; border: 1px solid #292E2A; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 2px;">
+          <h2 style="margin: 0 0 8px; font-size: 16px; font-weight: 500;">Audit log</h2>
+          <sc-for list="{{ audit }}" as="a" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 14px minmax(0,1fr) auto; gap: 10px; align-items: start; padding: 8px 0;">
+              <span aria-hidden="true" style="margin-top: 5px; width: 7px; height: 7px; border-radius: 50%; background: #3c443d; box-shadow: 0 0 0 3px #1D211E;"></span>
+              <span style="font-size: 12.5px; color: #cfd6d0; text-wrap: pretty;">{{ a.text }}</span>
+              <span style="font-size: 11px; color: #6d756f; white-space: nowrap;">{{ a.time }}</span>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#B8F23A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#B8F23A&quot;,&quot;#8FE388&quot;,&quot;#D8F98D&quot;,&quot;#7E95FF&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;showOrdersLine&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Chart&quot;}}">
+const MONTHS = [
+  { label: 'Oct 25', full: 'Oct 2025', rev: 1.42, ord: 24 },
+  { label: 'Nov 25', full: 'Nov 2025', rev: 1.58, ord: 27 },
+  { label: 'Dec 25', full: 'Dec 2025', rev: 1.76, ord: 29 },
+  { label: 'Jan 26', full: 'Jan 2026', rev: 2.05, ord: 34 },
+  { label: 'Feb 26', full: 'Feb 2026', rev: 1.88, ord: 31 },
+  { label: 'Mar 26', full: 'Mar 2026', rev: 2.21, ord: 36 },
+  { label: 'Apr 26', full: 'Apr 2026', rev: 2.34, ord: 38 },
+  { label: 'May 26', full: 'May 2026', rev: 1.96, ord: 32 },
+  { label: 'Jun 26', full: 'Jun 2026', rev: 2.12, ord: 35 },
+  { label: 'Jul 26', full: 'Jul 2026', rev: 2.28, ord: 37 },
+  { label: 'Aug 26', full: 'Aug 2026', rev: 2.19, ord: 36 },
+  { label: 'Sep 26', full: 'Sep 2026', rev: 2.33, ord: 21 }
+];
+
+const PERIODS = { 'Last 12 months': 12, 'Last 6 months': 6, 'Last quarter': 3 };
+const METRICS = ['Revenue', 'Quotations', 'Orders'];
+
+const PL = 46, PR = 908, PT = 16, PB = 286;
+
+function smooth(pts) {
+  if (!pts.length) return '';
+  if (pts.length < 3) return pts.map((p, i) => (i ? 'L' : 'M') + ' ' + p.x + ' ' + p.y).join(' ');
+  let d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ' C ' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ', ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) + ', ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
+  }
+  return d;
+}
+
+class Component extends DCLogic {
+  state = { period: 'Last 12 months', metric: 'Revenue', periodOpen: false, metricOpen: false, loading: false, navOpen: false,
+    view: 'dashboard', qFilter: 'All', messages: [{ role: 'ai', text: 'Ask me about revenue, quotations, customers or products. I read from your existing Technicon data — nothing here is written back.' }],
+    toggles: { followupEmail: true, overdueDigest: true, poAlerts: false, aiSuggestions: true } };
+
+  constructor(props) {
+    super(props);
+    this.guideRef = React.createRef();
+    this.dotRef = React.createRef();
+    this.tipRef = React.createRef();
+    this.donutTipRef = React.createRef();
+    this.donutCenterRef = React.createRef();
+    this.refreshRef = React.createRef();
+    this.chatRef = React.createRef();
+    this.lastIdx = -1;
+  }
+
+  slice() {
+    const n = PERIODS[this.state.period] || 12;
+    return MONTHS.slice(MONTHS.length - n);
+  }
+
+  seriesFor(rows) {
+    const m = this.state.metric;
+    if (m === 'Orders') return rows.map(r => r.ord / 18);
+    if (m === 'Quotations') return rows.map(r => (r.ord * 1.4) / 18);
+    return rows.map(r => r.rev);
+  }
+
+  fmt(v) { return '₹' + v.toFixed(2) + 'L'; }
+
+  geometry() {
+    const rows = this.slice();
+    const vals = this.seriesFor(rows);
+    const max = Math.max.apply(null, vals) * 1.22;
+    const step = rows.length > 1 ? (PR - PL) / (rows.length - 1) : 0;
+    const pts = vals.map((v, i) => ({ x: PL + i * step, y: PB - (v / max) * (PB - PT) }));
+    const oMax = Math.max.apply(null, rows.map(r => r.ord)) * 1.5;
+    const oPts = rows.map((r, i) => ({ x: PL + i * step, y: PB - (r.ord / oMax) * (PB - PT) }));
+    return { rows, vals, max, pts, oPts, step };
+  }
+
+  showTip(i, g) {
+    const tip = this.tipRef.current, guide = this.guideRef.current, dot = this.dotRef.current;
+    if (!tip || !guide || !dot) return;
+    const p = g.pts[i], row = g.rows[i];
+    guide.setAttribute('x1', p.x); guide.setAttribute('x2', p.x); guide.style.opacity = '1';
+    dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); dot.style.opacity = '1';
+    const svg = guide.ownerSVGElement;
+    const w = svg.getBoundingClientRect().width || 920;
+    const scale = w / 920;
+    tip.style.left = Math.max(70, Math.min(w - 70, p.x * scale)) + 'px';
+    tip.style.top = Math.max(0, p.y * scale - 78) + 'px';
+    tip.style.opacity = '1';
+    tip.style.transform = 'translate(-50%, 0)';
+    tip.querySelector('[data-tip-month]').textContent = row.full;
+    tip.querySelector('[data-tip-rev]').textContent = this.fmt(row.rev);
+    tip.querySelector('[data-tip-ord]').textContent = row.ord + ' orders';
+  }
+
+  navItems(group) {
+    const v = this.state.view;
+    return group.map(it => {
+      const on = it.view === v;
+      return {
+        label: it.label, view: it.view, current: on ? 'page' : 'false',
+        bg: on ? '#1D211E' : 'transparent',
+        bd: on ? '#333c31' : 'transparent',
+        ring: on ? 'inset 2px 0 0 var(--accent)' : 'none',
+        color: on ? '#F5F7F4' : '#A5AEA8',
+        mark: on ? 'var(--accent)' : '#3c443d'
+      };
+    });
+  }
+
+  screenVals() {
+    const v = this.state.view;
+    const stageTone = { Draft: '#A5AEA8', Sent: '#708D31', Accepted: '#B8F23A', 'PO raised': '#7E95FF', Expired: '#E25757' };
+    const quotes = [
+      { id: 'QT-2026-0452', customer: 'Surya Fabtech', date: '15 Sep 2026', items: 6, amount: '₹41,900', stage: 'Draft', follow: '—' },
+      { id: 'QT-2026-0449', customer: 'Meridian Polymers', date: '14 Sep 2026', items: 14, amount: '₹2.10L', stage: 'Sent', follow: 'In 2d' },
+      { id: 'QT-2026-0444', customer: 'XYZ Pharma', date: '11 Sep 2026', items: 9, amount: '₹92,150', stage: 'Sent', follow: 'Today' },
+      { id: 'QT-2026-0441', customer: 'Kalpana Engineering', date: '09 Sep 2026', items: 4, amount: '₹68,400', stage: 'Sent', follow: 'Overdue 2d' },
+      { id: 'QT-2026-0436', customer: 'ABC Industries', date: '06 Sep 2026', items: 22, amount: '₹3.42L', stage: 'Accepted', follow: '—' },
+      { id: 'QT-2026-0431', customer: 'Nirmal Chem', date: '03 Sep 2026', items: 11, amount: '₹1.18L', stage: 'PO raised', follow: '—' },
+      { id: 'QT-2026-0418', customer: 'ABC Industries', date: '28 Aug 2026', items: 8, amount: '₹1.24L', stage: 'Sent', follow: 'Overdue 6d' },
+      { id: 'QT-2026-0402', customer: 'Vertex Tooling', date: '19 Aug 2026', items: 5, amount: '₹57,300', stage: 'Expired', follow: '—' }
+    ].map(q => Object.assign({}, q, { tone: stageTone[q.stage], followTone: q.follow.indexOf('Overdue') === 0 ? '#E25757' : (q.follow === 'Today' ? '#D9A441' : '#A5AEA8') }));
+    const qf = this.state.qFilter;
+    const filtered = qf === 'All' ? quotes : quotes.filter(q => q.stage === qf);
+    const chips = ['All', 'Draft', 'Sent', 'Accepted', 'Expired'].map(n => {
+      const on = n === qf;
+      const count = n === 'All' ? quotes.length : quotes.filter(q => q.stage === n).length;
+      return { name: n, count: count, bg: on ? '#23271f' : 'transparent', bd: on ? '#3a4a1f' : '#292E2A', color: on ? 'var(--accent)' : '#A5AEA8' };
+    });
+
+    return {
+      view: v,
+      isDashboard: v === 'dashboard', isQuotations: v === 'quotations', isPO: v === 'po', isPI: v === 'pi',
+      isCompanies: v === 'companies', isProducts: v === 'products', isBHealth: v === 'bhealth', isCHealth: v === 'chealth',
+      isGrowth: v === 'growth', isPIntel: v === 'pintel', isChat: v === 'chat', isSettings: v === 'settings', isAdmin: v === 'admin',
+      navMain: this.navItems([
+        { label: 'Dashboard', view: 'dashboard' }, { label: 'Quotations', view: 'quotations' },
+        { label: 'Purchase Orders', view: 'po' }, { label: 'Performa Invoices', view: 'pi' },
+        { label: 'Companies', view: 'companies' }, { label: 'Products', view: 'products' }
+      ]),
+      navReports: this.navItems([
+        { label: 'Business Health', view: 'bhealth' }, { label: 'Customer Health', view: 'chealth' },
+        { label: 'Growth Opportunities', view: 'growth' }, { label: 'Product Intelligence', view: 'pintel' },
+        { label: 'Chat with AI', view: 'chat' }
+      ]),
+      navSystem: this.navItems([{ label: 'Settings', view: 'settings' }, { label: 'Admin', view: 'admin' }]),
+      go: (e) => { e.preventDefault(); this.lastIdx = -1; this.setState({ view: e.currentTarget.dataset.view, navOpen: false }); },
+
+      qChips: chips,
+      quotes: filtered,
+      qCount: filtered.length + ' of ' + quotes.length,
+      setQFilter: (e) => this.setState({ qFilter: e.currentTarget.dataset.value }),
+
+      pos: [
+        { id: 'PO-2026-0139', customer: 'Nirmal Chem', quote: 'QT-2026-0431', date: '12 Sep 2026', amount: '₹1.18L', status: 'In production', tone: '#D9A441' },
+        { id: 'PO-2026-0136', customer: 'ABC Industries', quote: 'QT-2026-0436', date: '08 Sep 2026', amount: '₹3.42L', status: 'Dispatched', tone: '#7E95FF' },
+        { id: 'PO-2026-0131', customer: 'Meridian Polymers', quote: 'QT-2026-0407', date: '02 Sep 2026', amount: '₹1.86L', status: 'Delivered', tone: '#B8F23A' },
+        { id: 'PO-2026-0128', customer: 'XYZ Pharma', quote: 'QT-2026-0398', date: '27 Aug 2026', amount: '₹2.04L', status: 'Delivered', tone: '#B8F23A' },
+        { id: 'PO-2026-0124', customer: 'Kalpana Engineering', quote: 'QT-2026-0384', date: '21 Aug 2026', amount: '₹74,600', status: 'Part delivered', tone: '#D9A441' },
+        { id: 'PO-2026-0119', customer: 'Vertex Tooling', quote: 'QT-2026-0371', date: '14 Aug 2026', amount: '₹96,250', status: 'Delivered', tone: '#B8F23A' }
+      ],
+      pis: [
+        { id: 'PI-2026-0087', customer: 'Nirmal Chem', issued: '13 Sep 2026', due: '13 Oct 2026', amount: '₹1.18L', status: 'Awaiting payment', tone: '#D9A441', pct: 0 },
+        { id: 'PI-2026-0084', customer: 'ABC Industries', issued: '09 Sep 2026', due: '09 Oct 2026', amount: '₹3.42L', status: 'Part paid 50%', tone: '#7E95FF', pct: 50 },
+        { id: 'PI-2026-0081', customer: 'Meridian Polymers', issued: '03 Sep 2026', due: '03 Oct 2026', amount: '₹1.86L', status: 'Paid', tone: '#B8F23A', pct: 100 },
+        { id: 'PI-2026-0078', customer: 'XYZ Pharma', issued: '28 Aug 2026', due: '27 Sep 2026', amount: '₹2.04L', status: 'Paid', tone: '#B8F23A', pct: 100 },
+        { id: 'PI-2026-0074', customer: 'Kalpana Engineering', issued: '22 Aug 2026', due: '21 Sep 2026', amount: '₹74,600', status: 'Overdue 4d', tone: '#E25757', pct: 0 },
+        { id: 'PI-2026-0069', customer: 'Vertex Tooling', issued: '15 Aug 2026', due: '14 Sep 2026', amount: '₹96,250', status: 'Paid', tone: '#B8F23A', pct: 100 }
+      ],
+      companies: [
+        { name: 'ABC Industries', initial: 'AI', city: 'Pune, MH', revenue: '₹8.4L', open: 3, health: 'Healthy', tone: '#B8F23A' },
+        { name: 'XYZ Pharma', initial: 'XP', city: 'Ahmedabad, GJ', revenue: '₹6.2L', open: 2, health: 'Healthy', tone: '#B8F23A' },
+        { name: 'Meridian Polymers', initial: 'MP', city: 'Chennai, TN', revenue: '₹4.8L', open: 4, health: 'Watch', tone: '#D9A441' },
+        { name: 'Kalpana Engineering', initial: 'KE', city: 'Rajkot, GJ', revenue: '₹3.1L', open: 1, health: 'At risk', tone: '#E25757' },
+        { name: 'Surya Fabtech', initial: 'SF', city: 'Coimbatore, TN', revenue: '₹1.6L', open: 2, health: 'Healthy', tone: '#B8F23A' },
+        { name: 'Nirmal Chem', initial: 'NC', city: 'Vapi, GJ', revenue: '₹1.4L', open: 1, health: 'Watch', tone: '#D9A441' },
+        { name: 'Vertex Tooling', initial: 'VT', city: 'Faridabad, HR', revenue: '₹96K', open: 0, health: 'Dormant', tone: '#6d756f' },
+        { name: 'Deccan Hydraulics', initial: 'DH', city: 'Hyderabad, TS', revenue: '₹72K', open: 1, health: 'Watch', tone: '#D9A441' }
+      ],
+      products: [
+        { code: 'N9310066', name: 'Bearing housing, cast', cat: 'Assemblies', price: '₹18,400', stock: 42, orders: 28, trend: '+22%', tone: '#B8F23A', spark: '0,20 12,17 24,18 36,12 48,10 60,6 72,3' },
+        { code: 'H4420193', name: 'Hydraulic seal kit', cat: 'Seals', price: '₹7,950', stock: 118, orders: 19, trend: '+9%', tone: '#708D31', spark: '0,18 12,19 24,14 36,16 48,11 60,12 72,8' },
+        { code: 'B1180742', name: 'Bronze bushing 40mm', cat: 'Bushings', price: '₹2,310', stock: 260, orders: 14, trend: '−4%', tone: '#D9A441', spark: '0,8 12,10 24,9 36,13 48,12 60,16 72,18' },
+        { code: 'V2205118', name: 'Control valve, 2-way', cat: 'Valves', price: '₹24,600', stock: 12, orders: 11, trend: '+14%', tone: '#B8F23A', spark: '0,21 12,18 24,16 36,15 48,11 60,9 72,6' },
+        { code: 'G7730214', name: 'Gasket set, graphite', cat: 'Seals', price: '₹1,180', stock: 480, orders: 9, trend: '+3%', tone: '#708D31', spark: '0,15 12,16 24,14 36,15 48,13 60,13 72,11' },
+        { code: 'C5590327', name: 'Coupling, flexible', cat: 'Drives', price: '₹9,700', stock: 31, orders: 7, trend: '−11%', tone: '#E25757', spark: '0,6 12,8 24,10 36,9 48,14 60,16 72,19' },
+        { code: 'P3341509', name: 'Pressure gauge 0–16 bar', cat: 'Instruments', price: '₹3,420', stock: 74, orders: 6, trend: '+6%', tone: '#708D31', spark: '0,16 12,15 24,15 36,13 48,12 60,11 72,10' }
+      ],
+      healthParts: [
+        { name: 'Revenue momentum', score: 82, note: '+12.5% on previous period', tone: 'var(--accent)' },
+        { name: 'Pipeline coverage', score: 71, note: '2.4× of next-quarter target', tone: 'var(--accent)' },
+        { name: 'Collections', score: 64, note: '₹1.9L past due across 3 invoices', tone: '#D9A441' },
+        { name: 'Customer retention', score: 78, note: '68% revenue from repeat accounts', tone: 'var(--accent)' },
+        { name: 'Product mix', score: 58, note: 'Top 3 products carry 61% of revenue', tone: '#D9A441' }
+      ],
+      cohorts: [
+        { name: 'ABC Industries', score: 88, last: '6 Sep 2026', trend: '+21%', risk: 'Healthy', tone: '#B8F23A' },
+        { name: 'XYZ Pharma', score: 81, last: '11 Sep 2026', trend: '+8%', risk: 'Healthy', tone: '#B8F23A' },
+        { name: 'Meridian Polymers', score: 64, last: '14 Aug 2026', trend: '−6%', risk: 'Watch', tone: '#D9A441' },
+        { name: 'Kalpana Engineering', score: 47, last: '21 Jul 2026', trend: '−19%', risk: 'At risk', tone: '#E25757' },
+        { name: 'Vertex Tooling', score: 29, last: '14 May 2026', trend: '−38%', risk: 'Dormant', tone: '#6d756f' },
+        { name: 'Nirmal Chem', score: 72, last: '3 Sep 2026', trend: '+4%', risk: 'Watch', tone: '#D9A441' }
+      ],
+      opportunities: [
+        { type: 'Reorder due', customer: 'XYZ Pharma', value: '₹1.90L', conf: 86, note: 'Orders seal kits every 8 weeks — 9 weeks since last.' },
+        { type: 'Cross-sell', customer: 'ABC Industries', value: '₹1.20L', conf: 74, note: 'Buys housings but never the matching coupling.' },
+        { type: 'Win-back', customer: 'Vertex Tooling', value: '₹96K', conf: 52, note: 'No activity in 4 months after 3 consecutive orders.' },
+        { type: 'Price uplift', customer: 'Meridian Polymers', value: '₹64K', conf: 61, note: 'Held at 2024 pricing across 14 line items.' },
+        { type: 'Expand', customer: 'Nirmal Chem', value: '₹48K', conf: 58, note: 'Single-plant account; group has two more sites.' }
+      ],
+      leaders: [
+        { code: 'N9310066', v: '₹5.1L', pct: 100 }, { code: 'H4420193', v: '₹3.4L', pct: 67 },
+        { code: 'V2205118', v: '₹2.7L', pct: 53 }, { code: 'B1180742', v: '₹2.2L', pct: 43 }
+      ],
+      laggards: [
+        { code: 'C5590327', v: '−11%', note: '7 orders, 2 customers' },
+        { code: 'G7730214', v: '+3%', note: 'High volume, thin margin' },
+        { code: 'P3341509', v: '+6%', note: 'Single-customer dependency' }
+      ],
+      attach: [
+        { pair: 'N9310066 → C5590327', pct: 38 }, { pair: 'H4420193 → G7730214', pct: 31 },
+        { pair: 'V2205118 → P3341509', pct: 24 }, { pair: 'B1180742 → G7730214', pct: 17 }
+      ],
+      messages: this.state.messages.map(m => Object.assign({}, m, { badge: m.role === 'ai' ? 'AI' : 'You' })),
+      suggestions: ['Which customers slipped this quarter?', 'Revenue by product category', 'Quotations stuck over 10 days', 'Collections at risk this month'],
+      chatRef: this.chatRef,
+      askSuggestion: (e) => this.pushMessage(e.currentTarget.dataset.q),
+      sendChat: (e) => {
+        e.preventDefault();
+        const el = this.chatRef.current;
+        if (!el || !el.value.trim()) return;
+        const q = el.value.trim(); el.value = '';
+        this.pushMessage(q);
+      },
+      toggles: [
+        { key: 'followupEmail', label: 'Follow-up reminder emails', note: 'Sends the owner a reminder on the due date.' },
+        { key: 'overdueDigest', label: 'Daily overdue digest', note: 'One 9:00 summary of overdue follow-ups.' },
+        { key: 'poAlerts', label: 'Purchase order status alerts', note: 'Notify on dispatch and delivery changes.' },
+        { key: 'aiSuggestions', label: 'AI suggestions on dashboard', note: 'Surfaces generated insights in Key Business Insights.' }
+      ].map(t => {
+        const on = !!this.state.toggles[t.key];
+        return Object.assign({}, t, { on: on, bg: on ? 'var(--accent)' : '#2b312c', knob: on ? '18px' : '2px', ariaOn: on ? 'true' : 'false' });
+      }),
+      toggleSetting: (e) => {
+        const k = e.currentTarget.dataset.key;
+        this.setState(s => ({ toggles: Object.assign({}, s.toggles, { [k]: !s.toggles[k] }) }));
+      },
+      users: [
+        { name: 'R. Mehta', email: 'r.mehta@technicon.in', role: 'Owner', last: '2m ago', status: 'Active', tone: '#B8F23A' },
+        { name: 'S. Iyer', email: 's.iyer@technicon.in', role: 'Sales lead', last: '48m ago', status: 'Active', tone: '#B8F23A' },
+        { name: 'A. Khan', email: 'a.khan@technicon.in', role: 'Sales', last: 'Yesterday', status: 'Active', tone: '#B8F23A' },
+        { name: 'P. Desai', email: 'p.desai@technicon.in', role: 'Accounts', last: '3d ago', status: 'Active', tone: '#B8F23A' },
+        { name: 'M. Rao', email: 'm.rao@technicon.in', role: 'Sales', last: '21d ago', status: 'Suspended', tone: '#D9A441' }
+      ],
+      audit: [
+        { text: 'S. Iyer changed quotation QT-2026-0436 stage to Accepted', time: '38m' },
+        { text: 'P. Desai recorded payment against PI-2026-0081', time: '2h' },
+        { text: 'R. Mehta imported 412 products from catalogue sheet', time: 'Yesterday' },
+        { text: 'A. Khan created company record Deccan Hydraulics', time: '2d' },
+        { text: 'R. Mehta suspended user M. Rao', time: '21d' }
+      ]
+    };
+  }
+
+  pushMessage(q) {
+    const canned = 'Based on your current data: ' + q.replace(/\?$/, '') + ' — Meridian Polymers and Kalpana Engineering both fell below their trailing-quarter average, together accounting for ₹1.7L of the shortfall. Three quotations worth ₹2.4L are past their follow-up date in the same accounts.';
+    this.setState(s => ({ messages: s.messages.concat([{ role: 'me', text: q }, { role: 'ai', text: canned }]) }));
+  }
+
+  renderVals() {
+    const g = this.geometry();
+    const total = g.rows.reduce((a, r) => a + r.rev, 0);
+    const ordersTotal = g.rows.reduce((a, r) => a + r.ord, 0);
+    const prev = MONTHS.slice(Math.max(0, MONTHS.length - g.rows.length * 2), MONTHS.length - g.rows.length);
+    const prevTotal = prev.reduce((a, r) => a + r.rev, 0) || total * 0.889;
+    const delta = ((total - prevTotal) / prevTotal) * 100;
+
+    const yTicks = [];
+    for (let i = 0; i <= 5; i++) {
+      const v = (g.max / 5) * i;
+      const y = PB - (v / g.max) * (PB - PT);
+      yTicks.push({ y: +y.toFixed(1), topPct: +(y / 320 * 100).toFixed(2), label: '₹' + v.toFixed(1) + 'L' });
+    }
+    const xTicks = g.rows.map((r, i) => ({ leftPct: +(g.pts[i].x / 920 * 100).toFixed(2), label: r.label }));
+
+    const stageRaw = [
+      { name: 'Draft', count: 24, value: '₹3.1L', color: '#3f4a3a' },
+      { name: 'Sent', count: 41, value: '₹7.8L', color: '#708D31' },
+      { name: 'Accepted', count: 29, value: '₹9.4L', color: 'var(--accent)' },
+      { name: 'Purchase Order', count: 22, value: '₹7.6L', color: '#D8F98D' },
+      { name: 'Performa Invoice', count: 18, value: '₹6.2L', color: '#7E95FF' }
+    ];
+    const pipelineTotal = stageRaw.reduce((a, s) => a + s.count, 0);
+    const maxCount = Math.max.apply(null, stageRaw.map(s => s.count));
+    const C = 477.5;
+    let acc = 0;
+    const stages = stageRaw.map((s, i) => {
+      const frac = s.count / pipelineTotal;
+      const len = Math.max(0, frac * C - 3);
+      const rot = acc * 360;
+      acc += frac;
+      return Object.assign({}, s, { len: +len.toFixed(1), rot: +rot.toFixed(2), pct: +(s.count / maxCount * 100).toFixed(1), delay: +(i * 0.09).toFixed(2) });
+    });
+
+    const custRaw = [
+      ['ABC Industries', 'AI', '₹8.4L', 85],
+      ['XYZ Pharma', 'XP', '₹6.2L', 70],
+      ['Meridian Polymers', 'MP', '₹4.8L', 60],
+      ['Kalpana Engineering', 'KE', '₹3.1L', 45],
+      ['Surya Fabtech', 'SF', '₹1.6L', 32]
+    ];
+
+    const segPts = [0.42, 0.5, 0.46, 0.58, 0.61, 0.57, 0.68, 0.74, 0.71, 0.82]
+      .map((v, i) => ({ x: i * (320 / 9), y: 104 - v * 92 }));
+    const segLine = smooth(segPts);
+
+    const base = {
+      accent: this.props.accent || '#B8F23A',
+      ordersOpacity: (this.props.showOrdersLine ?? true) ? 1 : 0,
+      navOpenStr: this.state.navOpen ? 'true' : 'false',
+      loading: this.state.loading,
+      ready: !this.state.loading,
+      periodLabel: this.state.period,
+      metricLabel: this.state.metric,
+      periodOpen: this.state.periodOpen,
+      metricOpen: this.state.metricOpen,
+      dateRangeLabel: g.rows[0].label + ' — ' + g.rows[g.rows.length - 1].label,
+      periodOptions: Object.keys(PERIODS).map(n => ({ name: n, selected: n === this.state.period, tick: n === this.state.period ? 'var(--accent)' : 'transparent' })),
+      metricOptions: METRICS.map(n => ({ name: n, selected: n === this.state.metric, tick: n === this.state.metric ? 'var(--accent)' : 'transparent' })),
+      totalLabel: this.fmt(total),
+      ordersTotal: ordersTotal,
+      deltaLabel: (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%',
+      revenuePath: smooth(g.pts),
+      areaPath: smooth(g.pts) + ' L ' + g.pts[g.pts.length - 1].x.toFixed(1) + ' ' + PB + ' L ' + g.pts[0].x.toFixed(1) + ' ' + PB + ' Z',
+      ordersPath: smooth(g.oPts),
+      yTicks: yTicks,
+      xTicks: xTicks,
+      chartDescription: this.state.metric + ' by month, ' + this.state.period.toLowerCase() + '. Total ' + this.fmt(total) + ', ' + ordersTotal + ' orders, ' + (delta >= 0 ? 'up ' : 'down ') + Math.abs(delta).toFixed(1) + '% on the previous period.',
+      donutDescription: 'Quotation pipeline: ' + stageRaw.map(s => s.name + ' ' + s.count).join(', ') + '.',
+      stages: stages,
+      pipelineTotal: pipelineTotal,
+      acceptedRate: '58.0%',
+      segmentLine: segLine,
+      segmentArea: segLine + ' L 320 110 L 0 110 Z',
+      customers: custRaw.map((c, i) => ({ name: c[0], initial: c[1], value: c[2], pct: c[3], pctLabel: c[3] + '%', delay: +(0.12 + i * 0.07).toFixed(2) })),
+      followUps: [
+        { customer: 'ABC Industries', quote: 'QT-2026-0418', amount: '₹1.24L', status: 'Overdue 6d', color: '#E25757' },
+        { customer: 'Kalpana Engineering', quote: 'QT-2026-0431', amount: '₹68,400', status: 'Overdue 2d', color: '#E25757' },
+        { customer: 'XYZ Pharma', quote: 'QT-2026-0444', amount: '₹92,150', status: 'Due today', color: '#D9A441' },
+        { customer: 'Meridian Polymers', quote: 'QT-2026-0449', amount: '₹2.10L', status: 'Due in 2d', color: '#B8F23A' },
+        { customer: 'Surya Fabtech', quote: 'QT-2026-0452', amount: '₹41,900', status: 'Due in 5d', color: '#B8F23A' }
+      ],
+      products: [
+        { code: 'N9310066', meta: '28 orders · 19 customers', revenue: '₹5.1L', trend: '+22%', color: '#B8F23A', spark: '0,20 12,17 24,18 36,12 48,10 60,6 72,3' },
+        { code: 'H4420193', meta: '19 orders · 12 customers', revenue: '₹3.4L', trend: '+9%', color: '#708D31', spark: '0,18 12,19 24,14 36,16 48,11 60,12 72,8' },
+        { code: 'B1180742', meta: '14 orders · 11 customers', revenue: '₹2.2L', trend: '−4%', color: '#D9A441', spark: '0,8 12,10 24,9 36,13 48,12 60,16 72,18' }
+      ],
+      activity: [
+        { text: 'Quotation QT-2026-0452 created for Surya Fabtech', time: '12m', color: '#B8F23A' },
+        { text: 'Follow-up scheduled for XYZ Pharma', time: '1h', color: '#D9A441' },
+        { text: 'Purchase order PO-2026-0139 recorded', time: '3h', color: '#B8F23A' },
+        { text: 'Performa invoice PI-2026-0087 generated', time: '6h', color: '#7E95FF' },
+        { text: '412 products imported from catalogue sheet', time: 'Yesterday', color: '#A5AEA8' }
+      ],
+
+      guideRef: this.guideRef, dotRef: this.dotRef, tipRef: this.tipRef,
+      donutTipRef: this.donutTipRef, donutCenterRef: this.donutCenterRef, refreshRef: this.refreshRef,
+
+      toggleNav: () => this.setState(s => ({ navOpen: !s.navOpen })),
+      togglePeriod: () => this.setState(s => ({ periodOpen: !s.periodOpen, metricOpen: false })),
+      toggleMetric: () => this.setState(s => ({ metricOpen: !s.metricOpen, periodOpen: false })),
+      pickPeriod: (e) => { this.lastIdx = -1; this.setState({ period: e.currentTarget.dataset.value, periodOpen: false }); },
+      pickMetric: (e) => { this.lastIdx = -1; this.setState({ metric: e.currentTarget.dataset.value, metricOpen: false }); },
+
+      onRefresh: () => {
+        const el = this.refreshRef.current;
+        if (el) { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = 'spinOnce .7s cubic-bezier(.4,0,.2,1)'; }
+        this.setState({ loading: true });
+        clearTimeout(this._rt);
+        this._rt = setTimeout(() => this.setState({ loading: false }), 700);
+      },
+
+      onChartMove: (e) => {
+        const svg = e.currentTarget.ownerSVGElement;
+        const r = svg.getBoundingClientRect();
+        const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+        const sx = cx / (r.width || 1) * 920;
+        let best = 0, bd = Infinity;
+        g.pts.forEach((p, i) => { const d = Math.abs(p.x - sx); if (d < bd) { bd = d; best = i; } });
+        if (best === this.lastIdx) return;
+        this.lastIdx = best;
+        this.showTip(best, g);
+      },
+      onChartLeave: () => {
+        this.lastIdx = -1;
+        if (this.guideRef.current) this.guideRef.current.style.opacity = '0';
+        if (this.dotRef.current) this.dotRef.current.style.opacity = '0';
+        if (this.tipRef.current) { this.tipRef.current.style.opacity = '0'; this.tipRef.current.style.transform = 'translate(-50%, -8px)'; }
+      },
+
+      onSegEnter: (e) => {
+        const name = e.currentTarget.dataset.stage;
+        const s = stages.filter(x => x.name === name)[0];
+        const tip = this.donutTipRef.current;
+        if (!s || !tip) return;
+        const host = tip.parentElement.getBoundingClientRect();
+        const cr = e.currentTarget.getBoundingClientRect();
+        tip.style.left = (cr.left + cr.width / 2 - host.left) + 'px';
+        tip.style.top = (cr.top - host.top - 10) + 'px';
+        tip.style.opacity = '1';
+        tip.style.transform = 'translate(-50%, -4px)';
+        tip.querySelector('[data-dtip-stage]').textContent = s.name;
+        tip.querySelector('[data-dtip-count]').textContent = s.count + ' quotations';
+        tip.querySelector('[data-dtip-value]').textContent = s.value;
+        const c = this.donutCenterRef.current;
+        if (c) { c.querySelector('[data-center-value]').textContent = s.count; c.querySelector('[data-center-label]').textContent = s.name; }
+      },
+      onSegLeave: () => {
+        const tip = this.donutTipRef.current;
+        if (tip) { tip.style.opacity = '0'; tip.style.transform = 'translate(-50%, -8px)'; }
+        const c = this.donutCenterRef.current;
+        if (c) { c.querySelector('[data-center-value]').textContent = '58.0%'; c.querySelector('[data-center-label]').textContent = 'Accepted rate'; }
+      },
+
+      onCardSpot: (e) => {
+        const spot = e.currentTarget.querySelector('[data-spot]');
+        if (!spot) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        spot.style.background = 'radial-gradient(300px circle at ' + (e.clientX - r.left) + 'px ' + (e.clientY - r.top) + 'px, rgba(184,242,58,.055), transparent 70%)';
+        spot.style.opacity = '1';
+      },
+      onCardSpotOut: (e) => {
+        const spot = e.currentTarget.querySelector('[data-spot]');
+        if (spot) spot.style.opacity = '0';
+      }
+    };
+    return Object.assign(base, this.screenVals());
+  }
+
+  componentWillUnmount() { clearTimeout(this._rt); }
+}
+</script>
+</body>
+</html>

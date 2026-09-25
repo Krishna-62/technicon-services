@@ -5,10 +5,29 @@ import { streamQuotationPdf } from '../pdf/documents.js';
 
 const router = Router();
 
-function computeTotals(items, taxPercent) {
+function computeTotals(items, taxPercent, discountType = 'percentage', discountValue = 0) {
   const subtotal = items.reduce((sum, it) => sum + Number(it.qty) * Number(it.price), 0);
-  const taxAmount = subtotal * (Number(taxPercent) / 100);
-  return { subtotal, taxAmount, total: subtotal + taxAmount };
+  const numVal = Number(discountValue) || 0;
+  const dType = discountType || 'percentage';
+  let discountAmount = 0;
+  let discountPercent = 0;
+
+  if (dType === 'amount') {
+    discountAmount = numVal > 0 ? numVal : 0;
+    discountPercent = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
+  } else {
+    discountPercent = numVal > 0 ? numVal : 0;
+    discountAmount = subtotal * (discountPercent / 100);
+  }
+
+  const taxableAmount = Math.max(0, subtotal - discountAmount);
+  const taxAmount = taxableAmount * (Number(taxPercent) / 100);
+  const exactTotal = taxableAmount + taxAmount;
+  const roundedTotal = Math.round(exactTotal);
+  const roundOff = roundedTotal - exactTotal;
+  const total = roundedTotal;
+
+  return { subtotal, discountType: dType, discountValue: numVal, discountPercent, discountAmount, taxableAmount, taxAmount, roundOff, total };
 }
 
 router.get('/', async (req, res) => {
@@ -44,7 +63,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { company_id, date, items, tax_percent, notes } = req.body;
+    const { company_id, date, items, tax_percent, notes, discount_type, discount_value } = req.body;
     if (!company_id) return res.status(400).json({ error: 'company_id is required' });
     if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
 
@@ -52,22 +71,23 @@ router.post('/', async (req, res) => {
     if (!company) return res.status(404).json({ error: 'Company not found' });
 
     const taxPercent = tax_percent ?? 18;
-    const { subtotal, taxAmount, total } = computeTotals(items, taxPercent);
+    const { subtotal, discountType, discountValue, discountPercent, discountAmount, taxableAmount, taxAmount, roundOff, total } =
+      computeTotals(items, taxPercent, discount_type, discount_value);
 
     const quotationId = await db.transaction(async () => {
       const prefix = (await db.prepare(`SELECT quotation_prefix FROM company_settings WHERE id = 1`).get()).quotation_prefix;
       const number = await nextNumber(prefix, 'quotation');
       const info = await db
         .prepare(
-          `INSERT INTO quotation (number, date, company_id, status, subtotal, tax_percent, tax_amount, total, notes)
-           VALUES (?, ?, ?, 'draft', ?, ?, ?, ?, ?) RETURNING id`
+          `INSERT INTO quotation (number, date, company_id, status, subtotal, discount_type, discount_value, discount_percent, discount_amount, taxable_amount, tax_percent, tax_amount, round_off, total, notes, created_by_user_id)
+           VALUES (?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`
         )
-        .run(number, date || new Date().toISOString().slice(0, 10), company_id, subtotal, taxPercent, taxAmount, total, notes || '');
+        .run(number, date || new Date().toISOString().slice(0, 10), company_id, subtotal, discountType, discountValue, discountPercent, discountAmount, taxableAmount, taxPercent, taxAmount, roundOff, total, notes || '', req.user.id);
 
       const qId = info.lastInsertRowid;
       const insertItem = db.prepare(
-        `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, qty, price, amount)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, make, qty, price, amount)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
       for (const it of items) {
         await insertItem.run(
@@ -76,6 +96,7 @@ router.post('/', async (req, res) => {
           it.part_no || null,
           it.description,
           it.hsn_sac || null,
+          it.make || null,
           it.qty,
           it.price,
           Number(it.qty) * Number(it.price)
@@ -97,26 +118,29 @@ router.put('/:id', async (req, res) => {
     if (!existing) return res.status(404).json({ error: 'Quotation not found' });
     if (existing.status !== 'draft') return res.status(400).json({ error: 'Only draft quotations can be edited' });
 
-    const { company_id, date, items, tax_percent, notes } = req.body;
+    const { company_id, date, items, tax_percent, notes, discount_type, discount_value } = req.body;
     if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'At least one line item is required' });
 
     const taxPercent = tax_percent ?? existing.tax_percent;
-    const { subtotal, taxAmount, total } = computeTotals(items, taxPercent);
+    const dType = discount_type !== undefined ? discount_type : (existing.discount_type || 'percentage');
+    const dVal = discount_value !== undefined ? discount_value : (existing.discount_value || 0);
+    const { subtotal, discountType, discountValue, discountPercent, discountAmount, taxableAmount, taxAmount, roundOff, total } =
+      computeTotals(items, taxPercent, dType, dVal);
 
     await db.transaction(async () => {
       await db
         .prepare(
-          `UPDATE quotation SET company_id = ?, date = ?, subtotal = ?, tax_percent = ?, tax_amount = ?, total = ?, notes = ? WHERE id = ?`
+          `UPDATE quotation SET company_id = ?, date = ?, subtotal = ?, discount_type = ?, discount_value = ?, discount_percent = ?, discount_amount = ?, taxable_amount = ?, tax_percent = ?, tax_amount = ?, round_off = ?, total = ?, notes = ? WHERE id = ?`
         )
-        .run(company_id || existing.company_id, date || existing.date, subtotal, taxPercent, taxAmount, total, notes ?? existing.notes, req.params.id);
+        .run(company_id || existing.company_id, date || existing.date, subtotal, discountType, discountValue, discountPercent, discountAmount, taxableAmount, taxPercent, taxAmount, roundOff, total, notes ?? existing.notes, req.params.id);
 
       await db.prepare(`DELETE FROM quotation_item WHERE quotation_id = ?`).run(req.params.id);
       const insertItem = db.prepare(
-        `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, qty, price, amount)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO quotation_item (quotation_id, product_id, part_no, description, hsn_sac, make, qty, price, amount)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
       for (const it of items) {
-        await insertItem.run(req.params.id, it.product_id || null, it.part_no || null, it.description, it.hsn_sac || null, it.qty, it.price, Number(it.qty) * Number(it.price));
+        await insertItem.run(req.params.id, it.product_id || null, it.part_no || null, it.description, it.hsn_sac || null, it.make || null, it.qty, it.price, Number(it.qty) * Number(it.price));
       }
     });
 
@@ -254,8 +278,12 @@ router.get('/:id/pdf', async (req, res) => {
   try {
     const quotation = await db
       .prepare(
-        `SELECT q.*, c.name AS company_name, c.address AS company_address, c.state AS company_state, c.gstin AS company_gstin
-         FROM quotation q JOIN company c ON c.id = q.company_id WHERE q.id = ?`
+        `SELECT q.*, c.name AS company_name, c.address AS company_address, c.state AS company_state,
+                c.gstin AS company_gstin, c.phone AS company_phone, u.username AS created_by_username
+         FROM quotation q
+         JOIN company c ON c.id = q.company_id
+         LEFT JOIN app_user u ON u.id = q.created_by_user_id
+         WHERE q.id = ?`
       )
       .get(req.params.id);
     if (!quotation) return res.status(404).json({ error: 'Quotation not found' });

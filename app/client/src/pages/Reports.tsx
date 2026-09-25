@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, Company } from '../api';
 import { HorizontalBarChart, GroupedBarChart } from '../components/BarChart';
 import SearchableSelect from '../components/SearchableSelect';
+import { ExpandableSearch } from '../components/ExpandableSearch';
 
 type Tab = 'companies' | 'products' | 'review' | 'import' | 'lapsed' | 'trends';
 
@@ -36,8 +37,6 @@ export default function Reports() {
   const [trendsCompany, setTrendsCompany] = useState('');
   const [trendsData, setTrendsData] = useState<{ products: any[]; years: string[]; rows: any[] } | null>(null);
 
-  // Only fetch a tab's data the first time it's opened, so switching to Reports
-  // doesn't fire six requests when the user only wants to look at one thing.
   useEffect(() => {
     if (loadedTabs.has(tab)) return;
     setLoading(true);
@@ -82,7 +81,6 @@ export default function Reports() {
       setUploadResult(result);
       setUploadFile(null);
       loadImportBatches();
-      // Sales data changed — drop cached tabs so they refetch next time they're opened.
       setLoadedTabs(new Set(['import']));
     } catch (e: any) {
       setError(e.message);
@@ -139,147 +137,258 @@ export default function Reports() {
     : productRows;
 
   return (
-    <div>
-      <h2>Reports</h2>
-      {error && <div className="error">{error}</div>}
+    <div className="p-6 flex flex-col gap-6 bg-[#101312] text-[#F5F7F4] min-h-screen">
+      {/* Header */}
+      <div className="flex flex-col gap-1.5">
+        <h1 className="margin-0 text-[34px] font-medium tracking-[-.02em] leading-[1.05]">
+          Reports Analytics
+        </h1>
+        <p className="margin-0 text-[13.5px] text-[#A5AEA8]">
+          Historical sales analytics, company purchasing trends, lapsed relationship tracking, and data imports.
+        </p>
+      </div>
 
-      <div className="toolbar">
-        <div>
-          <button className={`btn small ${tab === 'companies' ? '' : 'secondary'}`} onClick={() => setTab('companies')}>Companies</button>{' '}
-          <button className={`btn small ${tab === 'products' ? '' : 'secondary'}`} onClick={() => setTab('products')}>Products</button>{' '}
-          <button className={`btn small ${tab === 'lapsed' ? '' : 'secondary'}`} onClick={() => setTab('lapsed')}>Lapsed Purchases</button>{' '}
-          <button className={`btn small ${tab === 'trends' ? '' : 'secondary'}`} onClick={() => setTab('trends')}>Company Trends</button>{' '}
-          <button className={`btn small ${tab === 'review' ? '' : 'secondary'}`} onClick={() => setTab('review')}>
-            Review Queue{loadedTabs.has('review') ? ` (${reviewRows.length})` : ''}
-          </button>{' '}
-          <button className={`btn small ${tab === 'import' ? '' : 'secondary'}`} onClick={() => setTab('import')}>Import Data</button>
+      {error && (
+        <div className="p-3 rounded-[10px] border border-[#4a2a2a] bg-[#1b1414] text-[#E25757] text-[12.5px]">
+          {error}
+        </div>
+      )}
+
+      {/* Tab Navigation & Export Bar */}
+      <div className="flex items-center justify-between gap-4 flex-wrap bg-[#171918] border border-[#292E2A] rounded-[14px] p-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {[
+            { id: 'companies', label: 'Companies' },
+            { id: 'products', label: 'Products' },
+            { id: 'lapsed', label: 'Lapsed Purchases' },
+            { id: 'trends', label: 'Company Trends' },
+            { id: 'review', label: `Review Queue${loadedTabs.has('review') ? ` (${reviewRows.length})` : ''}` },
+            { id: 'import', label: 'Import Data' },
+          ].map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id as Tab)}
+              className={`px-3.5 py-1.5 rounded-[9px] text-[12.5px] font-medium transition-colors cursor-pointer ${
+                tab === t.id
+                  ? 'bg-[#1D211E] text-[#B8F23A] border border-[#3a4a1f]'
+                  : 'text-[#A5AEA8] hover:text-[#F5F7F4] hover:bg-[#161A18]'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
         {(tab === 'companies' || tab === 'products') && (
-          <a className="btn secondary small" href={api.reports.exportUrl(tab)}>Export to Excel</a>
+          <a
+            href={api.reports.exportUrl(tab)}
+            className="h-[32px] px-3.5 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#B8F23A] hover:border-[#3a4a1f] text-[12px] font-medium inline-flex items-center no-underline transition-colors"
+          >
+            Export to Excel →
+          </a>
         )}
       </div>
 
-      {loading && <p className="muted loading-text">Loading…</p>}
+      {loading && <p className="text-[#A5AEA8] text-[13px] py-4">Loading report data…</p>}
 
       {!loading && tab === 'companies' && (
-        <div className="card">
-          <input
-            type="search"
-            placeholder="Search companies…"
-            value={companySearch}
-            onChange={(e) => setCompanySearch(e.target.value)}
-            style={{ maxWidth: 280, marginBottom: 14 }}
-          />
-          <div className="table-scroll">
-            <table>
-              <thead><tr><th>Company</th><th>Orders</th><th>Total Qty</th><th>Revenue</th><th></th></tr></thead>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-[16px_18px_12px] flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-3 border-b border-[#20251f] pb-3.5">
+            <ExpandableSearch
+              value={companySearch}
+              onChange={setCompanySearch}
+              placeholder="Search companies..."
+              ariaLabel="Search companies report"
+              maxWidth="280px"
+            />
+            <span className="text-[11.5px] text-[#6d756f]">
+              Showing {filteredCompanyRows.length} of {companyRows.length}
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[#20251f]">
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">COMPANY</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">ORDERS</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">TOTAL QTY</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">REVENUE</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">ACTION</th>
+                </tr>
+              </thead>
               <tbody>
                 {filteredCompanyRows.map((c) => (
-                  <tr key={c.company_name}>
-                    <td>{c.company_name}</td>
-                    <td>{c.order_count}</td>
-                    <td>{c.total_qty}</td>
-                    <td>₹{Number(c.total).toLocaleString('en-IN')}</td>
-                    <td><button className="btn small secondary" onClick={() => viewHistory(c.company_name)}>History</button></td>
+                  <tr key={c.company_name} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] font-medium text-[#F5F7F4]">{c.company_name}</td>
+                    <td className="p-[11px_10px] text-right text-[#A5AEA8]">{c.order_count}</td>
+                    <td className="p-[11px_10px] text-right text-[#A5AEA8]">{c.total_qty}</td>
+                    <td className="p-[11px_10px] text-right font-medium text-[#B8F23A]">₹{Number(c.total).toLocaleString('en-IN')}</td>
+                    <td className="p-[11px_10px] text-right">
+                      <button
+                        type="button"
+                        onClick={() => viewHistory(c.company_name)}
+                        className="h-[28px] px-2.5 rounded-[7px] bg-[#1D211E] border border-[#292E2A] text-[#B8F23A] text-[11.5px] font-medium hover:border-[#3a4a1f] cursor-pointer"
+                      >
+                        History
+                      </button>
+                    </td>
                   </tr>
                 ))}
-                {filteredCompanyRows.length === 0 && <tr><td colSpan={5} className="muted">No matches.</td></tr>}
+                {filteredCompanyRows.length === 0 && (
+                  <tr><td colSpan={5} className="text-center py-8 text-[#A5AEA8] text-[13px]">No matching companies found.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
 
       {!loading && tab === 'products' && (
-        <div className="card">
-          <input
-            type="search"
-            placeholder="Search products…"
-            value={productSearch}
-            onChange={(e) => setProductSearch(e.target.value)}
-            style={{ maxWidth: 280, marginBottom: 14 }}
-          />
-          <div className="table-scroll">
-            <table>
-              <thead><tr><th>Part No</th><th>Description</th><th>Orders</th><th>Total Qty</th><th>Revenue</th></tr></thead>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-[16px_18px_12px] flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-3 border-b border-[#20251f] pb-3.5">
+            <ExpandableSearch
+              value={productSearch}
+              onChange={setProductSearch}
+              placeholder="Search products..."
+              ariaLabel="Search products report"
+              maxWidth="280px"
+            />
+            <span className="text-[11.5px] text-[#6d756f]">
+              Showing {filteredProductRows.length} of {productRows.length}
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[#20251f]">
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PART NO</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DESCRIPTION</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">ORDERS</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">TOTAL QTY</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">REVENUE</th>
+                </tr>
+              </thead>
               <tbody>
                 {filteredProductRows.map((p) => (
-                  <tr key={p.part_no}>
-                    <td>{p.part_no}</td>
-                    <td>{p.product_description}</td>
-                    <td>{p.order_count}</td>
-                    <td>{p.total_qty}</td>
-                    <td>₹{Number(p.total).toLocaleString('en-IN')}</td>
+                  <tr key={p.part_no} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] font-mono text-[12px] text-[#B8F23A]">{p.part_no}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4] font-medium">{p.product_description}</td>
+                    <td className="p-[11px_10px] text-right text-[#A5AEA8]">{p.order_count}</td>
+                    <td className="p-[11px_10px] text-right text-[#A5AEA8]">{p.total_qty}</td>
+                    <td className="p-[11px_10px] text-right font-medium text-[#F5F7F4]">₹{Number(p.total).toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
-                {filteredProductRows.length === 0 && <tr><td colSpan={5} className="muted">No matches.</td></tr>}
+                {filteredProductRows.length === 0 && (
+                  <tr><td colSpan={5} className="text-center py-8 text-[#A5AEA8] text-[13px]">No matching products found.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
 
       {!loading && tab === 'review' && (
-        <div className="card">
-          <p className="muted">Rows imported from sales files with missing or inconsistent data. Review and correct in the source if needed.</p>
-          <div className="table-scroll">
-            <table>
-              <thead><tr><th>Date</th><th>Invoice</th><th>Company</th><th>Product</th><th>Reason</th></tr></thead>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+          <p className="margin-0 text-[13px] text-[#A5AEA8]">
+            Rows imported from sales files with missing or inconsistent data. Review and correct in the source if needed.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[#20251f]">
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DATE</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">INVOICE</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">COMPANY</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PRODUCT</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">REASON</th>
+                </tr>
+              </thead>
               <tbody>
                 {reviewRows.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.sale_date || '-'}</td>
-                    <td>{r.invoice_no || '-'}</td>
-                    <td>{r.company_name || '-'}</td>
-                    <td>{r.product_description || '-'}</td>
-                    <td className="muted">{r.review_reason}</td>
+                  <tr key={r.id} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{r.sale_date || '-'}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4]">{r.invoice_no || '-'}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4]">{r.company_name || '-'}</td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{r.product_description || '-'}</td>
+                    <td className="p-[11px_10px] text-[#E25757]">{r.review_reason}</td>
                   </tr>
                 ))}
+                {reviewRows.length === 0 && (
+                  <tr><td colSpan={5} className="text-center py-8 text-[#A5AEA8] text-[13px]">No records in review queue.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
 
       {!loading && tab === 'lapsed' && (
-        <div className="card">
-          <p className="muted">Company–product pairs with no purchase in the last N months, ranked by how much revenue they used to bring.</p>
-          <div className="row" style={{ maxWidth: 300, alignItems: 'end' }}>
-            <div className="field">
-              <label>No purchase in the last (months)</label>
-              <input type="number" min={1} value={lapsedMonths} onChange={(e) => setLapsedMonths(Number(e.target.value))} />
-            </div>
-            <button className="btn small" onClick={() => loadLapsed(lapsedMonths)}>Apply</button>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-6">
+          <p className="margin-0 text-[13px] text-[#A5AEA8]">
+            Company–product pairs with no purchase in the last N months, ranked by revenue before lapse.
+          </p>
+          <div className="flex items-end gap-3 max-w-[320px]">
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider flex-1">
+              NO PURCHASE IN LAST (MONTHS)
+              <input
+                type="number"
+                min={1}
+                value={lapsedMonths}
+                onChange={(e) => setLapsedMonths(Number(e.target.value))}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => loadLapsed(lapsedMonths)}
+              className="h-[36px] px-4 rounded-[9px] bg-[#B8F23A] text-[#101312] font-bold text-[12.5px] cursor-pointer"
+            >
+              Apply
+            </button>
           </div>
 
-          <h3 style={{ marginTop: 20 }}>Top 15 Lapsed Relationships</h3>
-          <HorizontalBarChart data={lapsedChartData} />
+          <div className="flex flex-col gap-3">
+            <h3 className="margin-0 text-[16px] font-medium text-[#F5F7F4]">Top 15 Lapsed Relationships</h3>
+            <HorizontalBarChart data={lapsedChartData} />
+          </div>
 
-          <div className="table-scroll" style={{ marginTop: 20 }}>
-            <table>
-              <thead><tr><th>Company</th><th>Product</th><th>Last Purchased</th><th>Months Since</th><th>Revenue Before Lapse</th></tr></thead>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[#20251f]">
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">COMPANY</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PRODUCT</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">LAST PURCHASED</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">MONTHS SINCE</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">REVENUE BEFORE LAPSE</th>
+                </tr>
+              </thead>
               <tbody>
                 {lapsedRows.map((r, i) => (
-                  <tr key={i}>
-                    <td>{r.company_name}</td>
-                    <td>{r.product_description}</td>
-                    <td>{r.last_purchase}</td>
-                    <td>{r.months_since}</td>
-                    <td>₹{Number(r.total_revenue).toLocaleString('en-IN')}</td>
+                  <tr key={i} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] font-medium text-[#F5F7F4]">{r.company_name}</td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{r.product_description}</td>
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{r.last_purchase}</td>
+                    <td className="p-[11px_10px] text-right text-[#D9A441]">{r.months_since} mo</td>
+                    <td className="p-[11px_10px] text-right font-medium text-[#B8F23A]">₹{Number(r.total_revenue).toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
-                {lapsedRows.length === 0 && <tr><td colSpan={5} className="muted">Nothing lapsed at this threshold.</td></tr>}
+                {lapsedRows.length === 0 && (
+                  <tr><td colSpan={5} className="text-center py-8 text-[#A5AEA8] text-[13px]">Nothing lapsed at this threshold.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
 
       {!loading && tab === 'trends' && (
-        <div className="card">
-          <p className="muted">Purchases per product per year for a chosen company — a missing bar means a gap year.</p>
-          <div className="field" style={{ maxWidth: 320 }}>
-            <label>Company</label>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-6">
+          <p className="margin-0 text-[13px] text-[#A5AEA8]">
+            Purchases per product per year for a chosen company — missing bars indicate gap years.
+          </p>
+          <div className="flex flex-col gap-1 max-w-[340px]">
+            <label className="text-[11px] text-[#6d756f] uppercase tracking-wider font-medium">SELECT COMPANY</label>
             <SearchableSelect
               options={companiesList.map((c) => ({ value: c.name, label: c.name }))}
               value={trendsCompany}
@@ -289,120 +398,171 @@ export default function Reports() {
           </div>
 
           {trendsData && (
-            <>
-              <h3 style={{ marginTop: 20 }}>Top Products by Year</h3>
+            <div className="flex flex-col gap-6">
+              <h3 className="margin-0 text-[16px] font-medium text-[#F5F7F4]">Top Products by Year</h3>
               <GroupedBarChart data={trendsChartData} seriesNames={trendsData.years} />
 
-              <div className="table-scroll" style={{ marginTop: 20 }}>
-                <table>
-                  <thead><tr><th>Product</th>{trendsData.years.map((y) => <th key={y}>{y}</th>)}</tr></thead>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-[12.5px]">
+                  <thead>
+                    <tr className="border-b border-[#20251f]">
+                      <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PRODUCT</th>
+                      {trendsData.years.map((y) => (
+                        <th key={y} className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">{y}</th>
+                      ))}
+                    </tr>
+                  </thead>
                   <tbody>
                     {trendsData.products.map((p) => (
-                      <tr key={p.part_no}>
-                        <td>{p.product_description}</td>
+                      <tr key={p.part_no} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                        <td className="p-[11px_10px] font-medium text-[#F5F7F4]">{p.product_description}</td>
                         {trendsData.years.map((y) => {
                           const val = trendsData.rows.find((r) => r.part_no === p.part_no && r.year === y)?.total;
-                          return <td key={y}>{val ? `₹${Number(val).toLocaleString('en-IN')}` : '-'}</td>;
+                          return (
+                            <td key={y} className="p-[11px_10px] text-right font-mono text-[12px] text-[#A5AEA8]">
+                              {val ? `₹${Number(val).toLocaleString('en-IN')}` : '—'}
+                            </td>
+                          );
                         })}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </>
+            </div>
           )}
-        </div>
+        </section>
       )}
 
       {!loading && tab === 'import' && (
-        <div className="card">
-          <p className="muted">Upload a year's sales Excel file (same column layout as the original report) to add it to the database.</p>
-          <div className="row" style={{ alignItems: 'end' }}>
-            <div className="field">
-              <label>Excel File</label>
-              <input type="file" accept=".xlsx,.xls" onChange={(e) => setUploadFile(e.target.files?.[0] || null)} />
-            </div>
-            <div className="field">
-              <label>Year</label>
-              <input value={uploadYear} onChange={(e) => setUploadYear(e.target.value)} />
-            </div>
-            <button className="btn small" onClick={submitUpload} disabled={uploading}>{uploading ? 'Importing…' : 'Import'}</button>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-6">
+          <p className="margin-0 text-[13px] text-[#A5AEA8]">
+            Upload a year's sales Excel file to import data into the database.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              EXCEL FILE
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[12px] file:mr-3 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-[#B8F23A] file:text-[#101312] file:font-bold text-xs"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[11px] text-[#6d756f] uppercase tracking-wider">
+              YEAR LABEL
+              <input
+                value={uploadYear}
+                onChange={(e) => setUploadYear(e.target.value)}
+                className="h-[36px] px-3 rounded-[9px] bg-[#1D211E] border border-[#292E2A] text-[#F5F7F4] text-[13px] outline-none"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={submitUpload}
+              disabled={uploading}
+              className="h-[36px] px-4 rounded-[9px] bg-[#B8F23A] text-[#101312] font-bold text-[12.5px] cursor-pointer"
+            >
+              {uploading ? 'Importing…' : 'Import File'}
+            </button>
           </div>
 
           {uploadResult && (
-            <div className="card" style={{ background: '#d9f2e3', marginTop: 16 }}>
-              <strong>Import complete.</strong>{' '}
-              {uploadResult.importedCount} rows imported, {uploadResult.skippedDuplicateCount} duplicates skipped,{' '}
-              {uploadResult.flaggedCount} flagged for review, {uploadResult.companiesAdded} new companies,{' '}
-              {uploadResult.productsAdded} new products.
+            <div className="p-4 rounded-[12px] border border-[#3a4a1f] bg-[#1b2013] text-[#B8F23A] text-[13px]">
+              <strong>Import complete.</strong> {uploadResult.importedCount} rows imported, {uploadResult.skippedDuplicateCount} duplicates skipped, {uploadResult.flaggedCount} flagged for review, {uploadResult.companiesAdded} new companies, {uploadResult.productsAdded} new products.
             </div>
           )}
 
-          <h3 style={{ marginTop: 20 }}>Import History</h3>
-          <div className="table-scroll">
-            <table>
-              <thead><tr><th>File</th><th>Year</th><th>Imported At</th><th>Rows</th><th>Imported</th><th>Duplicates</th><th>Flagged</th></tr></thead>
-              <tbody>
-                {importBatches.map((b) => (
-                  <tr key={b.id}>
-                    <td>{b.filename}</td>
-                    <td>{b.year_label || '-'}</td>
-                    <td>{b.imported_at}</td>
-                    <td>{b.row_count}</td>
-                    <td>{b.imported_count}</td>
-                    <td>{b.skipped_duplicate_count}</td>
-                    <td>{b.flagged_count}</td>
+          <div className="flex flex-col gap-3">
+            <h3 className="margin-0 text-[16px] font-medium text-[#F5F7F4]">Import History</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[12.5px]">
+                <thead>
+                  <tr className="border-b border-[#20251f]">
+                    <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">FILE</th>
+                    <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">YEAR</th>
+                    <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">IMPORTED AT</th>
+                    <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">ROWS</th>
+                    <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">IMPORTED</th>
+                    <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DUPLICATES</th>
+                    <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">FLAGGED</th>
                   </tr>
-                ))}
-                {importBatches.length === 0 && <tr><td colSpan={7} className="muted">No imports yet.</td></tr>}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {importBatches.map((b) => (
+                    <tr key={b.id} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                      <td className="p-[11px_10px] font-medium text-[#F5F7F4]">{b.filename}</td>
+                      <td className="p-[11px_10px] text-[#A5AEA8]">{b.year_label || '-'}</td>
+                      <td className="p-[11px_10px] text-[#A5AEA8]">{b.imported_at}</td>
+                      <td className="p-[11px_10px] text-right text-[#A5AEA8]">{b.row_count}</td>
+                      <td className="p-[11px_10px] text-right text-[#B8F23A] font-medium">{b.imported_count}</td>
+                      <td className="p-[11px_10px] text-right text-[#6d756f]">{b.skipped_duplicate_count}</td>
+                      <td className="p-[11px_10px] text-right text-[#E25757]">{b.flagged_count}</td>
+                    </tr>
+                  ))}
+                  {importBatches.length === 0 && (
+                    <tr><td colSpan={7} className="text-center py-8 text-[#A5AEA8] text-[13px]">No imports yet.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </section>
       )}
 
       {selectedCompany && yearComparison && yearComparison.years.length > 0 && (
-        <div className="card">
-          <h3>Products Bought — {yearComparison.years.join(' vs ')} — {selectedCompany}</h3>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+          <h3 className="margin-0 text-[18px] font-medium text-[#F5F7F4]">Products Bought — {yearComparison.years.join(' vs ')} — {selectedCompany}</h3>
           {yearComparison.years.length < 2 ? (
-            <p className="muted">Only one year of data on file for this company. Import a second year (Reports → Import Data) to see a year-over-year comparison.</p>
+            <p className="margin-0 text-[13px] text-[#A5AEA8]">
+              Only one year of data on file for this company. Import a second year (Import Data) to see a year-over-year comparison.
+            </p>
           ) : (
             <>
-              <p className="muted">
-                Products purchased in {yearComparison.years[0]} vs {yearComparison.years[1]}, biggest drop-offs first — a short or missing {yearComparison.years[1]} bar means they didn't reorder it.
+              <p className="margin-0 text-[13px] text-[#A5AEA8]">
+                Products purchased in {yearComparison.years[0]} vs {yearComparison.years[1]}, biggest drop-offs first.
               </p>
               {droppedProducts.length > 0 && (
-                <p className="muted">
+                <p className="margin-0 text-[13px] text-[#E25757]">
                   <strong>{droppedProducts.length}</strong> product(s) bought in {yearComparison.years[0]} with nothing purchased in {yearComparison.years[1]}.
                 </p>
               )}
             </>
           )}
           <GroupedBarChart data={yearComparisonChartData} seriesNames={yearComparison.years} />
-        </div>
+        </section>
       )}
 
       {selectedCompany && (
-        <div className="card">
-          <h3>Purchase History — {selectedCompany}</h3>
-          <div className="table-scroll">
-            <table>
-              <thead><tr><th>Date</th><th>Invoice</th><th>Part No</th><th>Description</th><th>Qty</th><th>Amount</th></tr></thead>
+        <section className="bg-[#171918] border border-[#292E2A] rounded-[16px] p-6 flex flex-col gap-4">
+          <h3 className="margin-0 text-[18px] font-medium text-[#F5F7F4]">Purchase History — {selectedCompany}</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[#20251f]">
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DATE</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">INVOICE</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">PART NO</th>
+                  <th className="text-left p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">DESCRIPTION</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">QTY</th>
+                  <th className="text-right p-[8px_10px] font-normal text-[11px] tracking-[.08em] text-[#6d756f] uppercase">AMOUNT</th>
+                </tr>
+              </thead>
               <tbody>
                 {history.map((h, i) => (
-                  <tr key={i}>
-                    <td>{h.sale_date}</td>
-                    <td>{h.invoice_no}</td>
-                    <td>{h.part_no}</td>
-                    <td>{h.product_description}</td>
-                    <td>{h.qty}</td>
-                    <td>₹{Number(h.total_amount).toLocaleString('en-IN')}</td>
+                  <tr key={i} className="border-b border-[#1a1f1c] hover:bg-[#1a1e1c] transition-colors">
+                    <td className="p-[11px_10px] text-[#A5AEA8]">{h.sale_date}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4]">{h.invoice_no}</td>
+                    <td className="p-[11px_10px] font-mono text-[12px] text-[#B8F23A]">{h.part_no}</td>
+                    <td className="p-[11px_10px] text-[#F5F7F4]">{h.product_description}</td>
+                    <td className="p-[11px_10px] text-right text-[#A5AEA8]">{h.qty}</td>
+                    <td className="p-[11px_10px] text-right font-medium text-[#F5F7F4]">₹{Number(h.total_amount).toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

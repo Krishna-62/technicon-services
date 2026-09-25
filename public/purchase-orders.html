@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TECHNICON SERVICES — Purchase Orders</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              sidebar: '#003B2B',
+              activeSidebar: '#0E513C',
+              accent: '#9CF45D',
+              bg: '#F4F7F4',
+              surface: '#FFFFFF',
+              text: '#111714',
+              muted: '#65716B',
+              border: '#E2E7E3',
+              success: '#35A866',
+              warning: '#D89B23',
+              danger: '#D44747',
+              info: '#5178E8'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Theme CSS -->
+  <link rel="stylesheet" href="/css/theme.css" />
+
+  <style>
+    /* Custom Color Overrides matching exact Technicon Design System */
+    body {
+      background-color: #F4F7F4;
+      color: #111714;
+    }
+    .bg-technicon-sidebar { background-color: #003B2B; }
+    .bg-technicon-active { background-color: #0E513C; }
+    .border-technicon-accent { border-color: #9CF45D; }
+    .text-technicon-accent { color: #9CF45D; }
+    .border-technicon { border-color: #E2E7E3; }
+    .text-technicon-muted { color: #65716B; }
+  </style>
+</head>
+<body class="bg-[#F4F7F4] text-[#111714] min-h-screen flex font-sans antialiased selection:bg-[#0E513C] selection:text-white">
+
+  <!-- MOBILE SIDEBAR BACKDROP OVERLAY -->
+  <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden transition-opacity"></div>
+
+  <!-- LEFT SIDEBAR NAVIGATION (Dark Deep Technicon Green #003B2B) -->
+  <aside id="sidebar-nav" class="w-64 bg-[#003B2B] text-white min-h-screen flex flex-col justify-between p-4 shrink-0 fixed left-0 top-0 bottom-0 z-50 sidebar-scroll overflow-y-auto border-r border-[#0E513C]/40 -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+    <div class="flex flex-col gap-6">
+      
+      <!-- Brand Logo Header -->
+      <div class="px-2 pt-2 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#0E513C] flex items-center justify-center text-[#9CF45D] shadow-sm border border-[#9CF45D]/20">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold tracking-tight text-white leading-none">TECHNICON</h1>
+            <p class="text-[11px] font-semibold text-[#65716B] mt-1 tracking-wide text-slate-300">Operational ERP</p>
+          </div>
+        </div>
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0E513C] text-[#9CF45D] border border-[#9CF45D]/30">PRO</span>
+      </div>
+
+      <!-- Navigation Links List -->
+      <nav class="flex flex-col gap-1 text-sm">
+        <!-- Dashboard -->
+        <a href="/index.html" class="px-3 py-2.5 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <!-- Quotations -->
+        <a href="/index.html#quotations" class="px-3 py-2.5 rounded-lg flex items-center justify-between text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-text" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+            <span>Quotations</span>
+          </div>
+          <span class="text-[11px] font-semibold bg-white/10 px-2 py-0.5 rounded-full text-[#9CF45D]">17</span>
+        </a>
+
+        <!-- Purchase Orders (ACTIVE STATE: #0E513C + #9CF45D accent) -->
+        <a href="/index.html#purchase-orders" class="px-3 py-2.5 rounded-lg bg-[#0E513C] text-white flex items-center justify-between font-semibold transition-all border-l-4 border-[#9CF45D] shadow-xs">
+          <div class="flex items-center gap-3">
+            <i data-lucide="shopping-cart" class="w-4 h-4 text-white"></i>
+            <span>Purchase Orders</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-[#9CF45D]"></span>
+        </a>
+
+        <!-- Performa Invoices -->
+        <a href="/index.html#performa-invoices" class="px-3 py-2.5 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="receipt" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+          <span>Performa Invoices</span>
+        </a>
+
+        <!-- Companies -->
+        <a href="/index.html#companies" class="px-3 py-2.5 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="building-2" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+          <span>Companies</span>
+        </a>
+
+        <!-- Products -->
+        <a href="/index.html#products" class="px-3 py-2.5 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="package" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+          <span>Products</span>
+        </a>
+
+        <!-- Section: REPORTS & INSIGHTS -->
+        <div class="pt-5 pb-1 px-3 flex items-center justify-between">
+          <span class="text-[10px] font-extrabold tracking-wider text-emerald-400/70 uppercase">REPORTS & INSIGHTS</span>
+        </div>
+
+        <!-- Business Health -->
+        <a href="/index.html#reports" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="trending-up" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Business Health</span>
+        </a>
+
+        <!-- Customer Health -->
+        <a href="/index.html#customer-health" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="users" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Customer Health</span>
+        </a>
+
+        <!-- Growth Opportunities -->
+        <a href="/index.html#opportunities" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="compass" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Growth Opportunities</span>
+        </a>
+
+        <!-- Product Intelligence -->
+        <a href="/product-intelligence.html" class="px-3 py-2 rounded-lg flex items-center justify-between text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="brain-circuit" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+            <span>Product Intelligence</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-[#9CF45D]"></span>
+        </a>
+
+        <!-- Chat with AI -->
+        <a href="/index.html#ai-chat" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="message-square" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Chat with AI</span>
+        </a>
+
+        <!-- Section: SYSTEM -->
+        <div class="pt-5 pb-1 px-3 flex items-center justify-between">
+          <span class="text-[10px] font-extrabold tracking-wider text-emerald-400/70 uppercase">SYSTEM</span>
+        </div>
+
+        <a href="/index.html#admin-settings" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="settings" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Settings</span>
+        </a>
+
+        <a href="/index.html#user-management" class="px-3 py-2 rounded-lg flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/5 transition-all group">
+          <i data-lucide="shield-check" class="w-4 h-4 text-slate-400 group-hover:text-white"></i>
+          <span>Admin</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- User Profile Footer -->
+    <div class="pt-4 border-t border-[#0E513C]/60 flex items-center justify-between px-2">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-[#0E513C] text-[#9CF45D] font-bold text-xs flex items-center justify-center border border-[#9CF45D]/30">
+          KC
+        </div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-white leading-tight">Krishna C.</p>
+          <p class="text-[10px] text-slate-400">Administrator</p>
+        </div>
+      </div>
+      <button aria-label="Log Out" class="text-slate-400 hover:text-white p-1 rounded transition-colors">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+    
+    <!-- TOP NAVIGATION BAR -->
+    <header class="h-16 px-4 md:px-8 bg-[#F4F7F4] border-b border-[#E2E7E3] flex items-center justify-between sticky top-0 z-20 backdrop-blur-md bg-opacity-95">
+      
+      <!-- Left: Mobile Menu Toggle & Search Bar -->
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <button onclick="toggleMobileSidebar(true)" aria-label="Open Navigation Menu" class="md:hidden p-2 text-[#111714] hover:bg-white rounded-lg border border-[#E2E7E3]">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <div class="relative w-full sm:w-80 md:w-96">
+          <i data-lucide="search" class="w-4 h-4 text-[#65716B] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input 
+            id="global-search-input" 
+            type="text" 
+            placeholder="Search orders..." 
+            class="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E7E3] rounded-full text-xs text-[#111714] placeholder-[#65716B] focus:outline-none focus:ring-2 focus:ring-[#0E513C]/20 focus:border-[#0E513C] transition-all shadow-xs"
+          />
+        </div>
+      </div>
+
+      <!-- Right Header Controls -->
+      <div class="hidden sm:flex items-center gap-4">
+        <!-- Notification Icon -->
+        <button aria-label="Notifications" class="w-9 h-9 rounded-full bg-white border border-[#E2E7E3] flex items-center justify-center text-[#111714] hover:bg-slate-50 transition-colors shadow-xs relative">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="w-2 h-2 rounded-full bg-[#35A866] absolute top-2 right-2 ring-2 ring-white"></span>
+        </button>
+
+        <!-- Profile User Icon -->
+        <button aria-label="User Profile" class="w-9 h-9 rounded-full bg-white border border-[#E2E7E3] flex items-center justify-center text-[#111714] hover:bg-slate-50 transition-colors shadow-xs">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </button>
+
+        <!-- CTA Button: New Quotation -->
+        <a href="/quotations.html" class="px-4 py-2 rounded-lg bg-[#003B2B] text-white text-xs font-semibold hover:bg-[#0E513C] transition-all shadow-xs flex items-center gap-2">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>New Quotation</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- MAIN PAGE CONTENT CONTAINER -->
+    <main class="p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6 sm:space-y-8">
+
+      <!-- PAGE TITLE & SUBTITLE HEADER ROW -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-[#111714] tracking-tight">Purchase Orders</h1>
+          <p class="text-xs sm:text-sm text-[#65716B] mt-1">View and manage incoming customer orders.</p>
+        </div>
+        
+        <!-- Header Action Buttons -->
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <!-- Upload PO Button -->
+          <button id="upload-po-btn" onclick="toggleUploadModal(true)" class="flex-1 sm:flex-none px-4 py-2 border border-[#E2E7E3] rounded-lg text-xs font-semibold text-[#111714] bg-white hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-xs">
+            <i data-lucide="upload-cloud" class="w-4 h-4 text-[#111714]"></i>
+            <span>Upload PO</span>
+          </button>
+
+          <!-- View Reports Button -->
+          <a href="/index.html#reports" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#003B2B] hover:bg-[#0E513C] transition-colors flex items-center justify-center gap-2 shadow-xs">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-white"></i>
+            <span>View Reports</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3 KPI SUMMARY CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="kpi-cards-container">
+        
+        <!-- Card 1: Total POs -->
+        <div class="bg-white rounded-xl p-5 sm:p-6 border border-[#E2E7E3] shadow-xs relative hover:shadow-md transition-all">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs sm:text-sm font-semibold text-[#65716B]">Total POs</h3>
+            <button aria-label="Card Options" class="text-[#65716B] hover:text-[#111714] p-1 rounded">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#111714] mb-2" id="kpi-total-pos">1,248</div>
+          <div class="flex items-center gap-1 text-xs font-semibold text-[#35A866]" id="kpi-total-pos-subtext">
+            <i data-lucide="arrow-up" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+            <span>+12% vs last month</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Pending Approval -->
+        <div class="bg-white rounded-xl p-5 sm:p-6 border border-[#E2E7E3] shadow-xs relative hover:shadow-md transition-all">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs sm:text-sm font-semibold text-[#65716B]">Pending Approval</h3>
+            <button aria-label="Card Options" class="text-[#65716B] hover:text-[#111714] p-1 rounded">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#111714] mb-2" id="kpi-pending-count">42</div>
+          <div class="text-xs font-medium text-[#65716B]">
+            Requires immediate review
+          </div>
+        </div>
+
+        <!-- Card 3: Valued At -->
+        <div class="bg-white rounded-xl p-5 sm:p-6 border border-[#E2E7E3] shadow-xs relative hover:shadow-md transition-all sm:col-span-2 lg:col-span-1">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs sm:text-sm font-semibold text-[#65716B]">Valued At</h3>
+            <button aria-label="Card Options" class="text-[#65716B] hover:text-[#111714] p-1 rounded">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#111714] mb-2" id="kpi-total-value">₹24.8L</div>
+          <div class="flex items-center gap-1 text-xs font-semibold text-[#35A866]">
+            <i data-lucide="arrow-up" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+            <span>+5.4% this quarter</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT 2-COLUMN LAYOUT (70% TABLE / 30% ACTIVITY) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT PANEL: RECENT PURCHASE ORDERS (col-span-8) -->
+        <div class="lg:col-span-8 bg-white rounded-xl border border-[#E2E7E3] shadow-xs flex flex-col overflow-hidden">
+          
+          <!-- Panel Header & Actions -->
+          <div class="p-4 sm:p-5 border-b border-[#E2E7E3] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white">
+            <div class="flex items-center gap-3">
+              <h2 class="text-base font-bold text-[#111714]">Recent Purchase Orders</h2>
+              <span id="po-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F4F7F4] text-[#65716B] border border-[#E2E7E3]">
+                Showing 4 of 4
+              </span>
+            </div>
+
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between">
+              <button onclick="exportPOCSV()" class="text-xs font-semibold text-[#65716B] hover:text-[#111714] flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E2E7E3] hover:bg-slate-50 transition-colors">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Export CSV</span>
+              </button>
+              <button onclick="filterTableByStatus('all')" class="text-xs font-semibold text-[#111714] hover:text-[#0E513C] transition-colors flex items-center gap-1">
+                <span>View All</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- STATUS FILTER TABS -->
+          <div class="p-3 bg-[#F4F7F4] border-b border-[#E2E7E3] overflow-x-auto">
+            <div class="flex items-center gap-2 min-w-max">
+              <button onclick="filterTableByStatus('all')" data-status="all" class="status-tab px-3.5 py-1.5 rounded-lg bg-[#003B2B] text-white text-xs font-semibold transition-all">
+                All Statuses
+              </button>
+              <button onclick="filterTableByStatus('Processing')" data-status="Processing" class="status-tab px-3.5 py-1.5 rounded-lg bg-white text-[#65716B] hover:text-[#111714] hover:bg-slate-100 text-xs font-semibold border border-[#E2E7E3] transition-all">
+                Processing
+              </button>
+              <button onclick="filterTableByStatus('Completed')" data-status="Completed" class="status-tab px-3.5 py-1.5 rounded-lg bg-white text-[#65716B] hover:text-[#111714] hover:bg-slate-100 text-xs font-semibold border border-[#E2E7E3] transition-all">
+                Completed
+              </button>
+              <button onclick="filterTableByStatus('On Hold')" data-status="On Hold" class="status-tab px-3.5 py-1.5 rounded-lg bg-white text-[#65716B] hover:text-[#111714] hover:bg-slate-100 text-xs font-semibold border border-[#E2E7E3] transition-all">
+                On Hold
+              </button>
+              <button onclick="filterTableByStatus('Pending Approval')" data-status="Pending Approval" class="status-tab px-3.5 py-1.5 rounded-lg bg-white text-[#65716B] hover:text-[#111714] hover:bg-slate-100 text-xs font-semibold border border-[#E2E7E3] transition-all">
+                Pending Approval
+              </button>
+            </div>
+          </div>
+
+          <!-- FILTER BAR (Date, Amount, Customer, Search, Clear) -->
+          <div class="p-3 bg-white border-b border-[#E2E7E3] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            <!-- Search PO or Customer -->
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-[#65716B] absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input id="table-search-input" type="text" placeholder="Search PO or customer..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-[#111714] focus:outline-none focus:border-[#0E513C]" />
+            </div>
+
+            <!-- Date Filter -->
+            <div class="relative">
+              <input id="filter-date-input" type="date" class="w-full px-3 py-1.5 text-xs bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-[#111714] focus:outline-none focus:border-[#0E513C]" />
+            </div>
+
+            <!-- Customer Filter -->
+            <div>
+              <select id="filter-customer-select" class="w-full px-3 py-1.5 text-xs bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-[#111714] focus:outline-none focus:border-[#0E513C]">
+                <option value="">All Customers</option>
+                <option value="Global Tech Inc.">Global Tech Inc.</option>
+                <option value="Nexus Industries">Nexus Industries</option>
+                <option value="Vertex Solutions">Vertex Solutions</option>
+                <option value="Delta Corp">Delta Corp</option>
+              </select>
+            </div>
+
+            <!-- Clear Filters Button -->
+            <div class="flex items-center justify-end">
+              <button onclick="clearAllFilters()" class="w-full sm:w-auto px-3 py-1.5 text-xs font-semibold text-[#65716B] hover:text-[#D44747] hover:bg-rose-50 border border-[#E2E7E3] rounded-lg transition-colors flex items-center justify-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>Clear Filters</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- TABLE SCROLL CONTAINER (INTERNAL HORIZONTAL SCROLL FOR MOBILE) -->
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr class="bg-[#F4F7F4]/80 text-[11px] text-[#65716B] font-bold uppercase tracking-wider border-b border-[#E2E7E3]">
+                  <th class="py-3 px-5">PO ID / PO NUMBER</th>
+                  <th class="py-3 px-5">CUSTOMER</th>
+                  <th class="py-3 px-5 text-right">VALUE</th>
+                  <th class="py-3 px-5">STATUS</th>
+                  <th class="py-3 px-5 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="po-tbody" class="divide-y divide-[#E2E7E3] text-xs sm:text-sm">
+                
+                <!-- ROW 1 -->
+                <tr class="hover:bg-[#F4F7F4]/60 transition-colors po-row cursor-pointer" data-status="Processing" data-customer="Global Tech Inc." data-po="PO-2024-089" onclick="navigateToPODetail('PO-2024-089')">
+                  <td class="py-3.5 px-5">
+                    <div class="font-bold text-[#111714]">PO-2024-089</div>
+                    <div class="text-[11px] text-[#65716B] font-medium">Ref: QTN-1042 · Oct 24, 2024</div>
+                  </td>
+                  <td class="py-3.5 px-5 font-semibold text-[#111714]">
+                    Global Tech Inc.
+                  </td>
+                  <td class="py-3.5 px-5 font-bold text-[#111714] text-right">
+                    ₹4,50,000
+                  </td>
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FFFBEB] text-[#D89B23] border border-[#FCD34D]/40">
+                      Processing
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-5 text-right" onclick="event.stopPropagation()">
+                    <button aria-label="Actions Menu" class="p-1.5 text-[#65716B] hover:text-[#111714] hover:bg-slate-100 rounded-lg transition-colors">
+                      <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- ROW 2 -->
+                <tr class="hover:bg-[#F4F7F4]/60 transition-colors po-row cursor-pointer" data-status="Completed" data-customer="Nexus Industries" data-po="PO-2024-088" onclick="navigateToPODetail('PO-2024-088')">
+                  <td class="py-3.5 px-5">
+                    <div class="font-bold text-[#111714]">PO-2024-088</div>
+                    <div class="text-[11px] text-[#65716B] font-medium">Ref: QTN-1039 · Oct 22, 2024</div>
+                  </td>
+                  <td class="py-3.5 px-5 font-semibold text-[#111714]">
+                    Nexus Industries
+                  </td>
+                  <td class="py-3.5 px-5 font-bold text-[#111714] text-right">
+                    ₹12,20,000
+                  </td>
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#ECFDF5] text-[#35A866] border border-[#6EE7B7]/40">
+                      Completed
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-5 text-right" onclick="event.stopPropagation()">
+                    <button aria-label="Actions Menu" class="p-1.5 text-[#65716B] hover:text-[#111714] hover:bg-slate-100 rounded-lg transition-colors">
+                      <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- ROW 3 -->
+                <tr class="hover:bg-[#F4F7F4]/60 transition-colors po-row cursor-pointer" data-status="On Hold" data-customer="Vertex Solutions" data-po="PO-2024-087" onclick="navigateToPODetail('PO-2024-087')">
+                  <td class="py-3.5 px-5">
+                    <div class="font-bold text-[#111714]">PO-2024-087</div>
+                    <div class="text-[11px] text-[#65716B] font-medium">Ref: QTN-1045 · Oct 20, 2024</div>
+                  </td>
+                  <td class="py-3.5 px-5 font-semibold text-[#111714]">
+                    Vertex Solutions
+                  </td>
+                  <td class="py-3.5 px-5 font-bold text-[#111714] text-right">
+                    ₹85,000
+                  </td>
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FEF2F2] text-[#D44747] border border-[#FCA5A5]/40">
+                      On Hold
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-5 text-right" onclick="event.stopPropagation()">
+                    <button aria-label="Actions Menu" class="p-1.5 text-[#65716B] hover:text-[#111714] hover:bg-slate-100 rounded-lg transition-colors">
+                      <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- ROW 4 -->
+                <tr class="hover:bg-[#F4F7F4]/60 transition-colors po-row cursor-pointer" data-status="Processing" data-customer="Delta Corp" data-po="PO-2024-086" onclick="navigateToPODetail('PO-2024-086')">
+                  <td class="py-3.5 px-5">
+                    <div class="font-bold text-[#111714]">PO-2024-086</div>
+                    <div class="text-[11px] text-[#65716B] font-medium">Ref: QTN-1011 · Oct 18, 2024</div>
+                  </td>
+                  <td class="py-3.5 px-5 font-semibold text-[#111714]">
+                    Delta Corp
+                  </td>
+                  <td class="py-3.5 px-5 font-bold text-[#111714] text-right">
+                    ₹3,15,000
+                  </td>
+                  <td class="py-3.5 px-5">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FFFBEB] text-[#D89B23] border border-[#FCD34D]/40">
+                      Processing
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-5 text-right" onclick="event.stopPropagation()">
+                    <button aria-label="Actions Menu" class="p-1.5 text-[#65716B] hover:text-[#111714] hover:bg-slate-100 rounded-lg transition-colors">
+                      <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                    </button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- EMPTY STATE (HIDDEN BY DEFAULT) -->
+          <div id="po-empty-state" class="hidden p-12 text-center">
+            <div class="w-12 h-12 rounded-full bg-[#F4F7F4] border border-[#E2E7E3] text-[#65716B] flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="inbox" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-sm font-bold text-[#111714] mb-1">No Purchase Orders Yet</h3>
+            <p class="text-xs text-[#65716B] mb-4 max-w-sm mx-auto">Purchase Orders will appear here once orders are created or received from customers.</p>
+            <button onclick="toggleUploadModal(true)" class="px-4 py-2 bg-[#003B2B] text-white text-xs font-semibold rounded-lg hover:bg-[#0E513C]">
+              Create Purchase Order
+            </button>
+          </div>
+
+        </div>
+
+        <!-- RIGHT PANEL: RECENT ACTIVITY TIMELINE (col-span-4) -->
+        <div class="lg:col-span-4 bg-white rounded-xl border border-[#E2E7E3] p-5 sm:p-6 shadow-xs flex flex-col">
+          
+          <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-[#0E513C]"></i>
+              <h2 class="text-base font-bold text-[#111714]">Recent Activity</h2>
+            </div>
+            <button aria-label="Activity History" class="text-[#65716B] hover:text-[#111714] p-1 rounded">
+              <i data-lucide="history" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Vertical Timeline -->
+          <div class="relative pl-6 space-y-6 before:absolute before:left-[7px] before:top-2.5 before:bottom-2.5 before:w-[2px] before:bg-[#E2E7E3]">
+            
+            <!-- Timeline Item 1 -->
+            <div class="relative">
+              <span class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#35A866] flex items-center justify-center ring-4 ring-white"></span>
+              <div class="text-xs leading-relaxed text-[#111714]">
+                <span class="font-bold">PO-2024-089</span> received from <span class="font-bold">Global Tech Inc.</span>
+              </div>
+              <div class="text-[11px] text-[#65716B] font-medium mt-1">2 hours ago</div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="relative">
+              <span class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#E2E7E3] flex items-center justify-center ring-4 ring-white"></span>
+              <div class="text-xs leading-relaxed text-[#111714]">
+                Status changed to <span class="font-bold text-[#35A866]">Completed</span> for <span class="font-bold">PO-2024-088</span>
+              </div>
+              <div class="text-[11px] text-[#65716B] font-medium mt-1">5 hours ago</div>
+            </div>
+
+            <!-- Timeline Item 3 -->
+            <div class="relative">
+              <span class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#E2E7E3] flex items-center justify-center ring-4 ring-white"></span>
+              <div class="text-xs leading-relaxed text-[#111714]">
+                <span class="font-bold">Sarah J.</span> added a note to <span class="font-bold">PO-2024-087</span>
+              </div>
+              
+              <!-- Quote Callout Box -->
+              <div class="mt-2 p-3 bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-xs italic text-[#65716B] leading-normal">
+                "Awaiting final confirmation on shipping address before processing."
+              </div>
+
+              <div class="text-[11px] text-[#65716B] font-medium mt-2">Yesterday, 14:30</div>
+            </div>
+
+            <!-- Timeline Item 4 -->
+            <div class="relative">
+              <span class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#E2E7E3] flex items-center justify-center ring-4 ring-white"></span>
+              <div class="text-xs leading-relaxed text-[#111714]">
+                New PO uploaded manually by <span class="font-bold">Admin</span>
+              </div>
+              <div class="text-[11px] text-[#65716B] font-medium mt-1">Yesterday, 09:15</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- UPLOAD PO MODAL CONTAINER (Hidden by Default) -->
+  <div id="upload-po-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-[#E2E7E3] shadow-2xl max-w-lg w-full overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-[#E2E7E3] flex items-center justify-between bg-[#F4F7F4]/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#003B2B] text-[#9CF45D] flex items-center justify-center font-bold">
+            <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-[#111714]">Upload Purchase Order</h3>
+            <p class="text-xs text-[#65716B]">Upload customer PO document (.PDF, .PNG, .XLSX)</p>
+          </div>
+        </div>
+        <button onclick="toggleUploadModal(false)" aria-label="Close Modal" class="text-[#65716B] hover:text-[#111714] p-1.5 rounded-lg hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Form -->
+      <form id="upload-po-form" onsubmit="handlePOUpload(event)" class="p-6 space-y-4">
+        <!-- Drag & Drop File Container -->
+        <div class="border-2 border-dashed border-[#E2E7E3] hover:border-[#0E513C] bg-[#F4F7F4] rounded-xl p-6 text-center cursor-pointer transition-all" onclick="document.getElementById('po-file-input').click()">
+          <i data-lucide="file-up" class="w-8 h-8 text-[#0E513C] mx-auto mb-2"></i>
+          <p class="text-xs font-bold text-[#111714]">Click to choose or drag & drop file here</p>
+          <p class="text-[11px] text-[#65716B] mt-0.5">Supports PDF, PNG, JPG, or Excel up to 10MB</p>
+          <input type="file" id="po-file-input" class="hidden" onchange="updateFileName(this)" />
+          <div id="file-name-display" class="mt-2 text-xs font-semibold text-[#0E513C] hidden"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-bold text-[#111714] uppercase mb-1">PO Number *</label>
+            <input type="text" placeholder="e.g. PO-2024-090" required class="w-full px-3 py-2 bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-xs focus:outline-none focus:border-[#0E513C]" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-[#111714] uppercase mb-1">Customer Name *</label>
+            <input type="text" placeholder="e.g. Acme Enterprise" required class="w-full px-3 py-2 bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-xs focus:outline-none focus:border-[#0E513C]" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-[#111714] uppercase mb-1">Order Value (₹) *</label>
+          <input type="number" placeholder="e.g. 520000" required class="w-full px-3 py-2 bg-[#F4F7F4] border border-[#E2E7E3] rounded-lg text-xs focus:outline-none focus:border-[#0E513C]" />
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="pt-4 border-t border-[#E2E7E3] flex justify-end gap-3">
+          <button type="button" onclick="toggleUploadModal(false)" class="px-4 py-2 border border-[#E2E7E3] rounded-lg text-xs font-semibold text-[#65716B] hover:bg-slate-50">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-[#003B2B] text-white text-xs font-semibold hover:bg-[#0E513C] transition-all shadow-xs flex items-center gap-2">
+            <span>Submit PO Record</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Mobile Sidebar Drawer Toggle
+    function toggleMobileSidebar(open) {
+      const sidebar = document.getElementById('sidebar-nav');
+      const backdrop = document.getElementById('mobile-sidebar-backdrop');
+      if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // Toggle Upload PO Modal
+    function toggleUploadModal(show) {
+      const modal = document.getElementById('upload-po-modal');
+      if (show) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
+    }
+
+    // File input name update
+    function updateFileName(input) {
+      const nameDisplay = document.getElementById('file-name-display');
+      if (input.files && input.files[0]) {
+        nameDisplay.textContent = `Selected File: ${input.files[0].name}`;
+        nameDisplay.classList.remove('hidden');
+      }
+    }
+
+    // Form submission simulation
+    function handlePOUpload(e) {
+      e.preventDefault();
+      alert('Purchase Order successfully uploaded!');
+      toggleUploadModal(false);
+    }
+
+    // Navigate to PO Details
+    function navigateToPODetail(poId) {
+      window.location.href = `/index.html#purchase-orders`;
+    }
+
+    // Export CSV
+    function exportPOCSV() {
+      const rows = [
+        ["PO ID", "Ref Quote", "Customer", "Value", "Status"],
+        ["PO-2024-089", "QTN-1042", "Global Tech Inc.", "450000", "Processing"],
+        ["PO-2024-088", "QTN-1039", "Nexus Industries", "1220000", "Completed"],
+        ["PO-2024-087", "QTN-1045", "Vertex Solutions", "85000", "On Hold"],
+        ["PO-2024-086", "QTN-1011", "Delta Corp", "315000", "Processing"]
+      ];
+      let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+      let encodedUri = encodeURI(csvContent);
+      let link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "technicon_purchase_orders.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Interactive Filtering Engine
+    let activeStatus = 'all';
+
+    function filterTableByStatus(status) {
+      activeStatus = status;
+      
+      // Highlight Active Tab
+      document.querySelectorAll('.status-tab').forEach(tab => {
+        if (tab.getAttribute('data-status') === status) {
+          tab.className = 'status-tab px-3.5 py-1.5 rounded-lg bg-[#003B2B] text-white text-xs font-semibold transition-all';
+        } else {
+          tab.className = 'status-tab px-3.5 py-1.5 rounded-lg bg-white text-[#65716B] hover:text-[#111714] hover:bg-slate-100 text-xs font-semibold border border-[#E2E7E3] transition-all';
+        }
+      });
+
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchQuery = (document.getElementById('table-search-input')?.value || '').toLowerCase().trim();
+      const customerFilter = document.getElementById('filter-customer-select')?.value || '';
+      
+      const rows = document.querySelectorAll('.po-row');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        const rowCustomer = row.getAttribute('data-customer');
+        const rowPo = row.getAttribute('data-po');
+
+        const matchesStatus = (activeStatus === 'all' || rowStatus === activeStatus);
+        const matchesCustomer = (!customerFilter || rowCustomer === customerFilter);
+        const matchesSearch = (!searchQuery || rowPo.toLowerCase().includes(searchQuery) || rowCustomer.toLowerCase().includes(searchQuery) || rowStatus.toLowerCase().includes(searchQuery));
+
+        if (matchesStatus && matchesCustomer && matchesSearch) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Update counter badge & empty state
+      const countBadge = document.getElementById('po-count-badge');
+      if (countBadge) countBadge.textContent = `Showing ${visibleCount} of ${rows.length}`;
+
+      const emptyState = document.getElementById('po-empty-state');
+      if (emptyState) {
+        if (visibleCount === 0) emptyState.classList.remove('hidden');
+        else emptyState.classList.add('hidden');
+      }
+    }
+
+    function clearAllFilters() {
+      if (document.getElementById('table-search-input')) document.getElementById('table-search-input').value = '';
+      if (document.getElementById('filter-date-input')) document.getElementById('filter-date-input').value = '';
+      if (document.getElementById('filter-customer-select')) document.getElementById('filter-customer-select').value = '';
+      filterTableByStatus('all');
+    }
+
+    // Attach Event Listeners for Live Search & Filters
+    document.getElementById('table-search-input')?.addEventListener('input', applyFilters);
+    document.getElementById('global-search-input')?.addEventListener('input', (e) => {
+      if (document.getElementById('table-search-input')) {
+        document.getElementById('table-search-input').value = e.target.value;
+        applyFilters();
+      }
+    });
+    document.getElementById('filter-customer-select')?.addEventListener('change', applyFilters);
+
+    // Dynamic Live Data Loader from Technicon Backend
+    async function loadLiveData() {
+      try {
+        const res = await fetch('/api/purchase-orders');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            // Update total PO count KPI
+            const totalPoEl = document.getElementById('kpi-total-pos');
+            if (totalPoEl) totalPoEl.textContent = data.length.toLocaleString();
+            
+            // Calculate aggregate value
+            const totalVal = data.reduce((sum, item) => sum + (Number(item.total) || 0), 0);
+            const totalValEl = document.getElementById('kpi-total-value');
+            if (totalValEl && totalVal > 0) {
+              totalValEl.textContent = `₹${(totalVal / 100000).toFixed(1)}L`;
+            }
+          }
+        }
+      } catch (err) {
+        // Fallback gracefully to default sample view
+      }
+    }
+
+    loadLiveData();
+  </script>
+</body>
+</html>
